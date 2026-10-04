@@ -50,6 +50,31 @@
     return `[${'#'.repeat(llenos)}${'-'.repeat(10 - llenos)}] ${en}/100`;
   }
 
+  /* Aviso de rango: solo si el rango nuevo es distinto del anterior. */
+  function avisoRango(xpAntes, xpDespues) {
+    const antes = rango(nivel(xpAntes)), despues = rango(nivel(xpDespues));
+    return antes === despues ? '' : `¡Nuevo rango: ${despues}!`;
+  }
+
+  /* ---------- Requisitos de misión (preparados para la Ciudad; vacíos en esta versión) ---------- */
+  const UMBRALES_OBJETO = [0, 4, 10, 16, 24, 34];
+  function nivelObjeto(estado, id) {
+    const pts = (estado.maestria && estado.maestria[id]) || 0;
+    let n = 0;
+    UMBRALES_OBJETO.forEach((u, i) => { if (pts >= u) n = i; });
+    return Math.min(n, 3);
+  }
+  function valorRequisito(estado, r) {
+    if (r.tipo === 'objeto') return nivelObjeto(estado, r.id);
+    if (r.tipo === 'stat') return (estado.stats && estado.stats[r.id]) || 0;
+    if (r.tipo === 'mision') return estado.completadas && estado.completadas[r.id] ? 1 : 0;
+    return 0;
+  }
+  function requisitosFaltantes(estado, m) {
+    return (m.requisitos || []).filter((r) => valorRequisito(estado, r) < (r.tipo === 'mision' ? 1 : r.valor || 0));
+  }
+  const requisitosCumplidos = (estado, m) => requisitosFaltantes(estado, m).length === 0;
+
   const mision = (estado) => MISIONES[estado.misionActual] || null;
   const datosMision = (estado, i) => MISIONES[i].generarDatos(estado.semilla);
   const terminada = (estado) => estado.misionActual >= MISIONES.length;
@@ -98,7 +123,9 @@
       xp: m.xp, oro: m.oro, stats: m.stats,
       nivelAntes, nivelDespues,
       subeNivel: nivelDespues > nivelAntes,
-      mensajeNivel: nivelDespues > nivelAntes ? `¡Has subido al nivel ${nivelDespues}! Nuevo rango: ${rango(nivelDespues)}.` : '',
+      mensajeNivel: nivelDespues > nivelAntes ? `¡Has subido al nivel ${nivelDespues}!` : '',
+      cambiaRango: rango(nivelAntes) !== rango(nivelDespues),
+      mensajeRango: avisoRango(estado.xp - m.xp, estado.xp),
       consecuencia: estado.registro[estado.registro.length - 1].texto
     };
   }
@@ -186,7 +213,7 @@
 
   return {
     STATS, NOMBRES_STATS, nuevaPartida, nivel, rango, barraXP, mision, datosMision, terminada,
-    editarCelda, usarPista, entregar, calcularAldea, codice, resumenFinal,
+    editarCelda, usarPista, entregar, avisoRango, requisitosCumplidos, requisitosFaltantes, nivelObjeto, calcularAldea, codice, resumenFinal,
     serializar, cargar, guardarLocal, cargarLocal, borrarLocal
   };
 });

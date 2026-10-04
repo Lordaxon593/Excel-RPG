@@ -10,9 +10,10 @@ for (let r = 2; r <= 7; r++) M5['D' + r] = `=C${r}/B${r}`;
 Object.assign(M5, { B9: '=MAX(D2:D7)', B10: '=MIN(D2:D7)', B11: '=CONTAR(B2:B7)' });
 
 const M6 = {};
+const M7 = {};
 for (let r = 2; r <= 8; r++) {
-  M6['D' + r] = `=B${r}-C${r}`;
-  M6['E' + r] = `=SI(D${r}<$G$1;"RACIONAR";"NORMAL")`;
+  M6['C' + r] = `=B${r}-$G$1`;
+  M7['C' + r] = `=SI(B${r}<$G$1;"RACIONAR";"NORMAL")`;
 }
 
 const SOLUCIONES = {
@@ -22,9 +23,10 @@ const SOLUCIONES = {
   M4: { B13: '=PROMEDIO(B2:B8)', B14: '=ENTERO(B10/B11)', B15: '=B13-B11' },
   M5,
   M6,
-  M7: {}
+  M7,
+  M8: {}
 };
 
-const EXTRA = { M7: { rango: 'A1:B6', tipo: 'columnas', titulo: 'Producción de la aldea' } };
+const EXTRA = { M8: { rango: 'A1:B6', tipo: 'columnas', titulo: 'Producción de la aldea' } };
 
 module.exports = { SOLUCIONES, EXTRA };

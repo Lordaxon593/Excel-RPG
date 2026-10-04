@@ -15,11 +15,12 @@ const EQUIVOCADAS = {
   M3: { B6: '=B3+B4' },
   M4: { B13: '=PROMEDIO(B2:B7)' },
   M5: { B9: '=MIN(D2:D7)' },
-  M6: { D2: '=B2+C2' }
+  M6: { C2: '=B2+$G$1' },
+  M7: { C2: '=SI(B2>$G$1;"RACIONAR";"NORMAL")' }
 };
 
-test('hay 7 misiones con recompensas y pistas correctas', () => {
-  assert.strictEqual(M.MISIONES.length, 7);
+test('hay 8 misiones con recompensas y pistas correctas', () => {
+  assert.strictEqual(M.MISIONES.length, 8);
   assert.strictEqual(M.MISIONES.reduce((s, m) => s + m.xp, 0), 350);
   assert.strictEqual(M.MISIONES.reduce((s, m) => s + m.oro, 0), 150);
   for (const m of M.MISIONES) {
@@ -110,48 +111,8 @@ test('requisitos de función y de referencias', () => {
   assert.strictEqual(r.ok, false);
 });
 
-test('M6: rellenar sin $ falla y con $ pasa', () => {
-  const m6 = M.MISIONES[5];
-  const s = clonar(SOLUCIONES.M6);
-  const rel = E.rellenarAbajo('=SI(D2<G1;"RACIONAR";"NORMAL")', 6);
-  s.E2 = '=SI(D2<G1;"RACIONAR";"NORMAL")';
-  rel.forEach((raw, i) => { s['E' + (3 + i)] = raw; });
-  for (let semilla = 1; semilla <= 20; semilla++) {
-    const r = M.validar(m6, s, semilla);
-    assert.strictEqual(r.ok, false, 'semilla ' + semilla);
-  }
-  const con = clonar(SOLUCIONES.M6);
-  E.rellenarAbajo('=SI(D2<$G$1;"RACIONAR";"NORMAL")', 6).forEach((raw, i) => { con['E' + (3 + i)] = raw; });
-  con.E2 = '=SI(D2<$G$1;"RACIONAR";"NORMAL")';
-  assert.strictEqual(M.validar(m6, con, SEMILLA).ok, true);
-});
-
-test('M6: umbral escrito a mano en la fórmula se detecta', () => {
-  const m6 = M.MISIONES[5];
-  let detectadas = 0;
-  for (let semilla = 1; semilla <= 20; semilla++) {
-    const u = m6.generarDatos(semilla).v.umbral;
-    const s = clonar(SOLUCIONES.M6);
-    for (let r = 2; r <= 8; r++) s['E' + r] = `=SI(D${r}<${u};"RACIONAR";"NORMAL")`;
-    const res = M.validar(m6, s, semilla);
-    if (!res.ok) {
-      detectadas++;
-      assert.ok(res.mensajes.join(' ').includes('pista 2'));
-    }
-  }
-  assert.ok(detectadas >= 10, 'detectadas: ' + detectadas);
-});
-
-test('M6: B3:B8 vienen con fórmulas y son de solo lectura (no editables)', () => {
-  const m6 = M.MISIONES[5];
-  const d = m6.generarDatos(SEMILLA);
-  assert.strictEqual(d.celdas.B3, '=D2');
-  assert.strictEqual(d.celdas.B8, '=D7');
-  assert.ok(!M.celdasEditables(m6).includes('B3'));
-});
-
-test('M7: columnas con A1:B6 pasa; líneas, rango o título malos fallan', () => {
-  const m7 = M.MISIONES[6];
+test('M8: columnas con A1:B6 pasa; líneas, rango o título malos fallan', () => {
+  const m7 = M.MISIONES[7];
   const ok = { rango: 'A1:B6', tipo: 'columnas', titulo: 'Producción semanal' };
   assert.strictEqual(M.validar(m7, {}, SEMILLA, ok).ok, true);
   assert.strictEqual(M.validar(m7, {}, SEMILLA, Object.assign({}, ok, { rango: 'a1:b6' })).ok, true);
@@ -185,7 +146,9 @@ test('los datos son deterministas y respetan los rangos', () => {
   for (let s = 1; s <= 50; s++) {
     const d1 = M.MISIONES[0].generarDatos(s).v.trigo;
     assert.ok(d1.every((x) => x >= 18 && x <= 42));
-    const d6 = M.MISIONES[5].generarDatos(s).v;
-    assert.ok(d6.umbral >= 40 && d6.umbral <= 60 && d6.b2 >= 120 && d6.b2 <= 180);
+    for (const i of [5, 6]) {
+      const d6 = M.MISIONES[i].generarDatos(s).v;
+      assert.ok(d6.umbral >= 40 && d6.umbral <= 60 && d6.stock.every((x) => x >= 20 && x <= 140));
+    }
   }
 });

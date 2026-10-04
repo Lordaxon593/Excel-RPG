@@ -284,66 +284,88 @@
     }
   };
 
+  /* Datos compartidos por M6 y M7: stock final de cada día y umbral de racionamiento. */
+  function datosUmbral(stock, umbral, cabC) {
+    const celdas = { A1: 'Día', B1: 'Stock final (kg)', C1: cabC, F1: 'Umbral (kg)', G1: String(umbral) };
+    stock.forEach((v, i) => { celdas['A' + (i + 2)] = String(i + 1); celdas['B' + (i + 2)] = String(v); });
+    return { cols: 7, filas: 10, celdas, v: { stock: stock.slice(), umbral } };
+  }
+  function generarUmbral(semilla, n, cabC) {
+    const rng = prng(semilla, n);
+    const stock = [];
+    for (let i = 0; i < 7; i++) stock.push(ent(rng, 20, 140));
+    return datosUmbral(stock, ent(rng, 40, 60), cabC);
+  }
+  /* Conjuntos fijos que cruzan el umbral en ambos sentidos: delatan umbrales escritos a mano. */
+  const VARIANTES_UMBRAL = [
+    { stock: [38, 40, 41, 42, 45, 39, 60], umbral: 41 },
+    { stock: [56, 58, 59, 60, 57, 61, 30], umbral: 59 }
+  ];
+  const AYUDA_UMBRAL = 'Piensa qué pasa con la referencia al umbral cuando rellenas hacia abajo (mira la pista 2).';
+
   const M6 = {
-    id: 'M6', titulo: 'Tiempos de escasez', dificultad: 'Difícil', xp: 100, oro: 50,
-    stats: { logica: 2, finanzas: 1 },
-    etiquetas: ['ref.absoluta', 'funcion.si', 'comparaciones'],
+    id: 'M6', titulo: 'El umbral', dificultad: 'Normal', xp: 50, oro: 25,
+    stats: { logica: 1, finanzas: 1 },
+    etiquetas: ['ref.absoluta'],
     texto: [
-      'Llega el invierno y Maese Aldric habla bajo. «Si el trigo cae por debajo del umbral de racionamiento, hay que repartir menos. Quiero ver día a día cuánto queda y cuándo toca racionar.»',
-      'El umbral está en una sola celda (G1) y todos los días deben compararse con ella.'
+      'Llega el invierno y Maese Aldric habla bajo. «Anoté cuánto trigo queda cada día. Hay un umbral de racionamiento, y todos los días deben compararse con ese mismo número. Dime cuánto margen nos queda sobre él.»',
+      'El umbral está en una sola celda (G1) y no debe moverse al rellenar hacia abajo.'
     ],
-    queHacer: [
-      'D2:D8: el stock final de cada día (stock inicial menos consumo).',
-      'E2:E8: el estado de cada día, «RACIONAR» si el stock final queda por debajo del umbral y «NORMAL» si no.'
-    ],
+    queHacer: ['C2:C8: el margen de cada día sobre el umbral en kg (stock final menos umbral; sale negativo si queda por debajo).'],
     generarDatos(semilla) {
-      const rng = prng(semilla, 6);
-      const celdas = { A1: 'Día', B1: 'Stock inicial', C1: 'Consumo', D1: 'Stock final', E1: 'Estado', F1: 'Umbral' };
-      const b2 = ent(rng, 120, 180);
-      const consumo = [];
-      for (let i = 0; i < 7; i++) {
-        consumo.push(ent(rng, 15, 30));
-        celdas['A' + (i + 2)] = String(i + 1);
-        celdas['C' + (i + 2)] = String(consumo[i]);
-        celdas['B' + (i + 2)] = i === 0 ? String(b2) : '=D' + (i + 1);
-      }
-      const umbral = ent(rng, 40, 60);
-      celdas.G1 = String(umbral);
-      return { cols: 7, filas: 8, celdas, v: { b2, consumo, umbral } };
+      const d = generarUmbral(semilla, 6, 'Margen sobre umbral');
+      d.celdas.A10 = 'Margen = stock final - umbral (negativo si el stock queda por debajo).';
+      return d;
     },
-    objetivos: [].concat(
-      obRango('D', 2, 8, (d, k) => stockFinal(d, k), { usaReferencias: true }),
-      obRango('E', 2, 8, (d, k) => (stockFinal(d, k) < d.v.umbral ? 'RACIONAR' : 'NORMAL'), { funcion: 'SI', usaReferencias: true },
-        { ayuda: 'Piensa qué ocurre con la referencia al umbral cuando rellenas hacia abajo (mira la pista 2).' })
-    ),
+    variantes: () => VARIANTES_UMBRAL.map((v) => datosUmbral(v.stock, v.umbral, 'Margen sobre umbral')),
+    objetivos: obRango('C', 2, 8, (d, k) => d.v.stock[k] - d.v.umbral, { usaReferencias: true, apuntaA: 'G1' }, { entero: true, ayuda: AYUDA_UMBRAL }),
     pistas: [
-      'Cada día el stock final es el inicial menos el consumo. Y el estado depende de si ese stock final cae por debajo del umbral de racionamiento.',
-      'El estado se decide con la función SI, comparando el stock final con el umbral. Al rellenar hacia abajo, el umbral debe quedarse en su sitio: fija su referencia con el símbolo $ (referencia absoluta).',
-      'Stock final: celda de stock inicial menos celda de consumo. Estado: =SI(stock final < celda del umbral fijada con $; "RACIONAR"; "NORMAL"), con el texto entre comillas dobles.'
+      'Quieres saber cuántos kg quedan por encima o por debajo del umbral cada día. El umbral está en una única celda que comparten todos los días.',
+      'Resta el umbral al stock final de cada día. Al rellenar hacia abajo, la referencia al umbral debe quedarse quieta: fíjala con el símbolo $ delante de la letra y del número (referencia absoluta).',
+      'Primera fila: celda del stock final menos la celda del umbral escrita con $ delante de la columna y de la fila. Después selecciona la columna entera y rellena hacia abajo.'
     ],
     consecuencia: {
-      texto: () => 'La aldea sobrevive al invierno. Se instaura la política de racionamiento: cuando el stock cae bajo el umbral, se reparte menos.'
+      texto: () => 'Maese Aldric apunta el umbral en la pizarra de la aldea: desde hoy todos saben a partir de cuántos kg se raciona.'
     },
     aplicarAldea() {}
   };
-  function stockFinal(d, k) {
-    let s = d.v.b2;
-    for (let i = 0; i <= k; i++) s -= d.v.consumo[i];
-    return s;
-  }
+
+  const M7 = {
+    id: 'M7', titulo: 'Racionamiento', dificultad: 'Normal', xp: 50, oro: 25,
+    stats: { logica: 1 },
+    etiquetas: ['funcion.si', 'comparaciones'],
+    texto: [
+      'Aldric sacude la cabeza. «Ya sé cuánto margen tenemos, pero no quiero leer números cada mañana. Quiero que la hoja me diga sola, día a día, si hay que racionar o no.»',
+      'El umbral sigue en G1. Escribe los textos exactamente entre comillas dobles.'
+    ],
+    queHacer: ['C2:C8: el estado de cada día: «RACIONAR» si el stock final queda por debajo del umbral y «NORMAL» si no.'],
+    generarDatos(semilla) { return generarUmbral(semilla, 7, 'Estado'); },
+    variantes: () => VARIANTES_UMBRAL.map((v) => datosUmbral(v.stock, v.umbral, 'Estado')),
+    objetivos: obRango('C', 2, 8, (d, k) => (d.v.stock[k] < d.v.umbral ? 'RACIONAR' : 'NORMAL'),
+      { funcion: 'SI', usaReferencias: true }, { textoFlexible: true, ayuda: AYUDA_UMBRAL }),
+    pistas: [
+      'El estado de cada día depende de una pregunta: ¿el stock final está por debajo del umbral? Según la respuesta, el texto es uno u otro.',
+      'Usa la función SI: =SI(condición; valor_si_verdadero; valor_si_falso). La condición compara el stock final con el umbral (que debe quedar fijo con $) y los textos van entre comillas dobles.',
+      'Estructura: =SI(celda del stock final < celda del umbral con $; "texto si se raciona"; "texto si no"). Escríbela en la primera fila y rellena hacia abajo.'
+    ],
+    consecuencia: {
+      texto: () => 'Se instaura la política de racionamiento: cuando el stock cae bajo el umbral, se reparte menos. La aldea sobrevive al invierno.'
+    },
+    aplicarAldea() {}
+  };
 
   const PRODUCTOS = ['Trigo', 'Huevos', 'Leña', 'Piedra', 'Lana'];
-  const M7 = {
-    id: 'M7', titulo: 'El tablón de la aldea', dificultad: 'Normal', xp: 50, oro: 20,
+  const M8 = {
+    id: 'M8', titulo: 'El tablón de la aldea', dificultad: 'Normal', xp: 50, oro: 20,
     stats: { analisis: 1 },
     etiquetas: ['grafico.rango', 'grafico.tipo', 'grafico.titulo'],
-    grafico: true,
+    grafico: { rango: 'A1:B6', tipo: 'columnas', msgTipo: { 'líneas': 'Las líneas sirven para ver la evolución en el tiempo; aquí comparas categorías, y para eso van mejor las columnas.' } },
     texto: [
       'Maese Aldric clava un tablón en la plaza. «El pueblo entiende mejor un dibujo que una lista de números. Quiero un gráfico que compare lo que producimos de cada cosa.»'
     ],
     queHacer: ['Crea un gráfico con el panel de gráfico: elige el rango de datos, el tipo de gráfico adecuado para comparar productos y ponle un título (mínimo 5 caracteres).'],
     generarDatos(semilla) {
-      const rng = prng(semilla, 7);
+      const rng = prng(semilla, 8);
       const celdas = { A1: 'Producto', B1: 'Producción semanal' };
       const usados = new Set();
       const valores = [];
@@ -360,8 +382,8 @@
     objetivos: [],
     pistas: [
       'Quieres comparar cuánto se produce de cada producto. Piensa qué datos entran en el gráfico: ¿solo los números o también los nombres y los encabezados?',
-      'Indica el rango que incluye encabezados y datos, de la esquina superior izquierda a la inferior derecha. Para comparar categorías, elige el tipo de gráfico que pone una barra por producto.',
-      'El rango tiene la forma CELDA:CELDA (del primer encabezado al último dato), el tipo es el de barras verticales y el título debe describir qué muestra el gráfico.'
+      'Indica el rango que incluye encabezados y datos, de la esquina superior izquierda a la inferior derecha. Para comparar categorías elige el tipo columnas: una barra por producto.',
+      'El rango tiene la forma CELDA:CELDA (del primer encabezado al último dato), el tipo es el de barras verticales (columnas) y el título debe describir qué muestra el gráfico.'
     ],
     consecuencia: {
       texto: () => 'El gráfico queda fijado en el tablón de la aldea. Todos ven de un vistazo qué producimos más.'
@@ -369,7 +391,25 @@
     aplicarAldea(a) { a.edificios.push('Tablón de la aldea'); }
   };
 
-  const MISIONES = [M1, M2, M3, M4, M5, M6, M7];
+  const MISIONES = [M1, M2, M3, M4, M5, M6, M7, M8];
+
+  /* Metadatos comunes (§6 de CAMBIOS): preparados para la Ciudad; requisitos vacíos en esta versión. */
+  const META = {
+    M1: { negocio: 'almacen', familia: 'abaco', claves: ['SUMA'], entero: ['B9'], pista2: 'La función que suma es SUMA: se escribe =SUMA(rango), con los dos puntos entre la primera y la última celda de la columna del trigo.' },
+    M2: { negocio: 'granja', familia: 'compas', claves: ['SUMA'], entero: ['E2', 'E3', 'E4', 'E5', 'E6', 'E7'], pista2: 'Para cada fila usa la función SUMA sobre las tres celdas de esa fila. Luego selecciona de arriba abajo las celdas del total diario y pulsa «Rellenar hacia abajo» (Ctrl+D).' },
+    M3: { negocio: 'almacen', familia: 'abaco', claves: ['*', '-'], entero: [], pista2: 'No hace falta ninguna función: bastan los operadores * (multiplicar) y - (restar) con referencias a las celdas de la tabla. No escribas los números, apunta a sus celdas.' },
+    M4: { negocio: 'almacen', familia: 'abaco', claves: ['PROMEDIO', 'ENTERO'], entero: ['B14'], pista2: 'Para la producción usa PROMEDIO sobre el rango de la semana. Para los días, divide stock entre consumo y quédate solo con la parte entera con ENTERO. El balance es una resta.' },
+    M5: { negocio: 'capataz', familia: 'abaco', claves: ['MAX', 'MIN', 'CONTAR'], entero: ['B11'], pista2: 'El rendimiento es producción dividida entre horas con el operador / (fila a fila, rellena hacia abajo). Para el mejor, el peor y el recuento existen MAX, MIN y CONTAR.' },
+    M6: { negocio: 'almacen', familia: 'compas', claves: ['$'], entero: [] },
+    M7: { negocio: 'almacen', familia: 'balanza', claves: ['SI'], entero: [] },
+    M8: { negocio: 'tablon', familia: 'pincel', claves: ['columnas'], entero: [] }
+  };
+  MISIONES.forEach((m) => {
+    const x = META[m.id];
+    Object.assign(m, { tipo: 'principal', entorno: 'aldea', negocio: x.negocio, familia: x.familia, requisitos: [], pista2Contiene: x.claves });
+    if (x.pista2) m.pistas[1] = x.pista2;
+    m.objetivos.forEach((o) => { if (x.entero.includes(o.celda)) o.entero = true; });
+  });
 
   const INTRO = {
     bienvenida: [
@@ -380,10 +420,23 @@
   };
 
   /* ---------- Validación ---------- */
-  function iguales(esperado, valor) {
-    if (typeof esperado === 'number') return typeof valor === 'number' && Math.abs(esperado - valor) <= 1e-6;
-    return valor === esperado;
+  const norm = (t) => String(t).trim().toLowerCase();
+
+  /* Devuelve null si el valor es el esperado; si no, el motivo del fallo (sin revelar la solución). */
+  function juzgar(o, esperado, v) {
+    if (typeof esperado === 'number') {
+      if (typeof v === 'string') return 'hay texto en la celda y aquí se espera un número';
+      if (typeof v === 'boolean') return 'hay un valor lógico (VERDADERO/FALSO) y aquí se espera un número';
+      if (Math.abs(esperado - v) <= 1e-6) return null;
+      if (o.entero && Math.abs(v - Math.round(v)) > 1e-9) return 'el resultado tiene decimales y aquí se pide un número entero';
+      return v > esperado ? 'el resultado es mayor del esperado' : 'el resultado es menor del esperado';
+    }
+    if (typeof v === 'number') return 'hay un número en la celda y aquí se espera texto';
+    if (typeof v === 'boolean') return 'hay un valor lógico (VERDADERO/FALSO) y aquí se espera texto';
+    const igual = o.textoFlexible ? norm(v) === norm(esperado) : v === esperado;
+    return igual ? null : 'el texto de la celda no coincide con el esperado (revisa mayúsculas, ortografía y comillas)';
   }
+  const iguales = (esperado, valor) => juzgar({}, esperado, valor) === null;
 
   function construirHoja(m, datos, entrega) {
     const celdas = Object.assign({}, datos.celdas);
@@ -395,23 +448,19 @@
     return Engine.Hoja.desde(celdas, datos.cols, datos.filas);
   }
 
-  function evaluarCelda(m, datos, entrega, o) {
-    return construirHoja(m, datos, entrega).valor(o.celda);
-  }
-
-  function validarGrafico(extra) {
+  function validarGrafico(m, extra) {
+    const cfg = m.grafico;
     const porCelda = {};
     const mensajes = [];
     const g = extra || {};
     const rango = String(g.rango || '').replace(/\$/g, '').replace(/\s/g, '').toUpperCase();
-    porCelda.rango = rango === 'A1:B6' ? 'ok' : 'valor';
+    porCelda.rango = rango === cfg.rango ? 'ok' : 'valor';
     if (porCelda.rango !== 'ok') mensajes.push('El rango de datos no es el adecuado: debe cubrir los encabezados y todos los datos de la tabla, ni más ni menos.');
-    if (g.tipo === 'columnas') porCelda.tipo = 'ok';
+    const tipo = g.tipo === 'lineas' ? 'líneas' : g.tipo;
+    if (tipo === cfg.tipo) porCelda.tipo = 'ok';
     else {
       porCelda.tipo = 'valor';
-      mensajes.push(g.tipo === 'líneas' || g.tipo === 'lineas'
-        ? 'Las líneas sirven para ver la evolución en el tiempo; aquí comparas categorías, y para eso van mejor las columnas.'
-        : 'Elige un tipo de gráfico para el panel: columnas o líneas.');
+      mensajes.push((cfg.msgTipo && cfg.msgTipo[tipo]) || 'Elige un tipo de gráfico para el panel: columnas o líneas.');
     }
     if (String(g.titulo || '').trim().length >= 5) porCelda.titulo = 'ok';
     else {
@@ -423,16 +472,16 @@
 
   /* entrega: { celda: texto bruto } con las celdas editables del jugador. */
   function validar(m, entrega, semilla, extra) {
-    if (m.grafico) return validarGrafico(extra);
+    if (m.grafico) return validarGrafico(m, extra);
     entrega = entrega || {};
     const datos = m.generarDatos(semilla);
-    const alternos = [m.generarDatos(semilla + 1), m.generarDatos(semilla + 2)];
+    const alternos = [m.generarDatos(semilla + 1), m.generarDatos(semilla + 2)].concat(m.variantes ? m.variantes(semilla) : []);
     const porCelda = {};
     const fallos = new Map();
-    const registrar = (o, estado, texto) => {
+    const registrar = (o, estado, razon) => {
       porCelda[o.celda] = estado;
-      const clave = o.grupo + '|' + estado;
-      if (!fallos.has(clave)) fallos.set(clave, { texto, celdas: [] });
+      const clave = o.grupo + '|' + estado + '|' + razon;
+      if (!fallos.has(clave)) fallos.set(clave, { grupo: o.grupo, razon, celdas: [] });
       fallos.get(clave).celdas.push(o.celda);
     };
 
@@ -440,42 +489,54 @@
       const raw = entrega[o.celda];
       const vacia = raw === undefined || raw === null || String(raw).trim() === '';
       if (vacia) {
-        registrar(o, 'noFormula', `${o.grupo}: está vacía. Escribe una fórmula que empiece por =.`);
+        registrar(o, 'noFormula', 'está vacía. Escribe una fórmula que empiece por =.');
         continue;
       }
       if (!String(raw).trim().startsWith('=')) {
-        registrar(o, 'noFormula', `${o.grupo}: no contiene una fórmula (debe empezar por =). Un valor escrito a mano no se recalcula.`);
+        registrar(o, 'noFormula', 'no contiene una fórmula (debe empezar por =). Un valor escrito a mano no se recalcula.');
         continue;
       }
-      const v = evaluarCelda(m, datos, entrega, o);
+      const v = construirHoja(m, datos, entrega).valor(o.celda);
       if (Engine.esError(v)) {
-        registrar(o, 'valor', `${o.grupo}: la fórmula da el error ${v.codigo}. ${v.explicacion}`);
+        registrar(o, 'valor', `la fórmula da el error ${v.codigo}. ${v.explicacion}`);
         continue;
       }
-      if (!iguales(o.esperado(datos), v)) {
-        registrar(o, 'valor', `${o.grupo}: el resultado no es el esperado.${o.ayuda ? ' ' + o.ayuda : ''}`);
+      const motivo = juzgar(o, o.esperado(datos), v);
+      if (motivo) {
+        registrar(o, 'valor', `${motivo}.${o.ayuda ? ' ' + o.ayuda : ''}`);
         continue;
       }
       const adapta = alternos.every((alt) => {
-        const va = evaluarCelda(m, alt, entrega, o);
-        return !Engine.esError(va) && iguales(o.esperado(alt), va);
+        const va = construirHoja(m, alt, entrega).valor(o.celda);
+        return !Engine.esError(va) && juzgar(o, o.esperado(alt), va) === null;
       });
       if (!adapta) {
-        registrar(o, 'hardcode', `${o.grupo}: Tu resultado es correcto ahora, pero no se adapta si cambian los datos. ¿Has escrito algún número a mano o apuntado a una celda equivocada?${o.ayuda ? ' ' + o.ayuda : ''}`);
+        registrar(o, 'hardcode', `Tu resultado es correcto ahora, pero no se adapta si cambian los datos. ¿Has escrito algún número a mano o apuntado a una celda equivocada?${o.ayuda ? ' ' + o.ayuda : ''}`);
         continue;
       }
       const info = Engine.analizar(String(raw).trim());
-      if (o.requisitos.funcion && !info.funciones.includes(o.requisitos.funcion)) {
-        registrar(o, 'requisito', `${o.grupo}: en esta celda tienes que usar la función ${o.requisitos.funcion}.`);
+      const req = o.requisitos;
+      if (req.funcion && !info.funciones.includes(req.funcion)) {
+        registrar(o, 'requisito', `en esta celda tienes que usar la función ${req.funcion}.`);
         continue;
       }
-      if (o.requisitos.usaReferencias && info.referencias === 0) {
-        registrar(o, 'requisito', `${o.grupo}: tienes que usar referencias a celdas (como B2) en lugar de números escritos a mano.`);
+      if (req.usaReferencias && info.referencias === 0) {
+        registrar(o, 'requisito', 'tienes que usar referencias a celdas (como B2) en lugar de números escritos a mano.');
         continue;
+      }
+      if (req.apuntaA) {
+        const t = Engine.parsearRef(req.apuntaA);
+        if (!info.refs.some((r) => r.c === t.c && r.r === t.r)) {
+          registrar(o, 'requisito', `la fórmula debe apuntar a la celda ${req.apuntaA}. Si rellenas hacia abajo, esa referencia tiene que seguir apuntando a ella.`);
+          continue;
+        }
       }
       porCelda[o.celda] = 'ok';
     }
-    const mensajes = Array.from(fallos.values()).map((f) => f.texto);
+    const mensajes = Array.from(fallos.values()).map((f) => {
+      const etiqueta = f.celdas.length > 3 ? f.grupo : f.celdas.join(', ');
+      return `${etiqueta}: ${f.razon}`;
+    });
     return { ok: m.objetivos.every((o) => porCelda[o.celda] === 'ok'), porCelda, mensajes };
   }
 

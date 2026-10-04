@@ -204,7 +204,7 @@
   function htmlFinal() {
     const r = J.resumenFinal(estado);
     const stats = J.STATS.map((s) => `<li>${J.NOMBRES_STATS[s]}: <b>${r.stats[s]}</b></li>`).join('');
-    const tablon = estado.grafico ? `<section class="panel"><h2>Tablón de la aldea</h2>${svgGrafico(M.MISIONES[6].generarDatos(estado.semilla), estado.grafico) || ''}</section>` : '';
+    const tablon = estado.grafico ? `<section class="panel"><h2>Tablón de la aldea</h2>${svgGrafico(M.MISIONES[7].generarDatos(estado.semilla), estado.grafico) || ''}</section>` : '';
     return `<section class="panel final"><h1>¡La aldea ha nacido!</h1>
       <p>${esc(r.nombre)}, has pasado de Aprendiz a ${esc(r.rango)} usando solo fórmulas de Excel.</p>
       <ul class="lista-simple"><li>Nivel: <b>${r.nivel}</b> (${esc(r.rango)})</li><li>XP total: <b>${r.xp}</b></li><li>Oro: <b>${r.oro}</b></li>${stats}

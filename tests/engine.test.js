@@ -204,3 +204,72 @@ test('utilidades de columnas', () => {
   assert.deepStrictEqual(E.parsearRef('$B$7'), { c: 1, r: 7, absC: true, absR: true });
   assert.strictEqual(E.parsearRef('hola'), null);
 });
+
+test('modo señalar: cuándo toca insertar una referencia', () => {
+  const si = ['=', '=(', '=SUMA(', '=SUMA(A1;', '=A1+', '=A1-', '=A1*', '=A1/', '=A1^', '=A1<', '=A1>', '=A1=', '=A1<>', '=SI(A1>', '=SUMA( ', '=2*(A1+'];
+  for (const t of si) assert.strictEqual(E.puedeInsertarReferencia(t, t.length), true, t);
+  const no = ['', 'A1', '=A1', '=SUMA(A1', '=SUMA(A1)', '=SUMA', '="a=', '=SI(A1;"x', '=1,5'];
+  for (const t of no) assert.strictEqual(E.puedeInsertarReferencia(t, t.length), false, t);
+  assert.strictEqual(E.puedeInsertarReferencia('=SUMA()', 6), true);
+  assert.strictEqual(E.puedeInsertarReferencia('=SUMA()', 7), false);
+  assert.strictEqual(E.puedeInsertarReferencia('=A1+B1', 4), true);
+  assert.strictEqual(E.puedeInsertarReferencia('=A1+B1', 0), false);
+});
+
+test('modo señalar: insertar, reemplazar y arrastrar un rango', () => {
+  const a = E.insertarReferencia('=SUMA(', 6, 'B3');
+  assert.deepStrictEqual(a, { texto: '=SUMA(B3', cursor: 8, inicio: 6, fin: 8 });
+  const b = E.insertarReferencia(a.texto, a.cursor, 'C4', { inicio: a.inicio, fin: a.fin });
+  assert.strictEqual(b.texto, '=SUMA(C4');
+  const c = E.insertarReferencia(b.texto, b.cursor, 'C4:C8', { inicio: b.inicio, fin: b.fin });
+  assert.strictEqual(c.texto, '=SUMA(C4:C8');
+  assert.strictEqual(c.cursor, 11);
+  assert.strictEqual(E.insertarReferencia('=A1', 3, 'B2'), null);
+  const medio = E.insertarReferencia('=A1+)', 4, 'B2');
+  assert.strictEqual(medio.texto, '=A1+B2)');
+  assert.strictEqual(medio.cursor, 6);
+  assert.strictEqual(E.insertarReferencia('=1+', 3, 'B2', { inicio: 1, fin: 2 }).texto, '=B2+');
+});
+
+test('modo señalar: referencias de la fórmula con sus colores', () => {
+  const r = E.escanearReferencias('=SUMA(B2:B8;$A$1)+B2*"A1"+LOG10(3)+c3');
+  assert.deepStrictEqual(r.map((x) => x.texto), ['B2:B8', '$A$1', 'B2', 'c3']);
+  assert.deepStrictEqual(r.map((x) => x.color), [0, 1, 2, 3]);
+  assert.strictEqual(r[0].inicio, 6);
+  assert.strictEqual(r[0].fin, 11);
+  const rep = E.escanearReferencias('=A1+A1+$A1');
+  assert.deepStrictEqual(rep.map((x) => x.color), [0, 0, 0]);
+  assert.deepStrictEqual(E.escanearReferencias('texto A1'), []);
+  assert.deepStrictEqual(E.escanearReferencias('=SUMA(A1,'), [{ inicio: 6, fin: 8, texto: 'A1', color: 0 }]);
+});
+
+test('relleno por arrastre: patrón de una o varias filas', () => {
+  assert.deepStrictEqual(E.rellenarPatron(['=A1*$B$1'], 2), ['=A2*$B$1', '=A3*$B$1']);
+  assert.deepStrictEqual(E.rellenarPatron(['=A1', '=A2'], 4), ['=A3', '=A4', '=A5', '=A6']);
+  assert.deepStrictEqual(E.rellenarPatron(['7'], 2), ['7', '7']);
+  assert.deepStrictEqual(E.rellenarPatron([], 2), []);
+  assert.deepStrictEqual(E.rellenarPatron(['=B2'], 0), []);
+});
+
+test('selección: clic, Mayús+clic, arrastre y Mayús+flechas', () => {
+  let s = E.selUna(1, 2);
+  assert.strictEqual(E.rangoTexto(E.rectSel(s)), 'B2');
+  s = E.seleccionar(s, 1, 6, true);
+  assert.strictEqual(E.rangoTexto(E.rectSel(s)), 'B2:B6');
+  assert.deepStrictEqual(s.anchor, { c: 1, r: 2 });
+  s = E.seleccionar(s, 0, 1, true);
+  assert.strictEqual(E.rangoTexto(E.rectSel(s)), 'A1:B2');
+  s = E.seleccionar(s, 3, 3, false);
+  assert.strictEqual(E.rangoTexto(E.rectSel(s)), 'D3');
+  s = E.moverSeleccion(s, 0, 1, true, 5, 10);
+  s = E.moverSeleccion(s, 0, 1, true, 5, 10);
+  assert.strictEqual(E.rangoTexto(E.rectSel(s)), 'D3:D5');
+  s = E.moverSeleccion(s, -1, 0, true, 5, 10);
+  assert.strictEqual(E.rangoTexto(E.rectSel(s)), 'C3:D5');
+  s = E.moverSeleccion(s, 0, -1, false, 5, 10);
+  assert.strictEqual(E.rangoTexto(E.rectSel(s)), 'C4');
+  s = E.moverSeleccion(E.selUna(0, 1), -1, -1, false, 5, 10);
+  assert.strictEqual(E.rangoTexto(E.rectSel(s)), 'A1');
+  s = E.moverSeleccion(E.selUna(4, 10), 1, 1, true, 5, 10);
+  assert.strictEqual(E.rangoTexto(E.rectSel(s)), 'E10');
+});
