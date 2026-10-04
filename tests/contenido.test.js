@@ -107,7 +107,7 @@ test('lecciones de misión: una por misión, con ejemplo resuelto y texto breve'
     }
     for (const r of lec.repasos) assert.ok(L.ficha(r.ficha), `${m.id} repaso`);
   }
-  for (const id of ['M3', 'M5', 'M7']) assert.ok(M.MISIONES.find((m) => m.id === id).leccion.repasos.length >= 1, id);
+  for (const id of ['M3', 'M5', 'M6', 'M7', 'M8']) assert.ok(M.MISIONES.find((m) => m.id === id).leccion.repasos.length >= 1, id);
   const ej1 = M.MISIONES[0].leccion.paginas[0].ejemplo.celdas;
   assert.notDeepStrictEqual(ej1, M.MISIONES[0].generarDatos(1).celdas);
 });

@@ -490,7 +490,8 @@
         texto: 'Un gráfico necesita tres decisiones. El rango de datos: incluye los encabezados y todos los datos (A1:B5), ni más ni menos. El tipo: columnas para comparar categorías, líneas para ver la evolución en el tiempo. El título: dile al lector qué está viendo. Error común: dejar fuera la fila de encabezados o el último dato.',
         ejemplo: { cols: 2, filas: 5, celdas: { A1: 'Fruta', B1: 'Kilos', A2: 'Manzanas', B2: '40', A3: 'Peras', B3: '25', A4: 'Uvas', B4: '60', A5: 'Higos', B5: '15' } },
         ficha: 'grafico.rango'
-      }]
+      }],
+      repasos: [{ texto: 'Repaso: un rango se escribe PRIMERA:ÚLTIMA, como B2:B8; en un gráfico incluye también la fila de encabezados.', ficha: 'rangos' }]
     }
   };
   MISIONES.forEach((m) => { m.leccion = Object.assign({ repasos: [] }, LECCIONES[m.id]); });
