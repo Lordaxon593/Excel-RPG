@@ -9,7 +9,7 @@ const leer = (f) => fs.readFileSync(path.join(raiz, f), 'utf8');
 
 function construir() {
   const css = leer('src/style.css');
-  const script = ['engine', 'missions', 'game', 'ui'].map((n) => leer(`src/${n}.js`)).join('\n;\n');
+  const script = ['engine', 'missions', 'libro', 'escuela', 'practicas', 'game', 'ui'].map((n) => leer(`src/${n}.js`)).join('\n;\n');
   const html = `<!DOCTYPE html>
 <html lang="es">
 <head>

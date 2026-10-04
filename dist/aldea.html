@@ -118,6 +118,85 @@ label input, label select { display: block; margin-top: 3px; min-width: 16rem; }
   .rejilla { grid-template-columns: 1fr; }
 }
 
+/* ---------- Ronda 2: barra superior, paneles, ventana, selección, modo señalar ---------- */
+:root {
+  --ref0: #1f6fd1; --ref1: #c2410c; --ref2: #15803d; --ref3: #7e22ce; --ref4: #be185d; --ref5: #a16207;
+}
+#app { padding: 0 8px 24px; }
+.barra-sup {
+  position: sticky; top: 0; z-index: 20; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px;
+  background: var(--panel); border-bottom: 2px solid var(--borde); padding: 4px 10px; font-size: 0.9rem;
+}
+.barra-sup .xp { white-space: pre; }
+.b-botones { margin-left: auto; display: flex; gap: 4px; flex-wrap: wrap; }
+.b-botones button { padding: 3px 8px; }
+.b-botones button[aria-pressed="true"] { background: var(--acento); color: #fff; }
+.contenido { max-width: 980px; margin: 8px auto; }
+.tarjeta { background: var(--panel); border: 1px solid var(--borde); border-radius: 4px; padding: 10px 12px; margin-bottom: 8px; }
+.plegar { margin: 2px 0 6px; }
+.pasos { display: flex; gap: 10px; flex-wrap: wrap; margin: 4px 0; font-size: 0.9rem; }
+.paso { color: var(--suave); }
+.paso.actual { font-weight: bold; color: var(--texto); }
+.paso.hecho { color: var(--ok); }
+.ok-msg { color: var(--ok); font-weight: bold; }
+.ejemplo { margin: 8px 0; }
+.formulas-ej { margin: 6px 0; padding-left: 1.2rem; font-size: 0.9rem; }
+.repaso { background: var(--acento-fondo); border-radius: 3px; padding: 4px 8px; }
+code { background: #efe8d4; padding: 0 3px; border-radius: 2px; }
+.bono { color: var(--ok); }
+
+.fondo-panel { position: fixed; inset: 0; z-index: 30; background: rgba(0, 0, 0, 0.12); }
+.panel-lateral {
+  position: fixed; top: 0; right: 0; bottom: 0; z-index: 40; width: min(440px, 94vw); overflow-y: auto;
+  background: var(--panel); border-left: 3px solid var(--acento); padding: 12px 14px; box-shadow: -4px 0 14px rgba(0, 0, 0, 0.25);
+}
+.panel-lateral .cerrar { position: absolute; top: 6px; right: 8px; }
+.panel-lateral h2 { margin-right: 40px; }
+.objeto { border: 1px solid var(--borde); border-radius: 4px; padding: 6px 10px; margin: 8px 0; background: #fff; }
+.objeto p { margin: 3px 0; }
+.practicas { padding-left: 1.1rem; margin: 4px 0; }
+.practicas li { margin: 3px 0; }
+.ficha { border: 1px solid var(--borde); background: #fff; border-radius: 4px; padding: 6px 10px; margin-top: 8px; }
+
+.ventana-fondo { position: fixed; inset: 0; z-index: 60; background: rgba(0, 0, 0, 0.55); display: flex; align-items: center; justify-content: center; padding: 12px; }
+.ventana { background: var(--panel); border: 3px solid var(--ok); border-radius: 6px; padding: 16px 20px; max-width: 520px; width: 100%; max-height: 90vh; overflow-y: auto; }
+
+/* Hoja: sin selección de texto del navegador y rango bien visible */
+.hoja-wrap, .hoja { user-select: none; -webkit-user-select: none; }
+.hoja td { position: relative; }
+.hoja td.sel-r { background: #cfe0fb; }
+.hoja td.b-t { box-shadow: inset 0 3px 0 var(--sel); }
+.hoja td.b-b { box-shadow: inset 0 -3px 0 var(--sel); }
+.hoja td.b-l { box-shadow: inset 3px 0 0 var(--sel); }
+.hoja td.b-r { box-shadow: inset -3px 0 0 var(--sel); }
+.hoja td.b-t.b-b { box-shadow: inset 0 3px 0 var(--sel), inset 0 -3px 0 var(--sel); }
+.hoja td.b-l.b-r { box-shadow: inset 3px 0 0 var(--sel), inset -3px 0 0 var(--sel); }
+.hoja td.b-t.b-l { box-shadow: inset 0 3px 0 var(--sel), inset 3px 0 0 var(--sel); }
+.hoja td.b-t.b-r { box-shadow: inset 0 3px 0 var(--sel), inset -3px 0 0 var(--sel); }
+.hoja td.b-b.b-l { box-shadow: inset 0 -3px 0 var(--sel), inset 3px 0 0 var(--sel); }
+.hoja td.b-b.b-r { box-shadow: inset 0 -3px 0 var(--sel), inset -3px 0 0 var(--sel); }
+.hoja td.b-t.b-b.b-l { box-shadow: inset 0 3px 0 var(--sel), inset 0 -3px 0 var(--sel), inset 3px 0 0 var(--sel); }
+.hoja td.b-t.b-b.b-r { box-shadow: inset 0 3px 0 var(--sel), inset 0 -3px 0 var(--sel), inset -3px 0 0 var(--sel); }
+.hoja td.b-t.b-l.b-r { box-shadow: inset 0 3px 0 var(--sel), inset 3px 0 0 var(--sel), inset -3px 0 0 var(--sel); }
+.hoja td.b-b.b-l.b-r { box-shadow: inset 0 -3px 0 var(--sel), inset 3px 0 0 var(--sel), inset -3px 0 0 var(--sel); }
+.hoja td.b-t.b-b.b-l.b-r { box-shadow: inset 0 0 0 3px var(--sel); }
+.hoja td.activa { background: #fff; outline: 3px solid #0b2a63; outline-offset: -3px; font-weight: bold; }
+.hoja td.rel-prev { background: #e7f0d0; outline: 2px dashed var(--ok); outline-offset: -2px; }
+.hoja th.en-sel { background: #cfe0fb; color: var(--texto); font-weight: bold; }
+.hoja td.ok { background: var(--ok-fondo); }
+.hoja td.mal { background: var(--mal-fondo); }
+.asa { position: absolute; right: -4px; bottom: -4px; width: 9px; height: 9px; background: var(--sel); border: 1px solid #fff; cursor: crosshair; z-index: 2; }
+.hoja td.ref0 { background: #d6e6fb; outline: 2px solid var(--ref0); outline-offset: -2px; }
+.hoja td.ref1 { background: #fde3d3; outline: 2px solid var(--ref1); outline-offset: -2px; }
+.hoja td.ref2 { background: #d7f0df; outline: 2px solid var(--ref2); outline-offset: -2px; }
+.hoja td.ref3 { background: #ecdcf8; outline: 2px solid var(--ref3); outline-offset: -2px; }
+.hoja td.ref4 { background: #fadcea; outline: 2px solid var(--ref4); outline-offset: -2px; }
+.hoja td.ref5 { background: #f6eac4; outline: 2px solid var(--ref5); outline-offset: -2px; }
+.rc0 { color: var(--ref0); font-weight: bold; } .rc1 { color: var(--ref1); font-weight: bold; }
+.rc2 { color: var(--ref2); font-weight: bold; } .rc3 { color: var(--ref3); font-weight: bold; }
+.rc4 { color: var(--ref4); font-weight: bold; } .rc5 { color: var(--ref5); font-weight: bold; }
+.hoja.estatica td { cursor: default; }
+
 </style>
 </head>
 <body>
@@ -613,13 +692,14 @@ label input, label select { display: block; margin-top: 3px; min-width: 16rem; }
 
   /* ---------- Análisis y relleno ---------- */
   function analizar(raw) {
-    const info = { esFormula: false, funciones: [], referencias: 0, error: false };
+    const info = { esFormula: false, funciones: [], referencias: 0, refs: [], error: false };
     if (typeof raw !== 'string' || !raw.startsWith('=')) return info;
     info.esFormula = true;
     try {
       for (const t of tokenizar(raw.slice(1))) {
         if (t.t === 'func') info.funciones.push(t.v);
-        else if (t.t === 'ref' || t.t === 'rango') info.referencias++;
+        else if (t.t === 'ref') { info.referencias++; info.refs.push(t.ref); }
+        else if (t.t === 'rango') { info.referencias++; info.refs.push(t.a, t.b); }
       }
     } catch (e) {
       if (!(e instanceof ErrorHoja)) throw e;
@@ -662,10 +742,103 @@ label input, label select { display: block; margin-top: 3px; min-width: 16rem; }
     return res;
   }
 
+  /* Como Ctrl+D o el cuadradito de la esquina: devuelve el contenido de las n filas nuevas situadas
+     debajo de las celdas de origen (un patrón de 1 o más filas que se repite). */
+  function rellenarPatron(rawsOrigen, n) {
+    const len = rawsOrigen.length;
+    const res = [];
+    if (!len) return res;
+    for (let k = 0; k < n; k++) {
+      const i = len + k;
+      const s = i % len;
+      res.push(desplazarFormula(rawsOrigen[s], 0, i - s));
+    }
+    return res;
+  }
+
+  /* ---------- Modo señalar ---------- */
+  const COLORES_REF = 6;
+  function escanearReferencias(texto) {
+    const out = [];
+    if (typeof texto !== 'string' || texto[0] !== '=') return out;
+    const re = /\$?[A-Za-z]{1,3}\$?\d+(?::\$?[A-Za-z]{1,3}\$?\d+)?/y;
+    const colores = new Map();
+    let enCadena = false;
+    let i = 1;
+    while (i < texto.length) {
+      const ch = texto[i];
+      if (ch === '"') { enCadena = !enCadena; i++; continue; }
+      if (enCadena) { i++; continue; }
+      if (/[$A-Za-z]/.test(ch) && !/[A-Za-z0-9_.]/.test(texto[i - 1] || '')) {
+        re.lastIndex = i;
+        const m = re.exec(texto);
+        const fin = m ? i + m[0].length : -1;
+        if (m && !(texto[fin] && /[A-Za-z0-9_(.]/.test(texto[fin]))) {
+          const clave = m[0].replace(/\$/g, '').toUpperCase();
+          if (!colores.has(clave)) colores.set(clave, colores.size % COLORES_REF);
+          out.push({ inicio: i, fin, texto: m[0], color: colores.get(clave) });
+          i = fin;
+          continue;
+        }
+        while (i < texto.length && /[A-Za-z0-9_.$]/.test(texto[i])) i++;
+        continue;
+      }
+      i++;
+    }
+    return out;
+  }
+
+  /* ¿Toca insertar una referencia con un clic en la posición `cursor` de una fórmula en edición? */
+  function puedeInsertarReferencia(texto, cursor) {
+    if (typeof texto !== 'string' || texto[0] !== '=' || cursor < 1 || cursor > texto.length) return false;
+    const antes = texto.slice(0, cursor);
+    if ((antes.match(/"/g) || []).length % 2 === 1) return false;
+    const prev = antes.replace(/\s+$/, '').slice(-1);
+    return prev !== '' && '=(;+-*/^<>'.includes(prev);
+  }
+
+  /* Inserta `ref` en el cursor. Si se pasa `reemplazo` {inicio, fin}, sustituye la referencia recién insertada.
+     Devuelve {texto, cursor, inicio, fin} o null si en esa posición no toca insertar. */
+  function insertarReferencia(texto, cursor, ref, reemplazo) {
+    let ini = cursor, fin = cursor;
+    if (reemplazo && reemplazo.inicio >= 1 && reemplazo.fin <= texto.length && reemplazo.inicio <= reemplazo.fin) {
+      ini = reemplazo.inicio;
+      fin = reemplazo.fin;
+    }
+    if (!puedeInsertarReferencia(texto.slice(0, ini) + texto.slice(fin), ini)) return null;
+    const nuevo = texto.slice(0, ini) + ref + texto.slice(fin);
+    return { texto: nuevo, cursor: ini + ref.length, inicio: ini, fin: ini + ref.length };
+  }
+
+  /* ---------- Selección de celdas (estado puro) ---------- */
+  function rectSel(sel) {
+    return {
+      c1: Math.min(sel.anchor.c, sel.activa.c), c2: Math.max(sel.anchor.c, sel.activa.c),
+      r1: Math.min(sel.anchor.r, sel.activa.r), r2: Math.max(sel.anchor.r, sel.activa.r)
+    };
+  }
+  function rangoTexto(rect) {
+    const a = refA1(rect.c1, rect.r1);
+    return rect.c1 === rect.c2 && rect.r1 === rect.r2 ? a : a + ':' + refA1(rect.c2, rect.r2);
+  }
+  const selUna = (c, r) => ({ anchor: { c, r }, activa: { c, r } });
+  /* clic (extender=false) o Mayús+clic / arrastre (extender=true) */
+  function seleccionar(sel, c, r, extender) {
+    return extender ? { anchor: { c: sel.anchor.c, r: sel.anchor.r }, activa: { c, r } } : selUna(c, r);
+  }
+  /* flechas; con extender (Mayús) se amplía el rango desde el ancla */
+  function moverSeleccion(sel, dc, dr, extender, cols, filas) {
+    const c = Math.max(0, Math.min(cols - 1, sel.activa.c + dc));
+    const r = Math.max(1, Math.min(filas, sel.activa.r + dr));
+    return seleccionar(sel, c, r, extender);
+  }
+
   return {
     FUNCIONES, EXPLICACIONES, ErrorHoja, esError, Hoja,
     colALetra, letraACol, parsearRef, refA1,
-    interpretar, formatear, analizar, desplazarFormula, rellenarAbajo
+    interpretar, formatear, analizar, desplazarFormula, rellenarAbajo, rellenarPatron,
+    escanearReferencias, puedeInsertarReferencia, insertarReferencia,
+    rectSel, rangoTexto, selUna, seleccionar, moverSeleccion
   };
 });
 
@@ -956,66 +1129,88 @@ label input, label select { display: block; margin-top: 3px; min-width: 16rem; }
     }
   };
 
+  /* Datos compartidos por M6 y M7: stock final de cada día y umbral de racionamiento. */
+  function datosUmbral(stock, umbral, cabC) {
+    const celdas = { A1: 'Día', B1: 'Stock final (kg)', C1: cabC, F1: 'Umbral (kg)', G1: String(umbral) };
+    stock.forEach((v, i) => { celdas['A' + (i + 2)] = String(i + 1); celdas['B' + (i + 2)] = String(v); });
+    return { cols: 7, filas: 10, celdas, v: { stock: stock.slice(), umbral } };
+  }
+  function generarUmbral(semilla, n, cabC) {
+    const rng = prng(semilla, n);
+    const stock = [];
+    for (let i = 0; i < 7; i++) stock.push(ent(rng, 20, 140));
+    return datosUmbral(stock, ent(rng, 40, 60), cabC);
+  }
+  /* Conjuntos fijos que cruzan el umbral en ambos sentidos: delatan umbrales escritos a mano. */
+  const VARIANTES_UMBRAL = [
+    { stock: [38, 40, 41, 42, 45, 39, 60], umbral: 41 },
+    { stock: [56, 58, 59, 60, 57, 61, 30], umbral: 59 }
+  ];
+  const AYUDA_UMBRAL = 'Piensa qué pasa con la referencia al umbral cuando rellenas hacia abajo (mira la pista 2).';
+
   const M6 = {
-    id: 'M6', titulo: 'Tiempos de escasez', dificultad: 'Difícil', xp: 100, oro: 50,
-    stats: { logica: 2, finanzas: 1 },
-    etiquetas: ['ref.absoluta', 'funcion.si', 'comparaciones'],
+    id: 'M6', titulo: 'El umbral', dificultad: 'Normal', xp: 50, oro: 25,
+    stats: { logica: 1, finanzas: 1 },
+    etiquetas: ['ref.absoluta'],
     texto: [
-      'Llega el invierno y Maese Aldric habla bajo. «Si el trigo cae por debajo del umbral de racionamiento, hay que repartir menos. Quiero ver día a día cuánto queda y cuándo toca racionar.»',
-      'El umbral está en una sola celda (G1) y todos los días deben compararse con ella.'
+      'Llega el invierno y Maese Aldric habla bajo. «Anoté cuánto trigo queda cada día. Hay un umbral de racionamiento, y todos los días deben compararse con ese mismo número. Dime cuánto margen nos queda sobre él.»',
+      'El umbral está en una sola celda (G1) y no debe moverse al rellenar hacia abajo.'
     ],
-    queHacer: [
-      'D2:D8: el stock final de cada día (stock inicial menos consumo).',
-      'E2:E8: el estado de cada día, «RACIONAR» si el stock final queda por debajo del umbral y «NORMAL» si no.'
-    ],
+    queHacer: ['C2:C8: el margen de cada día sobre el umbral en kg (stock final menos umbral; sale negativo si queda por debajo).'],
     generarDatos(semilla) {
-      const rng = prng(semilla, 6);
-      const celdas = { A1: 'Día', B1: 'Stock inicial', C1: 'Consumo', D1: 'Stock final', E1: 'Estado', F1: 'Umbral' };
-      const b2 = ent(rng, 120, 180);
-      const consumo = [];
-      for (let i = 0; i < 7; i++) {
-        consumo.push(ent(rng, 15, 30));
-        celdas['A' + (i + 2)] = String(i + 1);
-        celdas['C' + (i + 2)] = String(consumo[i]);
-        celdas['B' + (i + 2)] = i === 0 ? String(b2) : '=D' + (i + 1);
-      }
-      const umbral = ent(rng, 40, 60);
-      celdas.G1 = String(umbral);
-      return { cols: 7, filas: 8, celdas, v: { b2, consumo, umbral } };
+      const d = generarUmbral(semilla, 6, 'Margen sobre umbral');
+      d.celdas.A10 = 'Margen = stock final - umbral (negativo si el stock queda por debajo).';
+      return d;
     },
-    objetivos: [].concat(
-      obRango('D', 2, 8, (d, k) => stockFinal(d, k), { usaReferencias: true }),
-      obRango('E', 2, 8, (d, k) => (stockFinal(d, k) < d.v.umbral ? 'RACIONAR' : 'NORMAL'), { funcion: 'SI', usaReferencias: true },
-        { ayuda: 'Piensa qué ocurre con la referencia al umbral cuando rellenas hacia abajo (mira la pista 2).' })
-    ),
+    variantes: () => VARIANTES_UMBRAL.map((v) => datosUmbral(v.stock, v.umbral, 'Margen sobre umbral')),
+    objetivos: obRango('C', 2, 8, (d, k) => d.v.stock[k] - d.v.umbral, { usaReferencias: true, apuntaA: 'G1' }, { entero: true, ayuda: AYUDA_UMBRAL }),
     pistas: [
-      'Cada día el stock final es el inicial menos el consumo. Y el estado depende de si ese stock final cae por debajo del umbral de racionamiento.',
-      'El estado se decide con la función SI, comparando el stock final con el umbral. Al rellenar hacia abajo, el umbral debe quedarse en su sitio: fija su referencia con el símbolo $ (referencia absoluta).',
-      'Stock final: celda de stock inicial menos celda de consumo. Estado: =SI(stock final < celda del umbral fijada con $; "RACIONAR"; "NORMAL"), con el texto entre comillas dobles.'
+      'Quieres saber cuántos kg quedan por encima o por debajo del umbral cada día. El umbral está en una única celda que comparten todos los días.',
+      'Resta el umbral al stock final de cada día. Al rellenar hacia abajo, la referencia al umbral debe quedarse quieta: fíjala con el símbolo $ delante de la letra y del número (referencia absoluta).',
+      'Primera fila: celda del stock final menos la celda del umbral escrita con $ delante de la columna y de la fila. Después selecciona la columna entera y rellena hacia abajo.'
     ],
     consecuencia: {
-      texto: () => 'La aldea sobrevive al invierno. Se instaura la política de racionamiento: cuando el stock cae bajo el umbral, se reparte menos.'
+      texto: () => 'Maese Aldric apunta el umbral en la pizarra de la aldea: desde hoy todos saben a partir de cuántos kg se raciona.'
     },
     aplicarAldea() {}
   };
-  function stockFinal(d, k) {
-    let s = d.v.b2;
-    for (let i = 0; i <= k; i++) s -= d.v.consumo[i];
-    return s;
-  }
+
+  const M7 = {
+    id: 'M7', titulo: 'Racionamiento', dificultad: 'Normal', xp: 50, oro: 25,
+    stats: { logica: 1 },
+    etiquetas: ['funcion.si', 'comparaciones'],
+    texto: [
+      'Aldric sacude la cabeza. «Ya sé cuánto margen tenemos, pero no quiero leer números cada mañana. Quiero que la hoja me diga sola, día a día, si hay que racionar o no.»',
+      'El umbral sigue en G1. Escribe los textos exactamente entre comillas dobles.'
+    ],
+    queHacer: ['C2:C8: el estado de cada día: «RACIONAR» si el stock final queda por debajo del umbral y «NORMAL» si no.'],
+    generarDatos(semilla) { return generarUmbral(semilla, 7, 'Estado'); },
+    variantes: () => VARIANTES_UMBRAL.map((v) => datosUmbral(v.stock, v.umbral, 'Estado')),
+    objetivos: obRango('C', 2, 8, (d, k) => (d.v.stock[k] < d.v.umbral ? 'RACIONAR' : 'NORMAL'),
+      { funcion: 'SI', usaReferencias: true }, { textoFlexible: true, ayuda: AYUDA_UMBRAL }),
+    pistas: [
+      'El estado de cada día depende de una pregunta: ¿el stock final está por debajo del umbral? Según la respuesta, el texto es uno u otro.',
+      'Usa la función SI: =SI(condición; valor_si_verdadero; valor_si_falso). La condición compara el stock final con el umbral (que debe quedar fijo con $) y los textos van entre comillas dobles.',
+      'Estructura: =SI(celda del stock final < celda del umbral con $; "texto si se raciona"; "texto si no"). Escríbela en la primera fila y rellena hacia abajo.'
+    ],
+    consecuencia: {
+      texto: () => 'Se instaura la política de racionamiento: cuando el stock cae bajo el umbral, se reparte menos. La aldea sobrevive al invierno.'
+    },
+    aplicarAldea() {}
+  };
 
   const PRODUCTOS = ['Trigo', 'Huevos', 'Leña', 'Piedra', 'Lana'];
-  const M7 = {
-    id: 'M7', titulo: 'El tablón de la aldea', dificultad: 'Normal', xp: 50, oro: 20,
+  const M8 = {
+    id: 'M8', titulo: 'El tablón de la aldea', dificultad: 'Normal', xp: 50, oro: 20,
     stats: { analisis: 1 },
     etiquetas: ['grafico.rango', 'grafico.tipo', 'grafico.titulo'],
-    grafico: true,
+    grafico: { rango: 'A1:B6', tipo: 'columnas', msgTipo: { 'líneas': 'Las líneas sirven para ver la evolución en el tiempo; aquí comparas categorías, y para eso van mejor las columnas.' } },
     texto: [
       'Maese Aldric clava un tablón en la plaza. «El pueblo entiende mejor un dibujo que una lista de números. Quiero un gráfico que compare lo que producimos de cada cosa.»'
     ],
     queHacer: ['Crea un gráfico con el panel de gráfico: elige el rango de datos, el tipo de gráfico adecuado para comparar productos y ponle un título (mínimo 5 caracteres).'],
     generarDatos(semilla) {
-      const rng = prng(semilla, 7);
+      const rng = prng(semilla, 8);
       const celdas = { A1: 'Producto', B1: 'Producción semanal' };
       const usados = new Set();
       const valores = [];
@@ -1032,8 +1227,8 @@ label input, label select { display: block; margin-top: 3px; min-width: 16rem; }
     objetivos: [],
     pistas: [
       'Quieres comparar cuánto se produce de cada producto. Piensa qué datos entran en el gráfico: ¿solo los números o también los nombres y los encabezados?',
-      'Indica el rango que incluye encabezados y datos, de la esquina superior izquierda a la inferior derecha. Para comparar categorías, elige el tipo de gráfico que pone una barra por producto.',
-      'El rango tiene la forma CELDA:CELDA (del primer encabezado al último dato), el tipo es el de barras verticales y el título debe describir qué muestra el gráfico.'
+      'Indica el rango que incluye encabezados y datos, de la esquina superior izquierda a la inferior derecha. Para comparar categorías elige el tipo columnas: una barra por producto.',
+      'El rango tiene la forma CELDA:CELDA (del primer encabezado al último dato), el tipo es el de barras verticales (columnas) y el título debe describir qué muestra el gráfico.'
     ],
     consecuencia: {
       texto: () => 'El gráfico queda fijado en el tablón de la aldea. Todos ven de un vistazo qué producimos más.'
@@ -1041,7 +1236,110 @@ label input, label select { display: block; margin-top: 3px; min-width: 16rem; }
     aplicarAldea(a) { a.edificios.push('Tablón de la aldea'); }
   };
 
-  const MISIONES = [M1, M2, M3, M4, M5, M6, M7];
+  const MISIONES = [M1, M2, M3, M4, M5, M6, M7, M8];
+
+  /* Metadatos comunes (§6 de CAMBIOS): preparados para la Ciudad; requisitos vacíos en esta versión. */
+  const META = {
+    M1: { negocio: 'almacen', familia: 'abaco', claves: ['SUMA'], entero: ['B9'], pista2: 'La función que suma es SUMA: se escribe =SUMA(rango), con los dos puntos entre la primera y la última celda de la columna del trigo.' },
+    M2: { negocio: 'granja', familia: 'compas', claves: ['SUMA'], entero: ['E2', 'E3', 'E4', 'E5', 'E6', 'E7'], pista2: 'Para cada fila usa la función SUMA sobre las tres celdas de esa fila. Luego selecciona de arriba abajo las celdas del total diario y pulsa «Rellenar hacia abajo» (Ctrl+D).' },
+    M3: { negocio: 'almacen', familia: 'abaco', claves: ['*', '-'], entero: [], pista2: 'No hace falta ninguna función: bastan los operadores * (multiplicar) y - (restar) con referencias a las celdas de la tabla. No escribas los números, apunta a sus celdas.' },
+    M4: { negocio: 'almacen', familia: 'abaco', claves: ['PROMEDIO', 'ENTERO'], entero: ['B14'], pista2: 'Para la producción usa PROMEDIO sobre el rango de la semana. Para los días, divide stock entre consumo y quédate solo con la parte entera con ENTERO. El balance es una resta.' },
+    M5: { negocio: 'capataz', familia: 'abaco', claves: ['MAX', 'MIN', 'CONTAR'], entero: ['B11'], pista2: 'El rendimiento es producción dividida entre horas con el operador / (fila a fila, rellena hacia abajo). Para el mejor, el peor y el recuento existen MAX, MIN y CONTAR.' },
+    M6: { negocio: 'almacen', familia: 'compas', claves: ['$'], entero: [] },
+    M7: { negocio: 'almacen', familia: 'balanza', claves: ['SI'], entero: [] },
+    M8: { negocio: 'tablon', familia: 'pincel', claves: ['columnas'], entero: [] }
+  };
+  MISIONES.forEach((m) => {
+    const x = META[m.id];
+    Object.assign(m, { tipo: 'principal', entorno: 'aldea', negocio: x.negocio, familia: x.familia, requisitos: [], pista2Contiene: x.claves });
+    if (x.pista2) m.pistas[1] = x.pista2;
+    m.objetivos.forEach((o) => { if (x.entero.includes(o.celda)) o.entero = true; });
+  });
+
+  /* ---------- Lecciones del mayordomo (se muestran antes de cada misión) ---------- */
+  const LECCIONES = {
+    M1: {
+      paginas: [{
+        titulo: 'Sumar con SUMA',
+        texto: 'Para sumar muchos números a la vez usamos la función SUMA. Se escribe =SUMA(rango): el signo =, el nombre de la función y, entre paréntesis, el rango (primera celda, dos puntos y última celda). Errores comunes: olvidar el = (la celda mostraría el texto tal cual) o dejar el paréntesis sin cerrar. En el ejemplo, B5 suma de B2 a B4.',
+        ejemplo: { cols: 2, filas: 5, celdas: { A1: 'Mes', B1: 'Sacos de cebada', A2: 'Enero', B2: '12', A3: 'Febrero', B3: '8', A4: 'Marzo', B4: '15', A5: 'Total', B5: '=SUMA(B2:B4)' } },
+        ficha: 'funcion.suma'
+      }]
+    },
+    M2: {
+      paginas: [{
+        titulo: 'Referencias relativas y rellenar hacia abajo',
+        texto: 'En una fórmula, B2 es una referencia relativa: si copias la fórmula una fila más abajo, Excel la convierte en B3 sola. Por eso basta escribir la primera fórmula, seleccionar la columna de arriba abajo y pulsar «Rellenar hacia abajo» (Ctrl+D), o arrastrar el cuadradito de la esquina. Error común: seleccionar solo la celda de la fórmula; sin celdas debajo no hay nada que rellenar.',
+        ejemplo: { cols: 4, filas: 4, celdas: { A1: 'Mes', B1: 'Cebada', C1: 'Avena', D1: 'Total', A2: 'Enero', B2: '12', C2: '5', D2: '=SUMA(B2:C2)', A3: 'Febrero', B3: '8', C3: '9', D3: '=SUMA(B3:C3)', A4: 'Marzo', B4: '15', C4: '7', D4: '=SUMA(B4:C4)' } },
+        ficha: 'ref.relativa'
+      }],
+      repasos: []
+    },
+    M3: {
+      paginas: [{
+        titulo: 'Operadores con referencias',
+        texto: 'Con referencias puedes calcular sin funciones: + suma, - resta, * multiplica, / divide y ^ eleva. Se escribe =B2*B3. Si cambia un dato, el resultado se actualiza. Los decimales llevan coma (2,5). Error común: escribir el número en la fórmula (=12*2,5) en lugar de apuntar a su celda: si el dato cambia, la fórmula no se entera.',
+        ejemplo: { cols: 2, filas: 5, celdas: { A1: 'Concepto', B1: 'Valor', A2: 'Cajas', B2: '12', A3: 'Peso por caja (kg)', B3: '2,5', A4: 'Peso total (kg)', B4: '=B2*B3', A5: 'Si se pierde una caja', B5: '=B4-B3' } },
+        ficha: 'operadores'
+      }],
+      repasos: [{ texto: 'Repaso: recuerda que SUMA suma un rango entero, como =SUMA(B2:B8).', ficha: 'funcion.suma' }]
+    },
+    M4: {
+      paginas: [{
+        titulo: 'La media con PROMEDIO',
+        texto: 'PROMEDIO calcula la media de un rango: suma los números y los divide entre cuántos hay. Forma: =PROMEDIO(rango). Ignora el texto y las celdas vacías. Error común: promediar también la celda del encabezado o la del propio resultado.',
+        ejemplo: { cols: 2, filas: 6, celdas: { A1: 'Día', B1: 'Panes', A2: 'Lun', B2: '10', A3: 'Mar', B3: '14', A4: 'Mié', B4: '12', A5: 'Jue', B5: '16', A6: 'Media', B6: '=PROMEDIO(B2:B5)' } },
+        ficha: 'funcion.promedio'
+      }, {
+        titulo: 'Solo la parte entera con ENTERO',
+        texto: 'ENTERO descarta los decimales y se queda con la parte entera (hacia abajo): =ENTERO(B1/B2). Sirve para contar unidades completas: 40 sacos entre raciones de 7 dan 5,71, pero solo 5 raciones completas. Si el divisor es 0 verás #DIV/0!: Excel no puede dividir entre cero. Error común: dejar los decimales cuando se piden días completos.',
+        ejemplo: { cols: 2, filas: 3, celdas: { A1: 'Sacos', B1: '40', A2: 'Sacos por ración', B2: '7', A3: 'Raciones completas', B3: '=ENTERO(B1/B2)' } },
+        ficha: 'funcion.entero'
+      }]
+    },
+    M5: {
+      paginas: [{
+        titulo: 'Mayor, menor y recuento: MAX, MIN y CONTAR',
+        texto: 'MAX devuelve el mayor valor de un rango, MIN el menor y CONTAR cuántas celdas tienen números: =MAX(rango). Un ratio como hogazas por hora es una división fila a fila (=B2/C2) que luego se rellena hacia abajo. Error común: usar CONTAR sobre una columna de texto: CONTAR solo cuenta números.',
+        ejemplo: { cols: 4, filas: 8, celdas: { A1: 'Panadero', B1: 'Hogazas', C1: 'Horas', D1: 'Hogazas/hora', A2: 'Rodrigo', B2: '60', C2: '6', D2: '=B2/C2', A3: 'Marta', B3: '45', C3: '5', D3: '=B3/C3', A4: 'Pablo', B4: '70', C4: '10', D4: '=B4/C4', A6: 'Mejor', B6: '=MAX(D2:D4)', A7: 'Peor', B7: '=MIN(D2:D4)', A8: 'Panaderos', B8: '=CONTAR(B2:B4)' } },
+        ficha: 'funcion.max'
+      }],
+      repasos: [{ texto: 'Repaso: para el ratio de cada trabajador, escribe la primera fórmula y usa «Rellenar hacia abajo».', ficha: 'rellenar' }]
+    },
+    M6: {
+      paginas: [{
+        titulo: 'Referencias absolutas con $',
+        texto: 'Al rellenar hacia abajo, las referencias relativas se desplazan. Si una celda debe quedarse fija (un precio, un umbral), escribe $ delante de la columna y de la fila: $G$1. Así no se mueve nunca. Sin $, al rellenar G1 pasaría a G2, a G3… celdas vacías. En el ejemplo, el envío está en G1 y se suma a cada precio.',
+        ejemplo: { cols: 7, filas: 4, celdas: { A1: 'Producto', B1: 'Precio', C1: 'Con envío', F1: 'Envío', G1: '2', A2: 'Harina', B2: '8', C2: '=B2+$G$1', A3: 'Sal', B3: '3', C3: '=B3+$G$1', A4: 'Miel', B4: '12', C4: '=B4+$G$1' } },
+        ficha: 'ref.absoluta'
+      }],
+      repasos: [{ texto: 'Repaso: escribe la fórmula en la primera fila, selecciona la columna y pulsa «Rellenar hacia abajo».', ficha: 'rellenar' }]
+    },
+    M7: {
+      paginas: [{
+        titulo: 'Decidir con SI y comparaciones',
+        texto: 'SI toma una decisión: =SI(condición; valor_si_verdadero; valor_si_falso). La condición compara con < (menor), > (mayor), = (igual), <= , >= o <> (distinto). Ejemplo: =SI(B2>=5;"APROBADO";"SUSPENDIDO"). Error común: usar comas en vez de punto y coma, o invertir los dos resultados.',
+        ejemplo: { cols: 3, filas: 4, celdas: { A1: 'Alumno', B1: 'Nota', C1: 'Resultado', A2: 'Ana', B2: '7', C2: '=SI(B2>=5;"APROBADO";"SUSPENDIDO")', A3: 'Luis', B3: '4', C3: '=SI(B3>=5;"APROBADO";"SUSPENDIDO")', A4: 'Eva', B4: '5', C4: '=SI(B4>=5;"APROBADO";"SUSPENDIDO")' } },
+        ficha: 'funcion.si'
+      }, {
+        titulo: 'El texto va entre comillas',
+        texto: 'Cuando una fórmula devuelve texto, ese texto se escribe entre comillas dobles: "PESADO". Sin comillas, Excel cree que es el nombre de algo y da #¿NOMBRE?. Los números y las referencias no llevan comillas. Error común: comillas tipográficas (“ ”) en lugar de las rectas ("). En el ejemplo el límite está escrito en la fórmula; en tu misión estará en una celda, y ya sabes cómo fijarla.',
+        ejemplo: { cols: 3, filas: 4, celdas: { A1: 'Saco', B1: 'Peso (kg)', C1: 'Aviso', A2: 'Harina', B2: '35', C2: '=SI(B2>30;"PESADO";"LIGERO")', A3: 'Sal', B3: '12', C3: '=SI(B3>30;"PESADO";"LIGERO")', A4: 'Miel', B4: '30', C4: '=SI(B4>30;"PESADO";"LIGERO")' } },
+        ficha: 'comparaciones'
+      }],
+      repasos: [{ texto: 'Repaso: para fijar una celda al rellenar hacia abajo usa $, como en $G$1.', ficha: 'ref.absoluta' }]
+    },
+    M8: {
+      paginas: [{
+        titulo: 'Gráficos: rango, tipo y título',
+        texto: 'Un gráfico necesita tres decisiones. El rango de datos: incluye los encabezados y todos los datos (A1:B5), ni más ni menos. El tipo: columnas para comparar categorías, líneas para ver la evolución en el tiempo. El título: dile al lector qué está viendo. Error común: dejar fuera la fila de encabezados o el último dato.',
+        ejemplo: { cols: 2, filas: 5, celdas: { A1: 'Fruta', B1: 'Kilos', A2: 'Manzanas', B2: '40', A3: 'Peras', B3: '25', A4: 'Uvas', B4: '60', A5: 'Higos', B5: '15' } },
+        ficha: 'grafico.rango'
+      }],
+      repasos: [{ texto: 'Repaso: un rango se escribe PRIMERA:ÚLTIMA, como B2:B8; en un gráfico incluye también la fila de encabezados.', ficha: 'rangos' }]
+    }
+  };
+  MISIONES.forEach((m) => { m.leccion = Object.assign({ repasos: [] }, LECCIONES[m.id]); });
 
   const INTRO = {
     bienvenida: [
@@ -1052,10 +1350,23 @@ label input, label select { display: block; margin-top: 3px; min-width: 16rem; }
   };
 
   /* ---------- Validación ---------- */
-  function iguales(esperado, valor) {
-    if (typeof esperado === 'number') return typeof valor === 'number' && Math.abs(esperado - valor) <= 1e-6;
-    return valor === esperado;
+  const norm = (t) => String(t).trim().toLowerCase();
+
+  /* Devuelve null si el valor es el esperado; si no, el motivo del fallo (sin revelar la solución). */
+  function juzgar(o, esperado, v) {
+    if (typeof esperado === 'number') {
+      if (typeof v === 'string') return 'hay texto en la celda y aquí se espera un número';
+      if (typeof v === 'boolean') return 'hay un valor lógico (VERDADERO/FALSO) y aquí se espera un número';
+      if (Math.abs(esperado - v) <= 1e-6) return null;
+      if (o.entero && Math.abs(v - Math.round(v)) > 1e-9) return 'el resultado tiene decimales y aquí se pide un número entero';
+      return v > esperado ? 'el resultado es mayor del esperado' : 'el resultado es menor del esperado';
+    }
+    if (typeof v === 'number') return 'hay un número en la celda y aquí se espera texto';
+    if (typeof v === 'boolean') return 'hay un valor lógico (VERDADERO/FALSO) y aquí se espera texto';
+    const igual = o.textoFlexible ? norm(v) === norm(esperado) : v === esperado;
+    return igual ? null : 'el texto de la celda no coincide con el esperado (revisa mayúsculas, ortografía y comillas)';
   }
+  const iguales = (esperado, valor) => juzgar({}, esperado, valor) === null;
 
   function construirHoja(m, datos, entrega) {
     const celdas = Object.assign({}, datos.celdas);
@@ -1067,23 +1378,19 @@ label input, label select { display: block; margin-top: 3px; min-width: 16rem; }
     return Engine.Hoja.desde(celdas, datos.cols, datos.filas);
   }
 
-  function evaluarCelda(m, datos, entrega, o) {
-    return construirHoja(m, datos, entrega).valor(o.celda);
-  }
-
-  function validarGrafico(extra) {
+  function validarGrafico(m, extra) {
+    const cfg = m.grafico;
     const porCelda = {};
     const mensajes = [];
     const g = extra || {};
     const rango = String(g.rango || '').replace(/\$/g, '').replace(/\s/g, '').toUpperCase();
-    porCelda.rango = rango === 'A1:B6' ? 'ok' : 'valor';
+    porCelda.rango = rango === cfg.rango ? 'ok' : 'valor';
     if (porCelda.rango !== 'ok') mensajes.push('El rango de datos no es el adecuado: debe cubrir los encabezados y todos los datos de la tabla, ni más ni menos.');
-    if (g.tipo === 'columnas') porCelda.tipo = 'ok';
+    const tipo = g.tipo === 'lineas' ? 'líneas' : g.tipo;
+    if (tipo === cfg.tipo) porCelda.tipo = 'ok';
     else {
       porCelda.tipo = 'valor';
-      mensajes.push(g.tipo === 'líneas' || g.tipo === 'lineas'
-        ? 'Las líneas sirven para ver la evolución en el tiempo; aquí comparas categorías, y para eso van mejor las columnas.'
-        : 'Elige un tipo de gráfico para el panel: columnas o líneas.');
+      mensajes.push((cfg.msgTipo && cfg.msgTipo[tipo]) || 'Elige un tipo de gráfico para el panel: columnas o líneas.');
     }
     if (String(g.titulo || '').trim().length >= 5) porCelda.titulo = 'ok';
     else {
@@ -1095,16 +1402,16 @@ label input, label select { display: block; margin-top: 3px; min-width: 16rem; }
 
   /* entrega: { celda: texto bruto } con las celdas editables del jugador. */
   function validar(m, entrega, semilla, extra) {
-    if (m.grafico) return validarGrafico(extra);
+    if (m.grafico) return validarGrafico(m, extra);
     entrega = entrega || {};
     const datos = m.generarDatos(semilla);
-    const alternos = [m.generarDatos(semilla + 1), m.generarDatos(semilla + 2)];
+    const alternos = [m.generarDatos(semilla + 1), m.generarDatos(semilla + 2)].concat(m.variantes ? m.variantes(semilla) : []);
     const porCelda = {};
     const fallos = new Map();
-    const registrar = (o, estado, texto) => {
+    const registrar = (o, estado, razon) => {
       porCelda[o.celda] = estado;
-      const clave = o.grupo + '|' + estado;
-      if (!fallos.has(clave)) fallos.set(clave, { texto, celdas: [] });
+      const clave = o.grupo + '|' + estado + '|' + razon;
+      if (!fallos.has(clave)) fallos.set(clave, { grupo: o.grupo, razon, celdas: [] });
       fallos.get(clave).celdas.push(o.celda);
     };
 
@@ -1112,62 +1419,494 @@ label input, label select { display: block; margin-top: 3px; min-width: 16rem; }
       const raw = entrega[o.celda];
       const vacia = raw === undefined || raw === null || String(raw).trim() === '';
       if (vacia) {
-        registrar(o, 'noFormula', `${o.grupo}: está vacía. Escribe una fórmula que empiece por =.`);
+        registrar(o, 'noFormula', 'está vacía. Escribe una fórmula que empiece por =.');
         continue;
       }
       if (!String(raw).trim().startsWith('=')) {
-        registrar(o, 'noFormula', `${o.grupo}: no contiene una fórmula (debe empezar por =). Un valor escrito a mano no se recalcula.`);
+        registrar(o, 'noFormula', 'no contiene una fórmula (debe empezar por =). Un valor escrito a mano no se recalcula.');
         continue;
       }
-      const v = evaluarCelda(m, datos, entrega, o);
+      const v = construirHoja(m, datos, entrega).valor(o.celda);
       if (Engine.esError(v)) {
-        registrar(o, 'valor', `${o.grupo}: la fórmula da el error ${v.codigo}. ${v.explicacion}`);
+        registrar(o, 'valor', `la fórmula da el error ${v.codigo}. ${v.explicacion}`);
         continue;
       }
-      if (!iguales(o.esperado(datos), v)) {
-        registrar(o, 'valor', `${o.grupo}: el resultado no es el esperado.${o.ayuda ? ' ' + o.ayuda : ''}`);
+      const motivo = juzgar(o, o.esperado(datos), v);
+      if (motivo) {
+        registrar(o, 'valor', `${motivo}.${o.ayuda ? ' ' + o.ayuda : ''}`);
         continue;
       }
       const adapta = alternos.every((alt) => {
-        const va = evaluarCelda(m, alt, entrega, o);
-        return !Engine.esError(va) && iguales(o.esperado(alt), va);
+        const va = construirHoja(m, alt, entrega).valor(o.celda);
+        return !Engine.esError(va) && juzgar(o, o.esperado(alt), va) === null;
       });
       if (!adapta) {
-        registrar(o, 'hardcode', `${o.grupo}: Tu resultado es correcto ahora, pero no se adapta si cambian los datos. ¿Has escrito algún número a mano o apuntado a una celda equivocada?${o.ayuda ? ' ' + o.ayuda : ''}`);
+        registrar(o, 'hardcode', `Tu resultado es correcto ahora, pero no se adapta si cambian los datos. ¿Has escrito algún número a mano o apuntado a una celda equivocada?${o.ayuda ? ' ' + o.ayuda : ''}`);
         continue;
       }
       const info = Engine.analizar(String(raw).trim());
-      if (o.requisitos.funcion && !info.funciones.includes(o.requisitos.funcion)) {
-        registrar(o, 'requisito', `${o.grupo}: en esta celda tienes que usar la función ${o.requisitos.funcion}.`);
+      const req = o.requisitos;
+      if (req.funcion && !info.funciones.includes(req.funcion)) {
+        registrar(o, 'requisito', `en esta celda tienes que usar la función ${req.funcion}.`);
         continue;
       }
-      if (o.requisitos.usaReferencias && info.referencias === 0) {
-        registrar(o, 'requisito', `${o.grupo}: tienes que usar referencias a celdas (como B2) en lugar de números escritos a mano.`);
+      if (req.usaReferencias && info.referencias === 0) {
+        registrar(o, 'requisito', 'tienes que usar referencias a celdas (como B2) en lugar de números escritos a mano.');
         continue;
+      }
+      if (req.apuntaA) {
+        const t = Engine.parsearRef(req.apuntaA);
+        if (!info.refs.some((r) => r.c === t.c && r.r === t.r)) {
+          registrar(o, 'requisito', `la fórmula debe apuntar a la celda ${req.apuntaA}. Si rellenas hacia abajo, esa referencia tiene que seguir apuntando a ella.`);
+          continue;
+        }
       }
       porCelda[o.celda] = 'ok';
     }
-    const mensajes = Array.from(fallos.values()).map((f) => f.texto);
+    const mensajes = Array.from(fallos.values()).map((f) => {
+      const etiqueta = f.celdas.length > 3 ? f.grupo : f.celdas.join(', ');
+      return `${etiqueta}: ${f.razon}`;
+    });
     return { ok: m.objetivos.every((o) => porCelda[o.celda] === 'ok'), porCelda, mensajes };
   }
 
   function celdasEditables(m) { return m.objetivos.map((o) => o.celda); }
 
   return {
-    MISIONES, CODICE, INTRO, TUTORIAL, mulberry32, prng, validar, celdasEditables, iguales
+    MISIONES, CODICE, INTRO, TUTORIAL, mulberry32, prng, ent, ob, obRango, DIAS, validar, celdasEditables, iguales
+  };
+});
+
+;
+/* Libro de funciones: una ficha por competencia, que se desbloquea al enseñarla. Sin DOM. */
+(function (raiz, fabrica) {
+  if (typeof module === 'object' && module.exports) module.exports = fabrica();
+  else raiz.Libro = fabrica();
+})(typeof self !== 'undefined' ? self : this, function () {
+  'use strict';
+
+  /* desbloqueaCon: 'E1'..'E4' = lección de la Escuela completada; 'M1'..'M8' = lección de esa misión vista. */
+  function f(id, nombre, paraQue, forma, ejemplo, errores, desbloqueaCon, icono) {
+    return { id, nombre, paraQue, forma, ejemplo, errores, desbloqueaCon, icono: icono || '📖' };
+  }
+
+  const FICHAS = [
+    f('formulas.entrada', 'Entrada de fórmulas', 'Hacer que una celda calcule en vez de guardar un texto.', 'Empieza siempre por =, por ejemplo =A1+B1', '=2+3 muestra 5; =A1+B1 suma lo que haya en esas celdas.', 'Olvidar el =: Excel guarda el texto tal cual. Escribir la fórmula con comas en lugar de punto y coma.', ['E3', 'M1'], '✍'),
+    f('rangos', 'Rangos', 'Hablar de varias celdas seguidas a la vez.', 'PRIMERA:ÚLTIMA, por ejemplo B2:B8', 'B2:B8 es la columna B desde la fila 2 hasta la 8; A1:B3 es un bloque de seis celdas.', 'Dejar fuera la primera o la última celda del rango.', ['E2', 'M1'], '▦'),
+    f('funcion.suma', 'SUMA', 'Sumar muchos números a la vez.', '=SUMA(rango)', '=SUMA(B2:B4) suma las celdas B2, B3 y B4.', 'Olvidar el =, dejar el paréntesis sin cerrar o incluir la celda del encabezado.', ['E4', 'M1'], '🌾'),
+    f('ref.relativa', 'Referencias relativas', 'Copiar una fórmula a otras filas y que se adapte sola.', 'Escribe la referencia normal: B2', 'Una fórmula con B2 copiada una fila abajo pasa a usar B3.', 'Esperar que una celda fija cambie, o que una móvil se quede quieta.', ['M2'], '↕'),
+    f('rellenar', 'Rellenar hacia abajo', 'Copiar una fórmula a toda una columna de golpe.', 'Selecciona de arriba abajo y pulsa Ctrl+D (o arrastra el cuadradito de la esquina)', 'Escribes =SUMA(B2:C2) en D2, seleccionas D2:D6 y pulsas Ctrl+D.', 'Seleccionar solo la celda de la fórmula: no hay nada que rellenar.', ['M2'], '⬇'),
+    f('operadores', 'Operadores', 'Calcular con +, -, *, / y ^ sin necesidad de funciones.', '=B2*B3 (multiplicar), =B2-B3 (restar), =B2/B3 (dividir)', '=B2*B3 multiplica el contenido de dos celdas.', 'Escribir los números a mano en lugar de apuntar a sus celdas.', ['E3', 'M3'], '➕'),
+    f('ref.celda', 'Referencias de celda', 'Usar el contenido de otra celda dentro de una fórmula.', 'Columna + fila: B3', '=B3*2 usa lo que haya en B3 y se actualiza si cambia.', 'Apuntar a la fila o columna equivocada.', ['E3', 'M3'], '🎯'),
+    f('decimales', 'Decimales', 'Escribir números con parte decimal.', 'En español, con coma: 2,5', '=B2*1,5 multiplica por uno y medio.', 'Usar punto de millares o separar los argumentos con comas.', ['E3', 'M3'], ','),
+    f('funcion.promedio', 'PROMEDIO', 'Calcular la media de un rango.', '=PROMEDIO(rango)', '=PROMEDIO(B2:B5) da la media de cuatro días.', 'Incluir el encabezado o la propia celda del resultado en el rango.', ['M4'], '⚖'),
+    f('funcion.entero', 'ENTERO', 'Quedarse solo con la parte entera, hacia abajo.', '=ENTERO(número)', '=ENTERO(40/7) da 5, aunque 40/7 sea 5,71.', 'Dejar decimales cuando se piden unidades completas.', ['M4'], '🔢'),
+    f('error.div0', 'Error #DIV/0!', 'Entender qué pasa si divides entre cero o entre una celda vacía.', 'Aparece solo, como resultado de una división por 0', '=B1/0 da #DIV/0!. Si el consumo fuera 0, =B10/B11 daría ese error.', 'Dividir entre una celda vacía o con valor 0.', ['M4'], '⚠'),
+    f('funcion.max', 'MAX', 'Encontrar el mayor valor de un rango.', '=MAX(rango)', '=MAX(D2:D7) es el mejor rendimiento.', 'Incluir celdas con texto esperando que cuenten.', ['M5'], '▲'),
+    f('funcion.min', 'MIN', 'Encontrar el menor valor de un rango.', '=MIN(rango)', '=MIN(D2:D7) es el peor rendimiento.', 'Incluir celdas vacías que no son datos reales.', ['M5'], '▼'),
+    f('funcion.contar', 'CONTAR', 'Contar cuántas celdas del rango tienen números.', '=CONTAR(rango)', '=CONTAR(B2:B7) cuenta seis trabajadores si hay seis horas anotadas.', 'Contar una columna de texto: CONTAR solo cuenta números.', ['M5'], '#'),
+    f('ratios', 'Ratios entre columnas', 'Comparar cosas distintas con una división fila a fila (kg por hora, precio por unidad…).', '=C2/B2 y rellenar hacia abajo', '=C2/B2 divide la producción entre las horas de cada trabajador.', 'Dividir al revés: producción entre horas, no horas entre producción.', ['M5'], '÷'),
+    f('ref.absoluta', 'Referencias absolutas', 'Fijar una celda para que no se mueva al rellenar.', '$G$1: el $ delante de la columna y de la fila', '=B2-$G$1 rellenada hacia abajo sigue restando G1.', 'Olvidar el $ y que G1 pase a G2, G3…', ['M6'], '📌'),
+    f('funcion.si', 'SI', 'Decidir entre dos resultados según una condición.', '=SI(condición; si_verdadero; si_falso)', '=SI(B2<$G$1;"RACIONAR";"NORMAL")', 'Usar comas en lugar de punto y coma o invertir los dos resultados.', ['M7'], '⚖'),
+    f('comparaciones', 'Comparaciones y texto', 'Preguntar si algo es menor, mayor o igual, y escribir texto en una fórmula.', '< > = <= >= <> y el texto entre "comillas dobles"', '="a"="A" es VERDADERO; =SI(B2>30;"PESADO";"LIGERO")', 'Olvidar las comillas del texto: Excel da #¿NOMBRE?.', ['M7'], '❓'),
+    f('grafico.rango', 'Gráficos: el rango', 'Elegir qué datos dibuja el gráfico.', 'Del primer encabezado al último dato: A1:B6', 'Con 5 productos y su encabezado, el rango es A1:B6.', 'Dejar fuera el encabezado o el último dato.', ['M8'], '▦'),
+    f('grafico.tipo', 'Gráficos: el tipo', 'Elegir la forma de dibujar los datos.', 'Columnas para comparar categorías; líneas para la evolución en el tiempo', 'Producción de cada producto: columnas. Producción mes a mes: líneas.', 'Usar líneas para categorías que no tienen orden temporal.', ['M8'], '📊'),
+    f('grafico.titulo', 'Gráficos: el título', 'Decir al lector qué está mirando.', 'Un título breve y descriptivo (mínimo 5 caracteres)', '«Producción semanal de la aldea»', 'Dejar el gráfico sin título.', ['M8'], '🏷')
+  ];
+
+  const ficha = (id) => FICHAS.find((x) => x.id === id) || null;
+
+  /* ¿Está desbloqueada esta ficha? leccionesVistas: {M1: true}; escuelaLecciones: {E1: true} */
+  function desbloqueada(fi, leccionesVistas, escuelaLecciones) {
+    return fi.desbloqueaCon.some((c) => (c[0] === 'E' ? !!(escuelaLecciones && escuelaLecciones[c]) : !!(leccionesVistas && leccionesVistas[c])));
+  }
+
+  /* Búsqueda sencilla (sin distinguir mayúsculas ni acentos) para el selector del libro. */
+  const sinAcentos = (t) => String(t).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+  function buscar(texto, fichas) {
+    const q = sinAcentos(texto).trim();
+    if (!q) return fichas.slice();
+    return fichas.filter((x) => sinAcentos([x.nombre, x.paraQue, x.forma, x.id].join(' ')).includes(q));
+  }
+
+  return { FICHAS, ficha, desbloqueada, buscar };
+});
+
+;
+/* La Escuela: lecciones interactivas sin XP, validables sin DOM. */
+(function (raiz, fabrica) {
+  if (typeof module === 'object' && module.exports) module.exports = fabrica(require('./engine.js'), require('./missions.js'));
+  else raiz.Escuela = fabrica(raiz.Engine, raiz.Misiones);
+})(typeof self !== 'undefined' ? self : this, function (Engine, Misiones) {
+  'use strict';
+
+  const { prng, ent, ob } = Misiones;
+  const SEMILLA = 7;
+
+  /* Mini-misiones con la misma forma que las misiones: se validan con el mismo motor. */
+  const MINI_SUMAR_DOS = {
+    id: 'E3-suma', familia: 'abaco', requisitos: [],
+    generarDatos(semilla) {
+      const rng = prng(semilla, 201);
+      const a = ent(rng, 3, 9), b = ent(rng, 3, 9);
+      return { cols: 3, filas: 3, celdas: { A1: String(a), B1: String(b) }, v: { a, b } };
+    },
+    objetivos: [ob('C1', (d) => d.v.a + d.v.b, { usaReferencias: true })]
+  };
+  const MINI_SUMA = {
+    id: 'E4-suma', familia: 'abaco', requisitos: [],
+    generarDatos(semilla) {
+      const rng = prng(semilla, 202);
+      const celdas = {};
+      const v = [];
+      for (let i = 0; i < 4; i++) { v.push(ent(rng, 5, 30)); celdas['A' + (i + 1)] = String(v[i]); }
+      return { cols: 2, filas: 5, celdas, v: { valores: v } };
+    },
+    objetivos: [ob('A5', (d) => d.v.valores.reduce((s, x) => s + x, 0), { funcion: 'SUMA' })]
+  };
+
+  const vacia = (cols, filas) => ({ cols, filas, celdas: {}, editables: [] });
+
+  const LECCIONES = [
+    {
+      id: 'E1', titulo: 'La hoja',
+      texto: 'Una hoja de cálculo es una cuadrícula. Las columnas llevan letras (A, B, C…) y las filas números (1, 2, 3…). Cada casilla es una celda y su nombre une columna y fila: la celda de la columna B y la fila 3 es B3. Al hacer clic en una celda la seleccionas, y su nombre aparece en la barra de fórmulas.',
+      ejercicios: [
+        { id: 'E1-1', tipo: 'seleccion', objetivo: 'B3', enunciado: 'Haz clic en la celda B3 (columna B, fila 3).', hoja: vacia(5, 6) },
+        { id: 'E1-2', tipo: 'seleccion', objetivo: 'D5', enunciado: 'Ahora selecciona la celda D5.', hoja: vacia(5, 6) }
+      ]
+    },
+    {
+      id: 'E2', titulo: 'Moverse y seleccionar',
+      texto: 'Puedes moverte con las flechas del teclado o con el ratón. Para seleccionar varias celdas, arrastra con el ratón, o haz clic en la primera y Mayús+clic en la última, o usa Mayús+flechas. Un rango se nombra con la primera y la última celda separadas por dos puntos: A1:B5 es el bloque de A1 a B5.',
+      ejercicios: [
+        { id: 'E2-1', tipo: 'seleccion', objetivo: 'A1:B5', enunciado: 'Selecciona el rango A1:B5: clic en A1 y arrastra hasta B5 (o Mayús+clic en B5).', hoja: vacia(4, 6) },
+        { id: 'E2-2', tipo: 'seleccion', objetivo: 'C2:C6', enunciado: 'Selecciona el rango C2:C6. Prueba con Mayús+flechas.', hoja: vacia(4, 7) }
+      ]
+    },
+    {
+      id: 'E3', titulo: 'Escribir datos y fórmulas',
+      texto: 'Selecciona una celda y escribe: Enter confirma y baja, Esc cancela. Un número con decimales lleva coma: 2,5. Si lo escrito empieza por =, es una fórmula y Excel calcula: =A1+B1 suma el contenido de A1 y B1. Mientras escribes una fórmula, un clic en otra celda inserta su nombre (modo señalar), sin teclearlo.',
+      ejercicios: [
+        { id: 'E3-1', tipo: 'escribir', celda: 'B2', esperado: 2.5, enunciado: 'Escribe el número 2,5 en la celda B2 y pulsa Enter. Los decimales llevan coma.', hoja: { cols: 3, filas: 3, celdas: {}, editables: ['B2'] } },
+        { id: 'E3-2', tipo: 'formula', mini: MINI_SUMAR_DOS, enunciado: 'En C1 escribe una fórmula que sume A1 y B1. Empieza por = y prueba el modo señalar: tras el = haz clic en A1, escribe + y haz clic en B1.' }
+      ]
+    },
+    {
+      id: 'E4', titulo: 'Funciones',
+      texto: 'Una función es una operación que Excel ya sabe hacer. Se escribe con su nombre, un paréntesis y los argumentos, separados por punto y coma (;). Un rango puede ser un argumento. Por ejemplo, SUMA suma todo lo que le des: =SUMA(A1:A4) suma de A1 a A4. Ojo: en Excel en español el separador de argumentos es ;, no la coma.',
+      ejercicios: [
+        { id: 'E4-1', tipo: 'formula', mini: MINI_SUMA, enunciado: 'En A5 calcula la suma de los cuatro números de A1 a A4 con la función SUMA.' }
+      ]
+    }
+  ];
+
+  const todos = LECCIONES.reduce((a, l) => a.concat(l.ejercicios.map((e) => Object.assign({ leccion: l.id }, e))), []);
+  const ejercicio = (id) => todos.find((e) => e.id === id) || null;
+  const leccion = (id) => LECCIONES.find((l) => l.id === id) || null;
+
+  /* Hoja a mostrar en un ejercicio: {cols, filas, celdas, editables}. */
+  function hojaEjercicio(ej) {
+    if (ej.tipo === 'formula') {
+      const d = ej.mini.generarDatos(SEMILLA);
+      return { cols: d.cols, filas: d.filas, celdas: d.celdas, editables: ej.mini.objetivos.map((o) => o.celda) };
+    }
+    return ej.hoja;
+  }
+
+  /* ctx = { sel: {c1,c2,r1,r2}, celdas: {ref: texto} } → { ok, mensaje } */
+  function evaluarEjercicio(ej, ctx) {
+    ctx = ctx || {};
+    if (ej.tipo === 'seleccion') {
+      const sel = ctx.sel ? Engine.rangoTexto(ctx.sel) : '';
+      if (sel === ej.objetivo) return { ok: true, mensaje: '¡Bien! Has seleccionado ' + ej.objetivo + '.' };
+      return { ok: false, mensaje: sel ? `Ahora tienes seleccionado ${sel}. Fíjate en las letras de las columnas y en los números de las filas.` : 'Todavía no has seleccionado nada.' };
+    }
+    if (ej.tipo === 'escribir') {
+      const raw = (ctx.celdas || {})[ej.celda];
+      if (raw === undefined || String(raw).trim() === '') return { ok: false, mensaje: `Escribe el dato en ${ej.celda} y pulsa Enter.` };
+      const v = Engine.interpretar(raw);
+      if (v === ej.esperado) return { ok: true, mensaje: '¡Correcto!' };
+      if (typeof v === 'string') return { ok: false, mensaje: `En ${ej.celda} hay texto, y aquí hace falta un número. ¿Has usado la coma como separador decimal?` };
+      return { ok: false, mensaje: `El número escrito en ${ej.celda} no es el que se pide.` };
+    }
+    if (ej.tipo === 'formula') {
+      const r = Misiones.validar(ej.mini, ctx.celdas || {}, SEMILLA);
+      return { ok: r.ok, mensaje: r.ok ? '¡Correcto! La fórmula se adapta a otros datos.' : r.mensajes.join(' ') };
+    }
+    return { ok: false, mensaje: 'Ejercicio desconocido.' };
+  }
+
+  const MAX_PALABRAS = 80;
+  return { LECCIONES, ejercicios: todos, ejercicio, leccion, hojaEjercicio, evaluarEjercicio, MAX_PALABRAS, SEMILLA };
+});
+
+;
+/* Equipo, maestría y misiones de práctica (plantillas generadas por semilla). Sin DOM. */
+(function (raiz, fabrica) {
+  if (typeof module === 'object' && module.exports) module.exports = fabrica(require('./missions.js'));
+  else raiz.Practicas = fabrica(raiz.Misiones);
+})(typeof self !== 'undefined' ? self : this, function (Misiones) {
+  'use strict';
+
+  const { prng, ent, ob, obRango } = Misiones;
+
+  /* ---------- Objetos de equipo ---------- */
+  const OBJETOS = [
+    { id: 'abaco', nombre: 'Ábaco', icono: '🧮', familia: 'cálculo', stat: 'finanzas', lugar: 'en el Almacén', tarea: 'prácticas de cálculo' },
+    { id: 'compas', nombre: 'Compás', icono: '🧭', familia: 'moverse por la hoja', stat: 'productividad', lugar: 'en la Granja', tarea: 'prácticas de referencias y rellenado' },
+    { id: 'balanza', nombre: 'Balanza', icono: '⚖', familia: 'lógica', stat: 'logica', lugar: 'en la Oficina del capataz', tarea: 'prácticas de lógica (SI)' },
+    { id: 'pincel', nombre: 'Pincel', icono: '🖌', familia: 'gráficos', stat: 'analisis', lugar: 'en el Tablón de la aldea', tarea: 'prácticas de gráficos' }
+  ];
+  const NIVELES = ['madera', 'piedra', 'cobre', 'bronce', 'plata', 'oro'];
+  const UMBRALES = [0, 4, 10, 16, 24, 34];
+  const NIVEL_MAX = 3; // bronce: plata y oro están definidos pero son «Próximamente»
+  const MAX_REPETICIONES = 3;
+  const PUNTOS = { conPistas: 1, sinPistas: 2 };
+  const ORO_PRACTICA = 5;
+
+  const objeto = (id) => OBJETOS.find((o) => o.id === id) || null;
+
+  function nivelDePuntos(pts) {
+    let n = 0;
+    UMBRALES.forEach((u, i) => { if (pts >= u) n = i; });
+    return Math.min(n, NIVEL_MAX);
+  }
+
+  function infoObjeto(id, puntos) {
+    const o = objeto(id);
+    const pts = puntos || 0;
+    const nivel = nivelDePuntos(pts);
+    const tope = nivel >= NIVEL_MAX;
+    const base = UMBRALES[nivel];
+    const sig = tope ? null : UMBRALES[nivel + 1];
+    const llenos = tope ? 10 : Math.floor(((pts - base) / (sig - base)) * 10);
+    return {
+      id, nombre: o.nombre, icono: o.icono, stat: o.stat, puntos: pts,
+      nivel, nombreNivel: NIVELES[nivel], bono: nivel,
+      siguiente: sig, siguienteNombre: tope ? null : NIVELES[nivel + 1],
+      barra: `[${'#'.repeat(llenos)}${'-'.repeat(10 - llenos)}] ${tope ? pts + ' (nivel máximo por ahora)' : pts + '/' + sig}`,
+      proximamente: tope ? 'Próximamente: plata y oro' : '',
+      consejo: tope ? `Tu ${o.nombre} ya está en bronce. Plata y oro llegarán con más contenido.` : `Para subir tu ${o.nombre}, completa ${o.tarea} ${o.lugar}.`
+    };
+  }
+
+  /* ---------- Plantillas de práctica ---------- */
+  const NOMBRES_TABLA = (prefijo, n) => Array.from({ length: n }, (_, i) => `${prefijo} ${i + 1}`);
+
+  function tabla(rng, cab, filas, nombres, min, max) {
+    const celdas = { A1: cab[0], B1: cab[1] };
+    const v = [];
+    for (let i = 0; i < filas; i++) {
+      v.push(ent(rng, min, max));
+      celdas['A' + (i + 2)] = nombres[i];
+      celdas['B' + (i + 2)] = String(v[i]);
+    }
+    return { celdas, v };
+  }
+
+  const sum = (a) => a.reduce((s, x) => s + x, 0);
+
+  const A1 = {
+    id: 'P-A1', familia: 'abaco', titulo: 'Las hogazas de la semana', desbloqueo: 'M1', negocio: 'almacen',
+    texto: ['La panadera anota las hogazas que vende cada día. Necesita saber cuántas vendió en toda la semana.'],
+    queHacer: ['B9: el total de hogazas de la semana.'],
+    generarDatos(semilla) {
+      const t = tabla(prng(semilla, 301), ['Día', 'Hogazas'], 7, Misiones.DIAS, 10, 60);
+      t.celdas.A9 = 'Total';
+      return { cols: 2, filas: 9, celdas: t.celdas, v: { val: t.v } };
+    },
+    objetivos: [ob('B9', (d) => sum(d.v.val), { funcion: 'SUMA' }, { entero: true })],
+    pistas: ['Quieres juntar todas las ventas en un único total.', 'Usa la función SUMA sobre el rango de las hogazas, de lunes a domingo.', 'Estructura: =SUMA(primera:última) con las celdas de la columna de hogazas.'],
+    pista2Contiene: ['SUMA']
+  };
+
+  const A2 = {
+    id: 'P-A2', familia: 'abaco', titulo: 'La media del herrero', desbloqueo: 'M4', negocio: 'almacen',
+    texto: ['El herrero entrega clavos en pedidos de distinto tamaño y los guarda en cajas de capacidad fija. Quiere la media por pedido y cuántas cajas llenaría con esa media.'],
+    queHacer: ['B11: la media de clavos por pedido.', 'B12: las cajas completas que se llenarían con esa media (solo cajas enteras).'],
+    generarDatos(semilla) {
+      const rng = prng(semilla, 302);
+      const t = tabla(rng, ['Pedido', 'Clavos'], 6, NOMBRES_TABLA('Pedido', 6), 20, 90);
+      const caja = ent(rng, 6, 12);
+      Object.assign(t.celdas, { A9: 'Clavos por caja', B9: String(caja), A11: 'Media de clavos por pedido', A12: 'Cajas completas con la media' });
+      return { cols: 2, filas: 12, celdas: t.celdas, v: { val: t.v, caja } };
+    },
+    objetivos: [
+      ob('B11', (d) => sum(d.v.val) / d.v.val.length, { funcion: 'PROMEDIO' }),
+      ob('B12', (d) => Math.floor(sum(d.v.val) / d.v.val.length / d.v.caja), { funcion: 'ENTERO', usaReferencias: true }, { entero: true })
+    ],
+    pistas: ['Primero la media de los pedidos; después cuántas veces cabe la caja en esa media, contando solo cajas enteras.', 'Usa PROMEDIO para la media y ENTERO para quedarte con las cajas completas de la división.', 'B11: =PROMEDIO(rango de clavos). B12: =ENTERO(celda de la media / celda de clavos por caja).'],
+    pista2Contiene: ['PROMEDIO', 'ENTERO']
+  };
+
+  const A3 = {
+    id: 'P-A3', familia: 'abaco', titulo: 'El taller de Hilda', desbloqueo: 'M5', negocio: 'capataz',
+    texto: ['Hilda cronometra cuántos minutos tarda en hacer cada pieza. Quiere saber la más lenta, la más rápida y cuántas piezas ha medido.'],
+    queHacer: ['B9: el tiempo de la pieza más lenta.', 'B10: el tiempo de la pieza más rápida.', 'B11: el número de piezas medidas.'],
+    generarDatos(semilla) {
+      const t = tabla(prng(semilla, 303), ['Pieza', 'Minutos'], 6, NOMBRES_TABLA('Pieza', 6), 15, 95);
+      Object.assign(t.celdas, { A9: 'Más lenta (min)', A10: 'Más rápida (min)', A11: 'Nº de piezas' });
+      return { cols: 2, filas: 11, celdas: t.celdas, v: { val: t.v } };
+    },
+    objetivos: [
+      ob('B9', (d) => Math.max(...d.v.val), { funcion: 'MAX' }),
+      ob('B10', (d) => Math.min(...d.v.val), { funcion: 'MIN' }),
+      ob('B11', (d) => d.v.val.length, { funcion: 'CONTAR' }, { entero: true })
+    ],
+    pistas: ['Necesitas el valor más alto, el más bajo y un recuento del rango de minutos.', 'Las funciones son MAX, MIN y CONTAR, cada una sobre la columna de minutos.', 'Estructura: =MAX(rango), =MIN(rango) y =CONTAR(rango) con el mismo rango de minutos.'],
+    pista2Contiene: ['MAX', 'MIN', 'CONTAR']
+  };
+
+  const NOMBRES_ALDEANOS = ['Aldo', 'Brunilda', 'Cosme', 'Dora', 'Elías'];
+  const C1 = {
+    id: 'P-C1', familia: 'compas', titulo: 'Los tributos', desbloqueo: 'M2', negocio: 'granja',
+    texto: ['Cada aldeano entrega una cantidad de sacos a un precio por saco. Aldric quiere el total de cada uno y la recaudación de todos.'],
+    queHacer: ['D2:D6: el total de cada aldeano (cantidad por precio). Escribe la primera y rellena hacia abajo.', 'D8: la recaudación total.'],
+    generarDatos(semilla) {
+      const rng = prng(semilla, 304);
+      const celdas = { A1: 'Aldeano', B1: 'Cantidad', C1: 'Precio', D1: 'Total', A8: 'Recaudación' };
+      const cant = [], precio = [];
+      NOMBRES_ALDEANOS.forEach((n, i) => {
+        cant.push(ent(rng, 2, 9));
+        precio.push(ent(rng, 3, 12));
+        celdas['A' + (i + 2)] = n;
+        celdas['B' + (i + 2)] = String(cant[i]);
+        celdas['C' + (i + 2)] = String(precio[i]);
+      });
+      return { cols: 4, filas: 8, celdas, v: { cant, precio } };
+    },
+    objetivos: [].concat(
+      obRango('D', 2, 6, (d, k) => d.v.cant[k] * d.v.precio[k], { usaReferencias: true }, { entero: true }),
+      [ob('D8', (d) => sum(d.v.cant.map((c, k) => c * d.v.precio[k])), { funcion: 'SUMA', usaReferencias: true }, { entero: true })]
+    ),
+    pistas: ['Cada total es una multiplicación; la recaudación junta todos los totales.', 'Usa el operador * en la primera fila y rellena hacia abajo; para la recaudación, la función SUMA.', 'D2: celda de cantidad * celda de precio, y rellenar D2:D6. D8: =SUMA(rango de totales).'],
+    pista2Contiene: ['*', 'SUMA']
+  };
+
+  const NOMBRES_PROD = ['Pan', 'Queso', 'Vino', 'Aceite', 'Sal', 'Miel'];
+  const VARIANTES_RECARGO = [{ b: [10, 20, 5, 30, 15, 25], g: 3 }, { b: [40, 7, 12, 33, 18, 22], g: 8 }];
+  function datosRecargo(b, g) {
+    const celdas = { A1: 'Producto', B1: 'Precio base', C1: 'Precio final', F1: 'Recargo', G1: String(g) };
+    b.forEach((x, i) => { celdas['A' + (i + 2)] = NOMBRES_PROD[i]; celdas['B' + (i + 2)] = String(x); });
+    return { cols: 7, filas: 7, celdas, v: { b: b.slice(), g } };
+  }
+  const C2 = {
+    id: 'P-C2', familia: 'compas', titulo: 'El recargo del mercader', desbloqueo: 'M6', negocio: 'granja',
+    texto: ['El mercader suma el mismo recargo, anotado en una celda, al precio de cada producto.'],
+    queHacer: ['C2:C7: el precio final de cada producto (precio base más el recargo de G1).'],
+    generarDatos(semilla) {
+      const rng = prng(semilla, 305);
+      const b = [];
+      for (let i = 0; i < 6; i++) b.push(ent(rng, 5, 40));
+      return datosRecargo(b, ent(rng, 2, 9));
+    },
+    variantes: () => VARIANTES_RECARGO.map((x) => datosRecargo(x.b, x.g)),
+    objetivos: obRango('C', 2, 7, (d, k) => d.v.b[k] + d.v.g, { usaReferencias: true, apuntaA: 'G1' }, { entero: true, ayuda: 'Piensa qué pasa con la referencia al recargo cuando rellenas hacia abajo (mira la pista 2).' }),
+    pistas: ['El recargo es una única celda que todos los productos comparten.', 'Suma el recargo al precio base y fija la referencia del recargo con el símbolo $ para que no se mueva al rellenar.', 'Primera fila: celda del precio base + celda del recargo con $ en la columna y en la fila; después rellena hacia abajo.'],
+    pista2Contiene: ['$']
+  };
+
+  const NOMBRES_ALUMNOS = ['Ana', 'Luis', 'Eva', 'Pío', 'Rut', 'Tomás'];
+  const B1 = {
+    id: 'P-B1', familia: 'balanza', titulo: 'Aprobados y suspensos', desbloqueo: 'M7', negocio: 'capataz',
+    texto: ['El maestro de la aldea anota las notas de sus alumnos. Con 5 o más aprueban.'],
+    queHacer: ['C2:C7: «APROBADO» si la nota es 5 o más y «SUSPENDIDO» si es menor.'],
+    generarDatos(semilla) {
+      const t = tabla(prng(semilla, 306), ['Alumno', 'Nota'], 6, NOMBRES_ALUMNOS, 0, 10);
+      t.celdas.C1 = 'Resultado';
+      return { cols: 3, filas: 7, celdas: t.celdas, v: { val: t.v } };
+    },
+    objetivos: obRango('C', 2, 7, (d, k) => (d.v.val[k] >= 5 ? 'APROBADO' : 'SUSPENDIDO'), { funcion: 'SI', usaReferencias: true }, { textoFlexible: true }),
+    pistas: ['Cada alumno tiene una decisión: o aprueba o suspende.', 'Usa la función SI con una comparación sobre la nota; los textos van entre comillas dobles.', 'Estructura: =SI(celda de la nota >= 5; "APROBADO"; "SUSPENDIDO") y rellena hacia abajo.'],
+    pista2Contiene: ['SI']
+  };
+
+  const VARIANTES_LIMITE = [{ b: [20, 21, 22, 19, 25, 40], g: 21 }, { b: [38, 39, 40, 41, 30, 59], g: 39 }];
+  function datosLimite(b, g) {
+    const celdas = { A1: 'Pedido', B1: 'Sacos', C1: 'Tamaño', F1: 'Límite (sacos)', G1: String(g) };
+    b.forEach((x, i) => { celdas['A' + (i + 2)] = 'Pedido ' + (i + 1); celdas['B' + (i + 2)] = String(x); });
+    return { cols: 7, filas: 7, celdas, v: { b: b.slice(), g } };
+  }
+  const B2 = {
+    id: 'P-B2', familia: 'balanza', titulo: 'Pedidos grandes', desbloqueo: 'M7', negocio: 'capataz',
+    texto: ['El capataz clasifica los pedidos: son grandes si superan un límite que está anotado en una celda.'],
+    queHacer: ['C2:C7: «GRANDE» si los sacos superan el límite de G1 y «PEQUEÑO» si no (un pedido igual al límite es pequeño).'],
+    generarDatos(semilla) {
+      const rng = prng(semilla, 307);
+      const b = [];
+      for (let i = 0; i < 6; i++) b.push(ent(rng, 5, 60));
+      return datosLimite(b, ent(rng, 20, 40));
+    },
+    variantes: () => VARIANTES_LIMITE.map((x) => datosLimite(x.b, x.g)),
+    objetivos: obRango('C', 2, 7, (d, k) => (d.v.b[k] > d.v.g ? 'GRANDE' : 'PEQUEÑO'), { funcion: 'SI', usaReferencias: true }, { textoFlexible: true, ayuda: 'Piensa qué pasa con la referencia al límite cuando rellenas hacia abajo (mira la pista 2).' }),
+    pistas: ['Cada pedido se compara con un mismo límite compartido.', 'Usa la función SI comparando los sacos con el límite, que debe quedar fijo con $ al rellenar hacia abajo.', 'Estructura: =SI(celda de sacos > celda del límite con $; "GRANDE"; "PEQUEÑO") y rellena hacia abajo.'],
+    pista2Contiene: ['SI', '$']
+  };
+
+  function datosGrafico(rng, cab, etiquetas, min, max, distintos) {
+    const celdas = { A1: cab[0], B1: cab[1] };
+    const usados = new Set();
+    const valores = [];
+    etiquetas.forEach((e, i) => {
+      let v;
+      do { v = ent(rng, min, max); } while (distintos && usados.has(v));
+      usados.add(v);
+      valores.push(v);
+      celdas['A' + (i + 2)] = e;
+      celdas['B' + (i + 2)] = String(v);
+    });
+    return { cols: 2, filas: etiquetas.length + 1, celdas, v: { valores } };
+  }
+  const P1 = {
+    id: 'P-P1', familia: 'pincel', titulo: 'El mercado', desbloqueo: 'M8', negocio: 'tablon',
+    texto: ['Cada puesto del mercado anota sus ventas de la semana. Aldric quiere un gráfico para comparar los puestos.'],
+    queHacer: ['Crea un gráfico que compare las ventas de los cinco puestos: rango de datos, tipo adecuado y un título de al menos 5 caracteres.'],
+    grafico: { rango: 'A1:B6', tipo: 'columnas', msgTipo: { 'líneas': 'Las líneas sirven para ver la evolución en el tiempo; aquí comparas puestos, y para eso van mejor las columnas.' } },
+    generarDatos(semilla) { return datosGrafico(prng(semilla, 308), ['Puesto', 'Ventas'], ['Pan', 'Queso', 'Vino', 'Paño', 'Cera'], 20, 300, true); },
+    objetivos: [],
+    pistas: ['Piensa qué datos entran en el gráfico, encabezados incluidos.', 'Elige el rango de los encabezados y todos los datos, y el tipo columnas para comparar categorías.', 'Rango CELDA:CELDA de la esquina superior izquierda a la inferior derecha, tipo columnas y un título descriptivo.'],
+    pista2Contiene: ['columnas']
+  };
+  const P2 = {
+    id: 'P-P2', familia: 'pincel', titulo: 'La cosecha mes a mes', desbloqueo: 'M8', negocio: 'tablon',
+    texto: ['Aldric apunta lo cosechado cada mes. Quiere ver cómo evoluciona a lo largo del tiempo.'],
+    queHacer: ['Crea un gráfico que muestre cómo evoluciona la cosecha mes a mes: rango de datos, tipo adecuado y un título de al menos 5 caracteres.'],
+    grafico: { rango: 'A1:B7', tipo: 'líneas', msgTipo: { columnas: 'Las columnas comparan categorías; para ver cómo cambia algo mes a mes van mejor las líneas.' } },
+    generarDatos(semilla) { return datosGrafico(prng(semilla, 309), ['Mes', 'Cosecha (kg)'], ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'], 40, 400, false); },
+    objetivos: [],
+    pistas: ['Quieres ver una evolución en el tiempo, no comparar categorías.', 'Elige el rango de encabezados y datos y el tipo líneas, que une los puntos mes a mes.', 'Rango CELDA:CELDA de la esquina superior izquierda a la inferior derecha, tipo líneas y un título descriptivo.'],
+    pista2Contiene: ['líneas']
+  };
+
+  const PLANTILLAS = [A1, A2, A3, C1, C2, B1, B2, P1, P2];
+  PLANTILLAS.forEach((p) => Object.assign(p, {
+    tipo: 'secundaria', entorno: 'aldea', requisitos: [], maxRepeticiones: MAX_REPETICIONES,
+    dificultad: 'Práctica', xp: 0, oro: ORO_PRACTICA, stats: {}, etiquetas: [],
+    consecuencia: { texto: () => '' }, aplicarAldea() {}
+  }));
+
+  const plantilla = (id) => PLANTILLAS.find((p) => p.id === id) || null;
+  const indice = (id) => PLANTILLAS.findIndex((p) => p.id === id);
+  /* Cada repetición usa una semilla distinta, y por tanto datos distintos. */
+  const semillaPractica = (semillaPartida, id, rep) => semillaPartida + 997 * (indice(id) + 1) + 131 * rep;
+
+  return {
+    OBJETOS, NIVELES, UMBRALES, NIVEL_MAX, MAX_REPETICIONES, PUNTOS, ORO_PRACTICA, PLANTILLAS,
+    objeto, nivelDePuntos, infoObjeto, plantilla, semillaPractica
   };
 });
 
 ;
 /* Estado del juego, XP, niveles, recompensas y guardado. Sin DOM. */
 (function (raiz, fabrica) {
-  if (typeof module === 'object' && module.exports) module.exports = fabrica(require('./missions.js'));
-  else raiz.Juego = fabrica(raiz.Misiones);
-})(typeof self !== 'undefined' ? self : this, function (Misiones) {
+  if (typeof module === 'object' && module.exports) module.exports = fabrica(require('./missions.js'), require('./libro.js'), require('./escuela.js'), require('./practicas.js'));
+  else raiz.Juego = fabrica(raiz.Misiones, raiz.Libro, raiz.Escuela, raiz.Practicas);
+})(typeof self !== 'undefined' ? self : this, function (Misiones, Libro, Escuela, Practicas) {
   'use strict';
 
-  const { MISIONES, CODICE } = Misiones;
-  const VERSION = 1;
+  const { MISIONES } = Misiones;
+  const VERSION = 2;
   const CLAVE = 'excelrpg.aldea.v1';
   const STATS = ['logica', 'analisis', 'automatizacion', 'finanzas', 'productividad'];
   const NOMBRES_STATS = { logica: 'Lógica', analisis: 'Análisis', automatizacion: 'Automatización', finanzas: 'Finanzas', productividad: 'Productividad' };
@@ -1191,8 +1930,18 @@ label input, label select { display: block; margin-top: 3px; min-width: 16rem; }
       oro: 0,
       stats,
       registro: [],
-      grafico: null
+      grafico: null,
+      escuela: { ejercicios: {}, saltada: false },
+      leccionesVistas: {},
+      practicas: {},
+      maestria: maestriaInicial(),
+      practicaActiva: null
     };
+  }
+  function maestriaInicial() {
+    const m = {};
+    Practicas.OBJETOS.forEach((o) => { m[o.id] = 0; });
+    return m;
   }
 
   const nivel = (xp) => 1 + Math.floor(xp / 100);
@@ -1211,33 +1960,175 @@ label input, label select { display: block; margin-top: 3px; min-width: 16rem; }
     return `[${'#'.repeat(llenos)}${'-'.repeat(10 - llenos)}] ${en}/100`;
   }
 
+  /* Aviso de rango: solo si el rango nuevo es distinto del anterior. */
+  function avisoRango(xpAntes, xpDespues) {
+    const antes = rango(nivel(xpAntes)), despues = rango(nivel(xpDespues));
+    return antes === despues ? '' : `¡Nuevo rango: ${despues}!`;
+  }
+
+  /* ---------- Requisitos de misión (preparados para la Ciudad; vacíos en esta versión) ---------- */
+  const nivelObjeto = (estado, id) => Practicas.nivelDePuntos((estado.maestria && estado.maestria[id]) || 0);
+  function valorRequisito(estado, r) {
+    if (r.tipo === 'objeto') return nivelObjeto(estado, r.id);
+    if (r.tipo === 'stat') return (estado.stats && estado.stats[r.id]) || 0;
+    if (r.tipo === 'mision') return estado.completadas && estado.completadas[r.id] ? 1 : 0;
+    return 0;
+  }
+  function requisitosFaltantes(estado, m) {
+    return (m.requisitos || []).filter((r) => valorRequisito(estado, r) < (r.tipo === 'mision' ? 1 : r.valor || 0));
+  }
+  const requisitosCumplidos = (estado, m) => requisitosFaltantes(estado, m).length === 0;
+
   const mision = (estado) => MISIONES[estado.misionActual] || null;
   const datosMision = (estado, i) => MISIONES[i].generarDatos(estado.semilla);
   const terminada = (estado) => estado.misionActual >= MISIONES.length;
 
-  function editarCelda(estado, ref, raw) {
+  /* ---------- La Escuela ---------- */
+  const leccionEscuelaCompleta = (estado, id) => {
+    const l = Escuela.leccion(id);
+    return !!l && l.ejercicios.every((e) => estado.escuela.ejercicios[e.id]);
+  };
+  const escuelaCompleta = (estado) => estado.escuela.saltada || Escuela.LECCIONES.every((l) => leccionEscuelaCompleta(estado, l.id));
+  const aldeaDesbloqueada = escuelaCompleta;
+  function escuelaProgreso(estado) {
+    return Escuela.LECCIONES.map((l) => ({
+      id: l.id, titulo: l.titulo,
+      ejercicios: l.ejercicios.map((e) => ({ id: e.id, hecho: !!estado.escuela.ejercicios[e.id] })),
+      completa: leccionEscuelaCompleta(estado, l.id)
+    }));
+  }
+  function completarEjercicio(estado, id, ctx) {
+    const ej = Escuela.ejercicio(id);
+    if (!ej) return { ok: false, mensaje: 'Ejercicio desconocido.' };
+    const r = Escuela.evaluarEjercicio(ej, ctx);
+    if (r.ok) estado.escuela.ejercicios[id] = true;
+    return Object.assign({}, r, { leccionCompleta: r.ok && leccionEscuelaCompleta(estado, ej.leccion), escuelaCompleta: escuelaCompleta(estado) });
+  }
+  function saltarEscuela(estado) { estado.escuela.saltada = true; }
+  function siguienteEjercicio(estado) {
+    for (const e of Escuela.ejercicios) if (!estado.escuela.ejercicios[e.id]) return e;
+    return null;
+  }
+
+  /* ---------- Lecciones y Libro de funciones ---------- */
+  const verLeccion = (estado, id) => { estado.leccionesVistas[id] = true; };
+  const leccionVista = (estado, id) => !!estado.leccionesVistas[id];
+  function libro(estado) {
+    const esc = {};
+    Escuela.LECCIONES.forEach((l) => { if (leccionEscuelaCompleta(estado, l.id)) esc[l.id] = true; });
+    const modulos = {};
+    Misiones.CODICE.forEach((c) => { modulos[c.id] = c.moduloPlan; });
+    return Libro.FICHAS.map((f) => Object.assign({}, f, { moduloPlan: modulos[f.id] || '', desbloqueada: Libro.desbloqueada(f, estado.leccionesVistas, esc) }));
+  }
+
+  /* ---------- Objetivo activo: misión principal o práctica ---------- */
+  function activo(estado) {
+    const pa = estado.practicaActiva;
+    if (pa) {
+      const def = Practicas.plantilla(pa.id);
+      return { tipo: 'practica', def, semilla: Practicas.semillaPractica(estado.semilla, pa.id, pa.rep), borrador: pa.borrador, ref: pa };
+    }
     const m = mision(estado);
-    if (!m) return false;
+    return m ? { tipo: 'mision', def: m, semilla: estado.semilla, borrador: estado.borradores[m.id] || {}, ref: null } : null;
+  }
+  const datosActivos = (estado) => { const a = activo(estado); return a ? a.def.generarDatos(a.semilla) : null; };
+
+  function editarCelda(estado, ref, raw) {
+    const a = activo(estado);
+    if (!a) return false;
     const k = String(ref).toUpperCase();
-    if (!Misiones.celdasEditables(m).includes(k)) return false;
-    const b = estado.borradores[m.id] || (estado.borradores[m.id] = {});
+    if (!Misiones.celdasEditables(a.def).includes(k)) return false;
+    let b;
+    if (a.tipo === 'practica') b = a.ref.borrador;
+    else b = estado.borradores[a.def.id] || (estado.borradores[a.def.id] = {});
     if (raw === '' || raw === null || raw === undefined) delete b[k];
     else b[k] = String(raw);
     return true;
   }
 
+  function pistasUsadas(estado) {
+    const a = activo(estado);
+    if (!a) return 0;
+    return a.tipo === 'practica' ? a.ref.pistas : estado.pistas[a.def.id] || 0;
+  }
   function usarPista(estado) {
-    const m = mision(estado);
-    if (!m) return null;
-    const n = estado.pistas[m.id] || 0;
-    if (n < m.pistas.length) estado.pistas[m.id] = n + 1;
-    return { usadas: estado.pistas[m.id] || 0, texto: m.pistas.slice(0, estado.pistas[m.id] || 0) };
+    const a = activo(estado);
+    if (!a) return null;
+    const n = pistasUsadas(estado);
+    if (n < a.def.pistas.length) {
+      if (a.tipo === 'practica') a.ref.pistas = n + 1;
+      else estado.pistas[a.def.id] = n + 1;
+    }
+    const usadas = pistasUsadas(estado);
+    return { usadas, texto: a.def.pistas.slice(0, usadas) };
   }
 
-  /* Entrega la misión actual. entrega: {celda: texto}; extra: datos del gráfico (M7). */
+  /* ---------- Prácticas y equipo ---------- */
+  function practicasInfo(estado) {
+    return Practicas.PLANTILLAS.map((p) => {
+      const hechas = (estado.practicas[p.id] && estado.practicas[p.id].hechas) || 0;
+      return {
+        id: p.id, titulo: p.titulo, familia: p.familia, desbloqueo: p.desbloqueo,
+        desbloqueada: aldeaDesbloqueada(estado) && !!estado.leccionesVistas[p.desbloqueo],
+        hechas, restantes: Math.max(0, p.maxRepeticiones - hechas),
+        activa: !!(estado.practicaActiva && estado.practicaActiva.id === p.id)
+      };
+    });
+  }
+  function iniciarPractica(estado, id) {
+    const info = practicasInfo(estado).find((p) => p.id === id);
+    if (!info) return { ok: false, mensaje: 'Esa práctica no existe.' };
+    if (!info.desbloqueada) return { ok: false, mensaje: 'Todavía no has visto la lección de esta práctica.' };
+    if (info.restantes <= 0) return { ok: false, mensaje: 'Ya has hecho esta práctica las 3 veces permitidas.' };
+    estado.practicaActiva = { id, rep: info.hechas, borrador: {}, pistas: 0 };
+    return { ok: true };
+  }
+  function abandonarPractica(estado) { estado.practicaActiva = null; }
+
+  function entregarPractica(estado, entrega, extra) {
+    const pa = estado.practicaActiva;
+    const p = Practicas.plantilla(pa.id);
+    const res = Misiones.validar(p, entrega, Practicas.semillaPractica(estado.semilla, pa.id, pa.rep), extra);
+    if (!res.ok) return Object.assign({ completada: false, practica: true }, res);
+    const antes = Practicas.infoObjeto(p.familia, estado.maestria[p.familia]);
+    const puntos = pa.pistas === 0 ? Practicas.PUNTOS.sinPistas : Practicas.PUNTOS.conPistas;
+    estado.maestria[p.familia] = (estado.maestria[p.familia] || 0) + puntos;
+    estado.oro += Practicas.ORO_PRACTICA;
+    const reg = estado.practicas[p.id] || (estado.practicas[p.id] = { hechas: 0 });
+    reg.hechas += 1;
+    estado.practicaActiva = null;
+    const despues = Practicas.infoObjeto(p.familia, estado.maestria[p.familia]);
+    return {
+      ok: true, completada: true, practica: true, porCelda: res.porCelda, mensajes: [],
+      titulo: p.titulo, puntos, oro: Practicas.ORO_PRACTICA, sinPistas: pa.pistas === 0,
+      objeto: despues.nombre, nivelAntes: antes.nivel, nivelDespues: despues.nivel,
+      nombreNivel: despues.nombreNivel, subeObjeto: despues.nivel > antes.nivel, bono: despues.bono, stat: despues.stat,
+      restantes: Math.max(0, p.maxRepeticiones - reg.hechas)
+    };
+  }
+
+  function equipo(estado) {
+    const prac = practicasInfo(estado);
+    return Practicas.OBJETOS.map((o) => Object.assign(Practicas.infoObjeto(o.id, estado.maestria[o.id]), {
+      familia: o.familia, statNombre: NOMBRES_STATS[o.stat], practicas: prac.filter((p) => p.familia === o.id)
+    }));
+  }
+  /* Estadísticas con el bono de los objetos mostrado aparte de la base. */
+  function statsEfectivos(estado) {
+    const r = {};
+    STATS.forEach((s) => { r[s] = { base: estado.stats[s], bono: 0 }; });
+    Practicas.OBJETOS.forEach((o) => { r[o.stat].bono += nivelObjeto(estado, o.id); });
+    STATS.forEach((s) => { r[s].total = r[s].base + r[s].bono; });
+    return r;
+  }
+
+  /* Entrega la misión actual (o la práctica activa). entrega: {celda: texto}; extra: datos del gráfico. */
   function entregar(estado, entrega, extra) {
+    if (!aldeaDesbloqueada(estado)) return { ok: false, completada: false, mensajes: ['Primero completa la Escuela o sáltala para entrar en la Aldea.'], porCelda: {} };
+    if (estado.practicaActiva) return entregarPractica(estado, entrega, extra);
     const m = mision(estado);
     if (!m) return { ok: false, completada: false, mensajes: ['Ya has completado todas las misiones.'], porCelda: {} };
+    if (!requisitosCumplidos(estado, m)) return { ok: false, completada: false, mensajes: ['Todavía no cumples los requisitos de esta misión.'], porCelda: {} };
     const res = Misiones.validar(m, entrega, estado.semilla, extra);
     if (!res.ok) return Object.assign({ completada: false }, res);
 
@@ -1250,16 +2141,19 @@ label input, label select { display: block; margin-top: 3px; min-width: 16rem; }
     estado.completadas[m.id] = { celdas, extra: m.grafico ? Object.assign({}, extra) : null };
     if (m.grafico) estado.grafico = Object.assign({}, extra);
     estado.registro.push({ mision: m.id, titulo: m.titulo, texto: m.consecuencia.texto(m.generarDatos(estado.semilla), extra) });
+    estado.leccionesVistas[m.id] = true;
     delete estado.borradores[m.id];
     estado.misionActual += 1;
 
     const nivelDespues = nivel(estado.xp);
     return {
-      ok: true, completada: true, porCelda: res.porCelda, mensajes: [],
+      ok: true, completada: true, practica: false, porCelda: res.porCelda, mensajes: [],
       xp: m.xp, oro: m.oro, stats: m.stats,
       nivelAntes, nivelDespues,
       subeNivel: nivelDespues > nivelAntes,
-      mensajeNivel: nivelDespues > nivelAntes ? `¡Has subido al nivel ${nivelDespues}! Nuevo rango: ${rango(nivelDespues)}.` : '',
+      mensajeNivel: nivelDespues > nivelAntes ? `¡Has subido al nivel ${nivelDespues}!` : '',
+      cambiaRango: rango(nivelAntes) !== rango(nivelDespues),
+      mensajeRango: avisoRango(estado.xp - m.xp, estado.xp),
       consecuencia: estado.registro[estado.registro.length - 1].texto
     };
   }
@@ -1268,57 +2162,80 @@ label input, label select { display: block; margin-top: 3px; min-width: 16rem; }
   function calcularAldea(estado) {
     const m3 = MISIONES[2].generarDatos(estado.semilla);
     const aldea = { trigo: 0, huevos: 0, poblacion: m3.v.personas, trabajadores: 0, edificios: [] };
-    MISIONES.forEach((m, i) => {
+    MISIONES.forEach((m) => {
       if (estado.completadas[m.id]) m.aplicarAldea(aldea, m.generarDatos(estado.semilla));
     });
     return aldea;
   }
 
-  function codice(estado) {
-    const desbloqueadas = {};
-    for (const m of MISIONES) {
-      if (estado.completadas[m.id]) m.etiquetas.forEach((e) => { desbloqueadas[e] = m.titulo; });
-    }
-    const todas = {};
-    for (const m of MISIONES) m.etiquetas.forEach((e) => { todas[e] = todas[e] || m.titulo; });
-    return CODICE.map((c) => ({
-      id: c.id, nombre: c.nombre, moduloPlan: c.moduloPlan,
-      desbloqueada: !!desbloqueadas[c.id],
-      mision: desbloqueadas[c.id] || null
-    }));
-  }
-
   function resumenFinal(estado) {
-    const cod = codice(estado);
+    const fichas = libro(estado);
     return {
       nombre: estado.nombre, nivel: nivel(estado.xp), rango: rango(nivel(estado.xp)),
-      xp: estado.xp, oro: estado.oro, stats: Object.assign({}, estado.stats),
-      codiceDesbloqueadas: cod.filter((c) => c.desbloqueada).length, codiceTotal: cod.length
+      xp: estado.xp, oro: estado.oro, stats: Object.assign({}, estado.stats), statsEfectivos: statsEfectivos(estado),
+      codiceDesbloqueadas: fichas.filter((c) => c.desbloqueada).length, codiceTotal: fichas.length
     };
   }
 
   /* ---------- Guardado ---------- */
   const serializar = (estado) => JSON.stringify(estado);
 
+  /* Partidas de la versión 1 (7 misiones): la antigua M6 pasa a ser M6 + M7 y los gráficos pasan a M8.
+     El total de XP, oro y estadísticas de la antigua M6 coincide con el de M6 + M7. */
+  function migrarV1(o) {
+    const n = Object.assign({}, o, { version: VERSION });
+    const comp = {}, bor = {}, pis = {};
+    const viejas = o.completadas && typeof o.completadas === 'object' ? o.completadas : {};
+    ['M1', 'M2', 'M3', 'M4', 'M5'].forEach((id) => {
+      if (viejas[id]) comp[id] = viejas[id];
+      if (o.borradores && o.borradores[id]) bor[id] = o.borradores[id];
+      if (o.pistas && o.pistas[id]) pis[id] = o.pistas[id];
+    });
+    if (viejas.M6) {
+      comp.M6 = { celdas: {}, extra: null, migrada: true };
+      comp.M7 = { celdas: {}, extra: null, migrada: true };
+    }
+    if (viejas.M7) comp.M8 = viejas.M7;
+    if (o.pistas && o.pistas.M7) pis.M8 = o.pistas.M7;
+    n.completadas = comp;
+    n.borradores = bor;
+    n.pistas = pis;
+    n.misionActual = o.misionActual >= 6 ? o.misionActual + 1 : o.misionActual;
+    n.registro = (Array.isArray(o.registro) ? o.registro : []).map((r) => (r && r.mision === 'M7' ? Object.assign({}, r, { mision: 'M8' }) : r));
+    n.leccionesVistas = {};
+    for (let i = 0; i < n.misionActual; i++) n.leccionesVistas['M' + (i + 1)] = true;
+    n.escuela = { ejercicios: {}, saltada: true };
+    return n;
+  }
+
   function cargar(texto) {
     let o;
     try { o = typeof texto === 'string' ? JSON.parse(texto) : texto; } catch (e) { throw new Error('El archivo no es una partida válida.'); }
+    if (o && o.version === 1 && Number.isInteger(o.misionActual) && o.misionActual >= 0 && o.misionActual <= 7) o = migrarV1(o);
     if (!o || o.version !== VERSION || typeof o.nombre !== 'string' || !Number.isInteger(o.semilla) ||
         !Number.isInteger(o.misionActual) || o.misionActual < 0 || o.misionActual > MISIONES.length ||
         typeof o.xp !== 'number' || typeof o.oro !== 'number' || !o.stats || typeof o.stats !== 'object') {
       throw new Error('El archivo no es una partida válida.');
     }
+    const obj = (x) => (x && typeof x === 'object' && !Array.isArray(x) ? x : {});
     const base = nuevaPartida(o.nombre, o.semilla);
     const estado = Object.assign(base, {
       iniciada: !!o.iniciada, tutorialVisto: !!o.tutorialVisto,
       misionActual: o.misionActual, xp: o.xp, oro: o.oro,
-      completadas: o.completadas && typeof o.completadas === 'object' ? o.completadas : {},
-      borradores: o.borradores && typeof o.borradores === 'object' ? o.borradores : {},
-      pistas: o.pistas && typeof o.pistas === 'object' ? o.pistas : {},
+      completadas: obj(o.completadas),
+      borradores: obj(o.borradores),
+      pistas: obj(o.pistas),
       registro: Array.isArray(o.registro) ? o.registro : [],
-      grafico: o.grafico || null
+      grafico: o.grafico || null,
+      escuela: { ejercicios: obj(obj(o.escuela).ejercicios), saltada: !!obj(o.escuela).saltada },
+      leccionesVistas: obj(o.leccionesVistas),
+      practicas: obj(o.practicas)
     });
     STATS.forEach((s) => { estado.stats[s] = Number.isFinite(o.stats[s]) ? o.stats[s] : 1; });
+    Practicas.OBJETOS.forEach((ob) => { estado.maestria[ob.id] = Number.isFinite(obj(o.maestria)[ob.id]) ? o.maestria[ob.id] : 0; });
+    const pa = o.practicaActiva;
+    estado.practicaActiva = pa && Practicas.plantilla(pa.id) && Number.isInteger(pa.rep)
+      ? { id: pa.id, rep: pa.rep, borrador: obj(pa.borrador), pistas: Number.isInteger(pa.pistas) ? pa.pistas : 0 } : null;
     return estado;
   }
 
@@ -1346,8 +2263,13 @@ label input, label select { display: block; margin-top: 3px; min-width: 16rem; }
   }
 
   return {
-    STATS, NOMBRES_STATS, nuevaPartida, nivel, rango, barraXP, mision, datosMision, terminada,
-    editarCelda, usarPista, entregar, calcularAldea, codice, resumenFinal,
+    STATS, NOMBRES_STATS, nuevaPartida, nivel, rango, barraXP, mision, datosMision, terminada, avisoRango,
+    requisitosCumplidos, requisitosFaltantes, nivelObjeto,
+    leccionEscuelaCompleta, escuelaCompleta, aldeaDesbloqueada, escuelaProgreso, completarEjercicio, saltarEscuela, siguienteEjercicio,
+    verLeccion, leccionVista, libro,
+    activo, datosActivos, editarCelda, pistasUsadas, usarPista, entregar,
+    practicasInfo, iniciarPractica, abandonarPractica, equipo, statsEfectivos,
+    calcularAldea, resumenFinal,
     serializar, cargar, guardarLocal, cargarLocal, borrarLocal
   };
 });
@@ -1358,36 +2280,77 @@ label input, label select { display: block; margin-top: 3px; min-width: 16rem; }
   'use strict';
   if (typeof document === 'undefined') return;
 
-  const E = window.Engine, M = window.Misiones, J = window.Juego;
+  const E = window.Engine, M = window.Misiones, J = window.Juego, Esc = window.Escuela, L = window.Libro, P = window.Practicas;
   const raiz = document.getElementById('app');
-  const NMISIONES = M.MISIONES.length;
+  const NM = M.MISIONES.length;
 
   const semillaNueva = () => 1000 + Math.floor(Math.random() * 900000);
   let estado = J.cargarLocal() || J.nuevaPartida('', semillaNueva());
 
   const ui = {
-    ver: 0, sel: { c: 0, r: 1 }, anchor: { c: 0, r: 1 }, editando: null,
-    mensajes: [], resultado: {}, aviso: null, estadoMsg: '', enfocarHoja: false,
-    grafico: { rango: '', tipo: '', titulo: '' }, vistaGrafico: false, errorImportar: ''
+    ver: 0, sel: E.selUna(0, 1), editando: null, arrastrando: null, rellenoDestino: null, dragSenalar: null, ultimoClic: null,
+    mensajes: [], resultado: {}, estadoMsg: '', enfocarHoja: false,
+    grafico: { rango: '', tipo: '', titulo: '' }, vistaGrafico: false, errorImportar: '',
+    panel: null, libroQ: '', libroFoco: false, ficha: null, popup: null,
+    narrativa: true, leccionAbierta: false, pag: 0,
+    ejId: null, escuelaCeldas: {}, escuelaMsg: null, escuelaFin: false
   };
-  ui.ver = Math.min(estado.misionActual, NMISIONES);
+  ui.ver = Math.min(estado.misionActual, NM);
 
   const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   const guardar = () => J.guardarLocal(estado);
-  const pantalla = () => (!estado.iniciada ? 'bienvenida' : !estado.tutorialVisto ? 'tutorial' : 'juego');
+  function pantalla() {
+    if (!estado.iniciada) return 'bienvenida';
+    if (!J.aldeaDesbloqueada(estado) || ui.escuelaFin) return 'escuela';
+    return 'juego';
+  }
+  const ICONO_NEGOCIO = { almacen: '🌾', granja: '🥚', capataz: '⚒', tablon: '📜' };
 
-  /* ---------- Contexto de la misión que se está viendo ---------- */
-  function contexto() {
-    const idx = ui.ver;
-    const m = M.MISIONES[idx];
+  /* ---------- Contexto de la hoja que se está usando ---------- */
+  function ejercicioActual() {
+    return (ui.ejId && Esc.ejercicio(ui.ejId)) || J.siguienteEjercicio(estado);
+  }
+
+  function ctxDeDef(def, datos, jugador, soloLectura, modo, idx) {
+    const celdas = Object.assign({}, datos.celdas);
+    const edit = M.celdasEditables(def);
+    edit.forEach((k) => { if (jugador[k]) celdas[k] = jugador[k]; });
+    return { modo, def, idx, datos, cols: datos.cols, filas: datos.filas, soloLectura, edit: new Set(edit), hoja: E.Hoja.desde(celdas, datos.cols, datos.filas) };
+  }
+
+  function ctx() {
+    const p = pantalla();
+    if (p === 'escuela') {
+      const ej = ui.escuelaFin ? null : ejercicioActual();
+      if (!ej) return null;
+      const h = Esc.hojaEjercicio(ej);
+      const celdas = Object.assign({}, h.celdas);
+      h.editables.forEach((k) => { if (ui.escuelaCeldas[k]) celdas[k] = ui.escuelaCeldas[k]; });
+      return { modo: 'escuela', ej, cols: h.cols, filas: h.filas, soloLectura: false, edit: new Set(h.editables), hoja: E.Hoja.desde(celdas, h.cols, h.filas), datos: h };
+    }
+    if (p !== 'juego') return null;
+    if (estado.practicaActiva) {
+      const a = J.activo(estado);
+      return ctxDeDef(a.def, a.def.generarDatos(a.semilla), a.borrador, false, 'practica', -1);
+    }
+    if (ui.ver >= NM) return null;
+    const m = M.MISIONES[ui.ver];
     const datos = m.generarDatos(estado.semilla);
-    const soloLectura = idx < estado.misionActual;
+    const soloLectura = ui.ver < estado.misionActual;
     const comp = estado.completadas[m.id];
     const jugador = soloLectura ? (comp ? comp.celdas : {}) : (estado.borradores[m.id] || {});
-    const celdas = Object.assign({}, datos.celdas);
-    const edit = M.celdasEditables(m);
-    edit.forEach((k) => { if (jugador[k]) celdas[k] = jugador[k]; });
-    return { idx, m, datos, soloLectura, edit: new Set(edit), hoja: E.Hoja.desde(celdas, datos.cols, datos.filas) };
+    return ctxDeDef(m, datos, jugador, soloLectura, 'mision', ui.ver);
+  }
+
+  function guardarCelda(cx, ref, texto) {
+    if (cx.modo === 'escuela') {
+      if (texto === '') delete ui.escuelaCeldas[ref]; else ui.escuelaCeldas[ref] = texto;
+      ui.escuelaMsg = null;
+    } else {
+      J.editarCelda(estado, ref, texto);
+      guardar();
+    }
+    delete ui.resultado[ref];
   }
 
   /* ---------- Gráfico SVG ---------- */
@@ -1430,84 +2393,79 @@ label input, label select { display: block; margin-top: 3px; min-width: 16rem; }
     return s + '</svg>';
   }
 
-  /* ---------- Piezas de la interfaz ---------- */
-  function htmlCabecera() {
-    const n = J.nivel(estado.xp);
-    const stats = J.STATS.map((s) => `${J.NOMBRES_STATS[s]} <b>${estado.stats[s]}</b>`).join(' · ');
-    return `<header class="cabecera">
-      <div class="fila-cab"><span class="nombre">${esc(estado.nombre)}</span> · ${esc(estado.clase)} · Rango: <b>${esc(J.rango(n))}</b> · Nivel <b>${n}</b> · Oro <b>${estado.oro}</b></div>
-      <div class="fila-cab"><span class="xp" aria-label="Experiencia">XP ${esc(J.barraXP(estado.xp))}</span> · Equipo: ${esc(estado.equipo)}</div>
-      <div class="fila-cab stats">${stats}</div>
-      <div class="fila-cab botones-cab">
-        <button data-act="exportar">Exportar partida</button>
-        <button data-act="importar">Importar partida</button>
-        <button data-act="nueva">Nueva partida</button>
-        <input type="file" id="archivo" accept=".json,application/json" hidden>
-        ${ui.errorImportar ? `<span class="error" role="alert">${esc(ui.errorImportar)}</span>` : ''}
-      </div></header>`;
+  /* ---------- Colores de referencias (modo señalar) ---------- */
+  function mapaRefs(refs) {
+    const mapa = new Map();
+    refs.forEach((rf) => {
+      const partes = rf.texto.split(':').map((t) => E.parsearRef(t));
+      if (partes.some((x) => !x)) return;
+      const a = partes[0], b = partes[1] || partes[0];
+      for (let c = Math.min(a.c, b.c); c <= Math.max(a.c, b.c); c++) {
+        for (let r = Math.min(a.r, b.r); r <= Math.max(a.r, b.r); r++) {
+          const k = c + ',' + r;
+          if (!mapa.has(k)) mapa.set(k, rf.color);
+        }
+      }
+    });
+    return mapa;
+  }
+  function htmlColoreado(texto) {
+    const refs = E.escanearReferencias(texto);
+    let out = '', ult = 0;
+    refs.forEach((r) => {
+      out += esc(texto.slice(ult, r.inicio)) + `<span class="rc${r.color}">${esc(texto.slice(r.inicio, r.fin))}</span>`;
+      ult = r.fin;
+    });
+    return out + esc(texto.slice(ult));
   }
 
-  function htmlIzquierda() {
-    const a = J.calcularAldea(estado);
-    const misiones = M.MISIONES.map((m, i) => {
-      const hecha = i < estado.misionActual;
-      const actual = i === estado.misionActual;
-      const bloqueada = i > estado.misionActual;
-      const etiqueta = `${i + 1}. ${m.titulo}${hecha ? ' ✓' : ''}`;
-      return `<li>${bloqueada ? `<span class="bloqueada">${esc(etiqueta)} (bloqueada)</span>` :
-        `<button class="enlace${i === ui.ver ? ' activo' : ''}" data-act="ver" data-i="${i}">${esc(etiqueta)}${actual ? ' ◄' : ''}</button>`}</li>`;
-    }).join('');
-    const registro = estado.registro.length
-      ? estado.registro.map((r) => `<li><b>${esc(r.titulo)}:</b> ${esc(r.texto)}</li>`).join('')
-      : '<li class="suave">Aún no ha pasado nada en la aldea.</li>';
-    return `<aside class="izquierda">
-      <section class="panel"><h2>Estado de la aldea</h2><ul class="lista-simple">
-        <li>Trigo: <b>${a.trigo.toLocaleString('es-ES', { maximumFractionDigits: 2 })}</b> kg</li>
-        <li>Huevos: <b>${a.huevos}</b></li>
-        <li>Población: <b>${a.poblacion}</b></li>
-        <li>Trabajadores: <b>${a.trabajadores}</b></li>
-        <li>Edificios: <b>${a.edificios.length}</b>${a.edificios.length ? ' (' + esc(a.edificios.join(', ')) + ')' : ''}</li></ul></section>
-      <section class="panel"><h2>Misiones</h2><ul class="lista-simple">${misiones}</ul></section>
-      <section class="panel"><h2>Registro</h2><ul class="registro">${registro}</ul></section>
-    </aside>`;
-  }
-
-  function htmlCodice() {
-    const items = J.codice(estado).map((c) => c.desbloqueada
-      ? `<li class="desbloqueada">✓ ${esc(c.nombre)} <span class="suave">(${esc(c.mision)})</span></li>`
-      : `<li class="pendiente">○ ${esc(c.nombre)}</li>`).join('');
-    return `<aside class="derecha"><section class="panel"><h2>Códice</h2><ul class="lista-simple">${items}</ul></section></aside>`;
-  }
-
-  function rangoSel() {
-    const { anchor, sel } = ui;
-    if (anchor.c !== sel.c) return { c: sel.c, r1: sel.r, r2: sel.r };
-    return { c: sel.c, r1: Math.min(anchor.r, sel.r), r2: Math.max(anchor.r, sel.r) };
+  /* ---------- Hoja interactiva ---------- */
+  function htmlBarra(cx) {
+    const rc = E.rectSel(ui.sel);
+    const act = ui.sel.activa;
+    const ref = E.refA1(act.c, act.r);
+    const raw = ui.editando ? ui.editando.texto : (cx.hoja.crudo(ref) || '');
+    const v = cx.hoja.valor(ref);
+    const expl = !ui.editando && E.esError(v) ? `<div class="explica error" role="status">${esc(v.codigo)}: ${esc(v.explicacion)}</div>` : '';
+    return `<div class="barra-formulas"><span class="nombre-celda" id="nombre-celda">${E.rangoTexto(rc)}</span><span class="fx">fx</span><span id="barra-texto" class="barra-texto">${htmlColoreado(raw)}</span></div><div id="explica">${expl}</div>`;
   }
 
   function htmlHoja(cx) {
-    const { hoja, datos } = cx;
-    const rg = rangoSel();
+    const { hoja } = cx;
+    const rc = E.rectSel(ui.sel);
+    const act = ui.sel.activa;
+    const mapa = mapaRefs(ui.editando ? E.escanearReferencias(ui.editando.texto) : []);
+    const dest = ui.arrastrando === 'relleno' && ui.rellenoDestino > rc.r2 ? ui.rellenoDestino : 0;
     const anchos = [];
-    for (let c = 0; c < datos.cols; c++) {
+    for (let c = 0; c < cx.cols; c++) {
       let mx = 4;
-      for (let r = 1; r <= datos.filas; r++) mx = Math.max(mx, hoja.texto(E.refA1(c, r)).length);
+      for (let r = 1; r <= cx.filas; r++) mx = Math.max(mx, hoja.texto(E.refA1(c, r)).length);
       anchos.push(Math.min(30, mx) + 2);
     }
-    let h = '<div class="hoja-wrap" tabindex="0" role="grid" aria-label="Hoja de cálculo. Flechas para moverse, F2 para editar, Ctrl+D para rellenar hacia abajo"><table class="hoja"><thead><tr><th class="esq"></th>';
-    for (let c = 0; c < datos.cols; c++) h += `<th class="cab-col" style="min-width:${anchos[c]}ch">${E.colALetra(c)}</th>`;
+    let h = '<div class="hoja-wrap" tabindex="0" role="grid" aria-label="Hoja de cálculo. Flechas para moverse, Mayús para seleccionar varias celdas, F2 para editar, Ctrl+D para rellenar hacia abajo"><table class="hoja"><thead><tr><th class="esq"></th>';
+    for (let c = 0; c < cx.cols; c++) h += `<th class="cab-col${c >= rc.c1 && c <= rc.c2 ? ' en-sel' : ''}" style="min-width:${anchos[c]}ch">${E.colALetra(c)}</th>`;
     h += '</tr></thead><tbody>';
-    for (let r = 1; r <= datos.filas; r++) {
-      h += `<tr><th class="cab-fila">${r}</th>`;
-      for (let c = 0; c < datos.cols; c++) {
+    for (let r = 1; r <= cx.filas; r++) {
+      h += `<tr><th class="cab-fila${r >= rc.r1 && r <= rc.r2 ? ' en-sel' : ''}">${r}</th>`;
+      for (let c = 0; c < cx.cols; c++) {
         const ref = E.refA1(c, r);
         const v = hoja.valor(ref);
         const cls = ['celda'];
         if (cx.edit.has(ref)) cls.push(cx.soloLectura ? 'hecha' : 'editable');
         if (typeof v === 'number') cls.push('num');
         if (E.esError(v)) cls.push('err');
-        if (c === ui.sel.c && r === ui.sel.r) cls.push('sel');
-        else if (c === rg.c && r >= rg.r1 && r <= rg.r2) cls.push('rango');
+        const dentro = c >= rc.c1 && c <= rc.c2 && r >= rc.r1 && r <= rc.r2;
+        if (dentro) {
+          cls.push('sel-r');
+          if (r === rc.r1) cls.push('b-t');
+          if (r === rc.r2) cls.push('b-b');
+          if (c === rc.c1) cls.push('b-l');
+          if (c === rc.c2) cls.push('b-r');
+        }
+        if (c === act.c && r === act.r) cls.push('activa');
+        if (dest && c >= rc.c1 && c <= rc.c2 && r > rc.r2 && r <= dest) cls.push('rel-prev');
+        const k = mapa.get(c + ',' + r);
+        if (k !== undefined) cls.push('ref' + k);
         const res = ui.resultado[ref];
         if (res === 'ok') cls.push('ok'); else if (res) cls.push('mal');
         const titulo = E.esError(v) ? ` title="${esc(v.codigo + ': ' + v.explicacion)}"` : '';
@@ -1515,19 +2473,141 @@ label input, label select { display: block; margin-top: 3px; min-width: 16rem; }
         if (ui.editando && ui.editando.ref === ref) {
           contenido = `<input class="celda-input" value="${esc(ui.editando.texto)}" spellcheck="false" autocomplete="off" aria-label="Editando ${ref}">`;
         } else contenido = esc(hoja.texto(ref));
-        h += `<td class="${cls.join(' ')}" data-ref="${ref}"${titulo}>${contenido}</td>`;
+        const asa = !cx.soloLectura && !ui.editando && c === rc.c2 && r === rc.r2 ? '<span class="asa" data-asa="1" title="Arrastra hacia abajo para rellenar"></span>' : '';
+        h += `<td class="${cls.join(' ')}" data-ref="${ref}"${titulo}>${contenido}${asa}</td>`;
       }
       h += '</tr>';
     }
     return h + '</tbody></table></div>';
   }
 
-  function htmlBarra(cx) {
-    const ref = E.refA1(ui.sel.c, ui.sel.r);
-    const raw = ui.editando ? ui.editando.texto : (cx.hoja.crudo(ref) || '');
-    const v = cx.hoja.valor(ref);
-    const expl = E.esError(v) ? `<div class="explica error" role="status">${esc(v.codigo)}: ${esc(v.explicacion)}</div>` : '';
-    return `<div class="barra-formulas"><span class="nombre-celda">${ref}</span><span class="fx">fx</span><span id="barra-texto" class="barra-texto">${esc(raw)}</span></div>${expl}`;
+  const htmlZonaHoja = (cx) => htmlBarra(cx) + htmlHoja(cx);
+
+  /* Repinta solo la hoja (sin perder el resto de la pantalla). */
+  function refrescarHoja() {
+    const zona = raiz.querySelector('#zona-hoja');
+    const cx = ctx();
+    if (!zona || !cx) { render(); return; }
+    zona.innerHTML = cx.def && cx.def.grafico ? htmlHoja(cx) : htmlZonaHoja(cx);
+    enfocar();
+  }
+  function enfocar() {
+    if (ui.editando) {
+      const i = raiz.querySelector('.celda-input');
+      if (i) { i.focus(); const n = typeof ui.editando.cursor === 'number' ? ui.editando.cursor : i.value.length; i.setSelectionRange(n, n); }
+    } else if (ui.enfocarHoja) {
+      const w = raiz.querySelector('.hoja-wrap');
+      if (w && w.focus) w.focus({ preventScroll: true });
+    }
+    ui.enfocarHoja = false;
+  }
+  /* Actualiza barra y colores de referencias mientras se escribe (sin tocar el input). */
+  function pintarEdicion() {
+    const zona = raiz.querySelector('#zona-hoja');
+    if (!zona || !ui.editando) return;
+    const mapa = mapaRefs(E.escanearReferencias(ui.editando.texto));
+    zona.querySelectorAll('td[data-ref]').forEach((td) => {
+      td.className = td.className.replace(/\bref\d\b/g, '').replace(/\s+/g, ' ').trim();
+      const pr = E.parsearRef(td.getAttribute('data-ref'));
+      const k = mapa.get(pr.c + ',' + pr.r);
+      if (k !== undefined) td.className += ' ref' + k;
+    });
+    const barra = raiz.querySelector('#barra-texto');
+    if (barra) barra.innerHTML = htmlColoreado(ui.editando.texto);
+  }
+
+  /* ---------- Piezas de pantalla ---------- */
+  function htmlBarraSup() {
+    const n = J.nivel(estado.xp);
+    return `<header class="barra-sup">
+      <span class="b-nombre">👤 <b>${esc(estado.nombre)}</b></span>
+      <span>Nivel <b>${n}</b></span>
+      <span class="xp" aria-label="Experiencia">XP ${esc(J.barraXP(estado.xp))}</span>
+      <span>🪙 <b>${estado.oro}</b></span>
+      <span>🎖 ${esc(J.rango(n))}</span>
+      <nav class="b-botones" aria-label="Paneles">
+        <button data-panel="personaje" aria-pressed="${ui.panel === 'personaje'}">🧙 Personaje</button>
+        <button data-panel="equipo" aria-pressed="${ui.panel === 'equipo'}">🧰 Equipo</button>
+        <button data-panel="aldea" aria-pressed="${ui.panel === 'aldea'}">🏘 Aldea</button>
+        <button data-panel="libro" aria-pressed="${ui.panel === 'libro'}">📖 Libro de funciones</button>
+      </nav>
+      <input type="file" id="archivo" accept=".json,application/json" hidden>
+    </header>`;
+  }
+
+  function htmlEscuela() {
+    if (ui.escuelaFin) {
+      return `<main class="contenido"><section class="tarjeta"><h2>🎓 ¡Has terminado la Escuela!</h2>
+        <p>Ya sabes moverte por la hoja, escribir datos y fórmulas, y usar una función. La Aldea te espera: allí Maese Aldric te dará una lección antes de cada misión.</p>
+        <div class="botones"><button class="principal" data-act="entrar-aldea">Entrar en la Aldea</button></div></section></main>`;
+    }
+    const cx = ctx();
+    const ej = cx.ej;
+    const lec = Esc.leccion(ej.leccion);
+    const prog = J.escuelaProgreso(estado);
+    const total = Esc.ejercicios.length;
+    const hechos = Esc.ejercicios.filter((e) => estado.escuela.ejercicios[e.id]).length;
+    const llenos = Math.round((hechos / total) * 10);
+    const msg = ui.escuelaMsg;
+    const hecho = !!estado.escuela.ejercicios[ej.id];
+    const lecciones = prog.map((l) => `<span class="paso${l.id === lec.id ? ' actual' : ''}${l.completa ? ' hecho' : ''}">${l.completa ? '✓' : '○'} ${esc(l.titulo)}</span>`).join(' ');
+    return `<main class="contenido">
+      <section class="tarjeta">
+        <h2>🏫 La Escuela</h2>
+        <p class="meta">Sin XP: aquí solo se aprende lo básico. <span class="xp">[${'#'.repeat(llenos)}${'-'.repeat(10 - llenos)}] ${hechos}/${total} ejercicios</span></p>
+        <p class="pasos">${lecciones}</p>
+        <h3>Lección ${esc(lec.id.slice(1))}: ${esc(lec.titulo)}</h3>
+        <p>${esc(lec.texto)}</p>
+      </section>
+      <section class="tarjeta">
+        <div class="que-hacer"><h3>Qué tienes que hacer</h3><p>${esc(ej.enunciado)}</p></div>
+        <div id="zona-hoja">${htmlZonaHoja(cx)}</div>
+        <div class="estado-msg" role="status">${esc(ui.estadoMsg)}</div>
+        <div class="botones">
+          ${hecho ? '<button class="principal" data-act="esc-continuar">Continuar</button>' : '<button class="principal" data-act="esc-comprobar">Comprobar</button>'}
+          <button data-act="esc-saltar">Saltar la Escuela</button>
+        </div>
+        ${msg ? `<p class="${msg.ok ? 'ok-msg' : 'error'}" role="status">${esc(msg.mensaje)}</p>` : ''}
+      </section></main>`;
+  }
+
+  function htmlHojaEstatica(ej) {
+    const hoja = E.Hoja.desde(ej.celdas, ej.cols, ej.filas);
+    let h = '<div class="hoja-wrap"><table class="hoja estatica"><thead><tr><th class="esq"></th>';
+    for (let c = 0; c < ej.cols; c++) h += `<th class="cab-col">${E.colALetra(c)}</th>`;
+    h += '</tr></thead><tbody>';
+    for (let r = 1; r <= ej.filas; r++) {
+      h += `<tr><th class="cab-fila">${r}</th>`;
+      for (let c = 0; c < ej.cols; c++) {
+        const ref = E.refA1(c, r);
+        const v = hoja.valor(ref);
+        h += `<td class="celda${typeof v === 'number' ? ' num' : ''}">${esc(hoja.texto(ref))}</td>`;
+      }
+      h += '</tr>';
+    }
+    h += '</tbody></table></div>';
+    const formulas = Object.keys(ej.celdas).filter((k) => ej.celdas[k][0] === '=');
+    if (formulas.length) h += `<ul class="formulas-ej">${formulas.map((k) => `<li><b>${k}</b>: <code>${esc(ej.celdas[k])}</code></li>`).join('')}</ul>`;
+    return h;
+  }
+
+  function htmlLeccion(m) {
+    const paginas = m.leccion.paginas;
+    const idx = Math.min(ui.pag, paginas.length - 1);
+    const p = paginas[idx];
+    const ultima = idx >= paginas.length - 1;
+    const vista = J.leccionVista(estado, m.id);
+    const repasos = ultima ? m.leccion.repasos.map((r) => `<p class="repaso">↺ ${esc(r.texto)} <button class="enlace" data-act="ficha" data-id="${esc(r.ficha)}">Ver ficha</button></p>`).join('') : '';
+    return `<main class="contenido"><section class="tarjeta leccion">
+      <h2>🎓 Lección de Maese Aldric: ${esc(p.titulo)}</h2>
+      <p class="meta">Misión ${ui.ver + 1}: ${esc(m.titulo)} · página ${idx + 1} de ${paginas.length}</p>
+      <p>${esc(p.texto)}</p>
+      <div class="ejemplo"><h3>Ejemplo resuelto</h3>${htmlHojaEstatica(p.ejemplo)}</div>
+      ${repasos}
+      <div class="botones">
+        ${idx > 0 ? '<button data-act="pag-ant">Anterior</button>' : ''}
+        ${ultima ? `<button class="principal" data-act="empezar-mision">${vista ? 'Volver a la misión' : 'Empezar misión'}</button>` : '<button class="principal" data-act="pag-sig">Siguiente</button>'}
+      </div></section></main>`;
   }
 
   function htmlGraficoPanel(cx) {
@@ -1537,7 +2617,7 @@ label input, label select { display: block; margin-top: 3px; min-width: 16rem; }
     }
     const g = ui.grafico;
     const dibujo = ui.vistaGrafico ? (svgGrafico(cx.datos, g) || '<p class="error">No se puede dibujar un gráfico con ese rango. Escríbelo como CELDA:CELDA (por ejemplo, de la esquina superior izquierda a la inferior derecha).</p>') : '';
-    return `<div class="panel-grafico"><h3>Panel de gráfico</h3>
+    return `<div class="panel-grafico"><h3>📊 Panel de gráfico</h3>
       <label>Rango de datos <input type="text" data-campo="rango" value="${esc(g.rango)}" placeholder="CELDA:CELDA" autocomplete="off"></label>
       <label>Tipo de gráfico <select data-campo="tipo">
         <option value=""${g.tipo === '' ? ' selected' : ''}>Elige un tipo…</option>
@@ -1547,57 +2627,173 @@ label input, label select { display: block; margin-top: 3px; min-width: 16rem; }
       <button data-act="dibujar">Dibujar gráfico</button>${dibujo}</div>`;
   }
 
-  function htmlAviso() {
-    const r = ui.aviso;
-    if (!r) return '';
-    const ganancias = Object.keys(r.stats).map((k) => `+${r.stats[k]} ${J.NOMBRES_STATS[k]}`).join(', ');
-    return `<div class="aviso ok" role="status"><strong>¡Misión completada!</strong> +${r.xp} XP · +${r.oro} oro · ${esc(ganancias)}
-      <p>${esc(r.consecuencia)}</p>${r.mensajeNivel ? `<p class="nivel">${esc(r.mensajeNivel)}</p>` : ''}
-      <button data-act="siguiente">${estado.misionActual >= NMISIONES ? 'Ver el resumen final' : 'Siguiente misión'}</button></div>`;
-  }
-
   function htmlFinal() {
     const r = J.resumenFinal(estado);
-    const stats = J.STATS.map((s) => `<li>${J.NOMBRES_STATS[s]}: <b>${r.stats[s]}</b></li>`).join('');
-    const tablon = estado.grafico ? `<section class="panel"><h2>Tablón de la aldea</h2>${svgGrafico(M.MISIONES[6].generarDatos(estado.semilla), estado.grafico) || ''}</section>` : '';
-    return `<section class="panel final"><h1>¡La aldea ha nacido!</h1>
+    const stats = J.STATS.map((s) => {
+      const x = r.statsEfectivos[s];
+      return `<li>${J.NOMBRES_STATS[s]}: <b>${x.base}</b>${x.bono ? ` <span class="bono">(+${x.bono} de equipo)</span>` : ''}</li>`;
+    }).join('');
+    const tablon = estado.grafico ? `<section class="tarjeta"><h2>📜 Tablón de la aldea</h2>${svgGrafico(M.MISIONES[NM - 1].generarDatos(estado.semilla), estado.grafico) || ''}</section>` : '';
+    return `<main class="contenido"><section class="tarjeta final"><h1>🏘 ¡La aldea ha nacido!</h1>
       <p>${esc(r.nombre)}, has pasado de Aprendiz a ${esc(r.rango)} usando solo fórmulas de Excel.</p>
       <ul class="lista-simple"><li>Nivel: <b>${r.nivel}</b> (${esc(r.rango)})</li><li>XP total: <b>${r.xp}</b></li><li>Oro: <b>${r.oro}</b></li>${stats}
-      <li>Códice completado: <b>${r.codiceDesbloqueadas}/${r.codiceTotal}</b></li></ul>
-      <p class="proximamente">Próximamente: más misiones (Bosque de las Fórmulas).</p></section>${tablon}`;
+      <li>Libro de funciones: <b>${r.codiceDesbloqueadas}/${r.codiceTotal}</b> fichas</li></ul>
+      <p>Puedes seguir mejorando tu equipo con las misiones de práctica (botón Equipo).</p>
+      <p class="proximamente">Próximamente: más misiones (Bosque de las Fórmulas).</p></section>${tablon}</main>`;
   }
 
-  function htmlCentro() {
-    if (ui.ver >= NMISIONES) return `<main class="centro">${htmlFinal()}</main>`;
-    const cx = contexto();
-    const m = cx.m;
-    const usadas = estado.pistas[m.id] || 0;
-    const pistas = !cx.soloLectura && usadas ? `<ol class="pistas">${m.pistas.slice(0, usadas).map((p) => `<li>${esc(p)}</li>`).join('')}</ol>` : '';
+  function htmlMision(cx) {
+    const def = cx.def;
+    const practica = cx.modo === 'practica';
+    const usadas = practica ? J.pistasUsadas(estado) : (estado.pistas[def.id] || 0);
+    const pistas = !cx.soloLectura && usadas ? `<ol class="pistas">${def.pistas.slice(0, usadas).map((p) => `<li>${esc(p)}</li>`).join('')}</ol>` : '';
     const msgs = ui.mensajes.length ? `<ul class="mensajes error" role="alert">${ui.mensajes.map((t) => `<li>${esc(t)}</li>`).join('')}</ul>` : '';
+    const icono = practica ? (P.objeto(def.familia) || {}).icono || '🎯' : (ICONO_NEGOCIO[def.negocio] || '🌾');
     const botones = cx.soloLectura
-      ? '<p class="suave">Misión completada: la estás revisando en modo solo lectura.</p>'
+      ? '<p class="suave">Misión completada: la estás revisando en modo solo lectura.</p><div class="botones"><button data-act="leccion">📖 Ver la lección</button></div>'
       : `<div class="botones">
-          <button class="principal" data-act="entregar">Entregar al mayordomo</button>
-          <button data-act="pista"${usadas >= 3 ? ' disabled' : ''}>Pista (${usadas}/3)</button>
-          ${m.grafico ? '' : '<button data-act="rellenar">Rellenar hacia abajo</button>'}
+          <button class="principal" data-act="entregar">${practica ? 'Entregar práctica' : 'Entregar al mayordomo'}</button>
+          <button data-act="pista"${usadas >= def.pistas.length ? ' disabled' : ''}>Pista (${usadas}/3)</button>
+          ${def.grafico ? '' : '<button data-act="rellenar">Rellenar hacia abajo</button>'}
+          <button data-act="aldric">🧓 Preguntar a Aldric</button>
+          ${practica ? '<button data-act="abandonar">Abandonar práctica</button>' : '<button data-act="leccion">📖 Lección</button>'}
         </div>`;
-    return `<main class="centro">
-      <section class="panel mision"><h2>Misión ${cx.idx + 1}: ${esc(m.titulo)}</h2>
-        <p class="meta">${esc(m.dificultad)} · ${m.xp} XP · ${m.oro} oro</p>
-        ${m.texto.map((t) => `<p>${esc(t)}</p>`).join('')}
-        <div class="que-hacer"><h3>Qué tienes que hacer</h3><ul>${m.queHacer.map((t) => `<li>${esc(t)}</li>`).join('')}</ul></div>
+    const cab = practica
+      ? `<h2>${icono} Práctica: ${esc(def.titulo)}</h2><p class="meta">Misión secundaria · mejora tu ${esc((P.objeto(def.familia) || {}).nombre || '')} · repetición ${estado.practicaActiva.rep + 1} de ${P.MAX_REPETICIONES} · sin XP</p>`
+      : `<h2>${icono} Misión ${cx.idx + 1}: ${esc(def.titulo)}</h2><p class="meta">${esc(def.dificultad)} · ${def.xp} XP · ${def.oro} oro</p>`;
+    const narrativa = `<button class="enlace plegar" data-act="narrativa" aria-expanded="${ui.narrativa}">${ui.narrativa ? '▾ Ocultar la narrativa' : '▸ Mostrar la narrativa'}</button>${ui.narrativa ? def.texto.map((t) => `<p>${esc(t)}</p>`).join('') : ''}`;
+    const zona = def.grafico ? `<div id="zona-hoja">${htmlHoja(cx)}</div>${htmlGraficoPanel(cx)}` : `<div id="zona-hoja">${htmlZonaHoja(cx)}</div>`;
+    return `<main class="contenido">
+      <section class="tarjeta mision">${cab}${narrativa}
+        <div class="que-hacer"><h3>Qué tienes que hacer</h3><ul>${def.queHacer.map((t) => `<li>${esc(t)}</li>`).join('')}</ul></div>
       </section>
-      ${htmlAviso()}
-      <section class="panel">
-        ${m.grafico ? htmlHoja(cx) + htmlGraficoPanel(cx) : htmlBarra(cx) + htmlHoja(cx)}
+      <section class="tarjeta">
+        ${zona}
         <div class="estado-msg" role="status">${esc(ui.estadoMsg)}</div>
         ${botones}${msgs}${pistas}
       </section></main>`;
   }
 
+  function htmlJuego() {
+    if (!estado.practicaActiva && ui.ver >= NM) return htmlFinal();
+    const cx = ctx();
+    const necesitaLeccion = !estado.practicaActiva && (ui.leccionAbierta || (ui.ver === estado.misionActual && !J.leccionVista(estado, M.MISIONES[ui.ver].id)));
+    if (necesitaLeccion) return htmlLeccion(M.MISIONES[ui.ver]);
+    return htmlMision(cx);
+  }
+
+  /* ---------- Paneles laterales ---------- */
+  function htmlPanelPersonaje() {
+    const r = J.resumenFinal(estado);
+    const n = J.nivel(estado.xp);
+    const stats = J.STATS.map((s) => {
+      const x = r.statsEfectivos[s];
+      return `<li>${J.NOMBRES_STATS[s]}: <b>${x.total}</b> <span class="suave">(base ${x.base}${x.bono ? ` + ${x.bono} de equipo` : ''})</span></li>`;
+    }).join('');
+    return `<h2>🧙 Personaje</h2>
+      <ul class="lista-simple">
+        <li>Nombre: <b>${esc(estado.nombre)}</b></li><li>Clase: ${esc(estado.clase)}</li>
+        <li>Nivel <b>${n}</b> · Rango <b>${esc(J.rango(n))}</b></li>
+        <li class="xp">XP ${esc(J.barraXP(estado.xp))}</li>
+        <li>Oro: <b>${estado.oro}</b></li>
+        <li>Equipo inicial: ${esc(estado.equipo)}</li></ul>
+      <h3>Estadísticas</h3><ul class="lista-simple">${stats}</ul>
+      <h3>Partida</h3>
+      <div class="botones"><button data-act="exportar">Exportar partida</button><button data-act="importar">Importar partida</button><button data-act="nueva">Nueva partida</button></div>
+      ${ui.errorImportar ? `<p class="error" role="alert">${esc(ui.errorImportar)}</p>` : ''}`;
+  }
+
+  function htmlPanelEquipo() {
+    const objetos = J.equipo(estado).map((o) => {
+      const prac = o.practicas.map((p) => {
+        const motivo = p.desbloqueada ? (p.restantes <= 0 ? 'Agotada' : '') : `Se desbloquea con la lección de la misión ${p.desbloqueo.slice(1)}`;
+        return `<li>${esc(p.titulo)} <span class="suave">· ${p.restantes} de ${P.MAX_REPETICIONES} repeticiones</span>
+          ${motivo ? `<span class="suave">(${esc(motivo)})</span>` : `<button data-act="practicar" data-id="${esc(p.id)}">Practicar</button>`}</li>`;
+      }).join('');
+      return `<section class="objeto"><h3>${o.icono} ${esc(o.nombre)} <span class="suave">(${esc(o.familia)})</span> · ${esc(o.nombreNivel)}</h3>
+        <p class="xp">${esc(o.barra)}</p>
+        <p>Bono: <b>+${o.bono} ${esc(o.statNombre)}</b></p>
+        <p>${esc(o.consejo)}</p>${o.proximamente ? `<p class="suave">${esc(o.proximamente)}</p>` : ''}
+        <ul class="practicas">${prac}</ul></section>`;
+    }).join('');
+    return `<h2>🧰 Equipo</h2><p class="suave">Las misiones de práctica no dan XP: suben la maestría de tus objetos y dan algo de oro. Cada nivel de objeto te da +1 a una estadística. Cada práctica se puede hacer 3 veces. Si no usas pistas, ganas el doble de puntos.</p>${objetos}`;
+  }
+
+  function htmlPanelAldea() {
+    const a = J.calcularAldea(estado);
+    const misiones = M.MISIONES.map((m, i) => {
+      const hecha = i < estado.misionActual;
+      const actual = i === estado.misionActual;
+      const bloqueada = i > estado.misionActual || !J.aldeaDesbloqueada(estado);
+      const etiqueta = `${i + 1}. ${m.titulo}${hecha ? ' ✓' : ''}`;
+      return `<li>${bloqueada ? `<span class="bloqueada">${esc(etiqueta)} (bloqueada)</span>` :
+        `<button class="enlace" data-act="ver" data-i="${i}">${esc(etiqueta)}${actual ? ' ◄' : ''}</button>`}</li>`;
+    }).join('');
+    const registro = estado.registro.length
+      ? estado.registro.map((r) => `<li><b>${esc(r.titulo)}:</b> ${esc(r.texto)}</li>`).join('')
+      : '<li class="suave">Aún no ha pasado nada en la aldea.</li>';
+    return `<h2>🏘 Aldea</h2><ul class="lista-simple">
+        <li>🌾 Trigo: <b>${a.trigo.toLocaleString('es-ES', { maximumFractionDigits: 2 })}</b> kg</li>
+        <li>🥚 Huevos: <b>${a.huevos}</b></li>
+        <li>👥 Población: <b>${a.poblacion}</b></li>
+        <li>⚒ Trabajadores: <b>${a.trabajadores}</b></li>
+        <li>🏠 Edificios: <b>${a.edificios.length}</b>${a.edificios.length ? ' (' + esc(a.edificios.join(', ')) + ')' : ''}</li></ul>
+      <h3>Misiones</h3><ul class="lista-simple">${misiones}</ul>
+      <h3>Registro</h3><ul class="registro">${registro}</ul>`;
+  }
+
+  function htmlLibroLista() {
+    const lista = L.buscar(ui.libroQ, J.libro(estado));
+    return lista.map((f) => f.desbloqueada
+      ? `<li><button class="enlace${f.id === ui.ficha ? ' activo' : ''}" data-act="ficha" data-id="${esc(f.id)}">${esc(f.icono)} ${esc(f.nombre)}</button></li>`
+      : `<li class="pendiente">🔒 ${esc(f.nombre)} <span class="suave">(aún no enseñada)</span></li>`).join('') || '<li class="suave">No hay fichas con ese texto.</li>';
+  }
+  function htmlPanelLibro() {
+    const fichas = J.libro(estado);
+    const f = fichas.find((x) => x.id === ui.ficha && x.desbloqueada);
+    const detalle = f ? `<article class="ficha"><h3>${esc(f.icono)} ${esc(f.nombre)}</h3>
+        <p><b>Para qué sirve:</b> ${esc(f.paraQue)}</p><p><b>Forma:</b> <code>${esc(f.forma)}</code></p>
+        <p><b>Ejemplo:</b> <code>${esc(f.ejemplo)}</code></p><p><b>Errores típicos:</b> ${esc(f.errores)}</p></article>`
+      : '<p class="suave">Elige una ficha de la lista. Las fichas se desbloquean cuando Maese Aldric te enseña algo nuevo.</p>';
+    const n = fichas.filter((x) => x.desbloqueada).length;
+    return `<h2>📖 Libro de funciones</h2><p class="suave">${n} de ${fichas.length} fichas desbloqueadas.</p>
+      <label>Buscar o elegir <input type="text" id="libro-q" value="${esc(ui.libroQ)}" placeholder="Por ejemplo: SUMA" autocomplete="off"></label>
+      <ul class="lista-simple" id="libro-lista">${htmlLibroLista()}</ul>${detalle}`;
+  }
+
+  function htmlPanel() {
+    if (!ui.panel) return '';
+    const cuerpo = { personaje: htmlPanelPersonaje, equipo: htmlPanelEquipo, aldea: htmlPanelAldea, libro: htmlPanelLibro }[ui.panel]();
+    return `<div class="fondo-panel" data-act="cerrar-panel"></div>
+      <aside class="panel-lateral" role="dialog" aria-label="Panel ${esc(ui.panel)}"><button class="cerrar" data-act="cerrar-panel" aria-label="Cerrar panel">✕</button>${cuerpo}</aside>`;
+  }
+
+  /* ---------- Ventana emergente de éxito ---------- */
+  function htmlPopup() {
+    const r = ui.popup;
+    if (!r) return '';
+    let cuerpo;
+    if (r.practica) {
+      cuerpo = `<h2 id="vt">🎯 ¡Práctica completada!</h2>
+        <p>${esc(r.titulo)}: todo correcto.${r.sinPistas ? ' Sin pistas: ¡puntos dobles!' : ''}</p>
+        <ul class="lista-simple"><li>+${r.puntos} punto${r.puntos === 1 ? '' : 's'} de maestría en tu ${esc(r.objeto)}</li><li>+${r.oro} de oro</li><li>Te quedan ${r.restantes} repetición${r.restantes === 1 ? '' : 'es'} de esta práctica</li></ul>
+        ${r.subeObjeto ? `<p class="nivel">¡Tu ${esc(r.objeto)} sube a ${esc(r.nombreNivel)}! Bono total: +${r.bono} ${esc(J.NOMBRES_STATS[r.stat])}.</p>` : ''}`;
+    } else {
+      const ganancias = Object.keys(r.stats).map((k) => `+${r.stats[k]} ${J.NOMBRES_STATS[k]}`).join(', ');
+      cuerpo = `<h2 id="vt">🎉 ¡Misión completada!</h2>
+        <p>Maese Aldric ha revisado tu hoja: todo correcto.</p>
+        <ul class="lista-simple"><li>+${r.xp} XP</li><li>+${r.oro} de oro</li><li>${esc(ganancias)}</li></ul>
+        ${r.mensajeNivel ? `<p class="nivel">${esc(r.mensajeNivel)}</p>` : ''}${r.mensajeRango ? `<p class="nivel">${esc(r.mensajeRango)}</p>` : ''}
+        <p><b>En la aldea:</b> ${esc(r.consecuencia)}</p>`;
+    }
+    return `<div class="ventana-fondo"><div class="ventana" role="dialog" aria-modal="true" aria-labelledby="vt">${cuerpo}
+      <div class="botones"><button class="principal btn-continuar" data-act="continuar">Continuar</button></div></div></div>`;
+  }
+
   function htmlBienvenida() {
-    return `<div class="pantalla"><section class="panel"><h1>Excel RPG: El nacimiento de la aldea</h1>
+    return `<div class="pantalla"><section class="tarjeta"><h1>🏘 Excel RPG: El nacimiento de la aldea</h1>
       ${M.INTRO.bienvenida.map((t) => `<p>${esc(t)}</p>`).join('')}
+      <p>Empezarás en la Escuela, con cuatro lecciones cortas, y después entrarás en la Aldea.</p>
       <label>¿Cómo te llamas? <input type="text" id="nombre" value="Daniel" maxlength="30" autocomplete="off"></label>
       <div class="botones"><button class="principal" data-act="empezar">Empezar</button>
       <button data-act="importar">Importar partida</button></div>
@@ -1605,105 +2801,169 @@ label input, label select { display: block; margin-top: 3px; min-width: 16rem; }
       ${ui.errorImportar ? `<p class="error" role="alert">${esc(ui.errorImportar)}</p>` : ''}</section></div>`;
   }
 
-  function htmlTutorial() {
-    return `<div class="pantalla"><section class="panel"><h1>Antes de empezar</h1>
-      ${M.INTRO.tutorial.map((t) => `<h3>${esc(t.titulo)}</h3><p>${esc(t.texto)}</p>`).join('')}
-      <div class="botones"><button class="principal" data-act="tutorial-ok">Entendido, ¡a la aldea!</button></div></section></div>`;
-  }
-
   /* ---------- Render ---------- */
   function render() {
     const p = pantalla();
     if (p === 'bienvenida') raiz.innerHTML = htmlBienvenida();
-    else if (p === 'tutorial') raiz.innerHTML = htmlTutorial();
-    else raiz.innerHTML = htmlCabecera() + `<div class="rejilla">${htmlIzquierda()}${htmlCentro()}${htmlCodice()}</div>`;
-    if (ui.editando) {
-      const i = raiz.querySelector('.celda-input');
-      if (i) { i.focus(); const n = i.value.length; i.setSelectionRange(n, n); }
-    } else if (ui.enfocarHoja) {
-      const w = raiz.querySelector('.hoja-wrap');
-      if (w && w.focus) w.focus({ preventScroll: true });
-    }
+    else raiz.innerHTML = htmlBarraSup() + (p === 'escuela' ? htmlEscuela() : htmlJuego()) + htmlPanel() + htmlPopup();
+    if (ui.popup) {
+      const b = raiz.querySelector('.btn-continuar');
+      if (b) b.focus();
+    } else if (ui.panel === 'libro' && ui.libroFoco) {
+      const i = raiz.querySelector('#libro-q');
+      if (i) i.focus();
+      ui.libroFoco = false;
+    } else enfocar();
     ui.enfocarHoja = false;
   }
 
-  /* ---------- Acciones ---------- */
+  /* ---------- Acciones de hoja ---------- */
+  const celdaActiva = () => E.refA1(ui.sel.activa.c, ui.sel.activa.r);
+
+  function refrescarEstadoMsg() {
+    const el = raiz.querySelector('.estado-msg');
+    if (el) el.textContent = ui.estadoMsg;
+  }
+
   function iniciarEdicion(ref, inicial) {
-    if (ui.ver >= NMISIONES) return;
-    const cx = contexto();
+    const cx = ctx();
+    if (!cx) return;
     ui.estadoMsg = '';
-    if (cx.soloLectura) { ui.estadoMsg = 'Esta misión ya está completada: solo puedes mirarla.'; render(); return; }
-    if (!cx.edit.has(ref)) { ui.estadoMsg = `La celda ${ref} es de solo lectura. Solo puedes editar las celdas de «Qué tienes que hacer».`; render(); return; }
-    ui.editando = { ref, texto: inicial === undefined || inicial === null ? (cx.hoja.crudo(ref) || '') : inicial };
-    render();
+    if (cx.soloLectura) { ui.estadoMsg = 'Esta misión ya está completada: solo puedes mirarla.'; refrescarEstadoMsg(); return; }
+    if (!cx.edit.has(ref)) { ui.estadoMsg = `La celda ${ref} es de solo lectura. Solo puedes editar las celdas de «Qué tienes que hacer».`; refrescarEstadoMsg(); return; }
+    const texto = inicial === undefined || inicial === null ? (cx.hoja.crudo(ref) || '') : inicial;
+    ui.editando = { ref, texto, cursor: texto.length, ultimaRef: null };
+    refrescarHoja();
+    refrescarEstadoMsg();
   }
 
   function confirmarEdicion(dc, dr) {
     if (!ui.editando) return;
+    const cx = ctx();
     const { ref, texto } = ui.editando;
-    J.editarCelda(estado, ref, texto.trim() === '' ? '' : texto.trim());
-    delete ui.resultado[ref];
     ui.editando = null;
-    guardar();
-    if (dc || dr) mover(dc, dr, false);
+    if (cx) guardarCelda(cx, ref, texto.trim());
+    if ((dc || dr) && cx) ui.sel = E.moverSeleccion(E.selUna(ui.sel.activa.c, ui.sel.activa.r), dc, dr, false, cx.cols, cx.filas);
     ui.enfocarHoja = true;
-    render();
+    refrescarHoja();
+  }
+  function cancelarEdicion() {
+    ui.editando = null;
+    ui.enfocarHoja = true;
+    refrescarHoja();
   }
 
-  function mover(dc, dr, extender) {
-    const cx = contexto();
-    const c = Math.max(0, Math.min(cx.datos.cols - 1, ui.sel.c + dc));
-    const r = Math.max(1, Math.min(cx.datos.filas, ui.sel.r + dr));
-    ui.sel = { c, r };
-    if (!extender) ui.anchor = { c, r };
+  /* Modo señalar: inserta la referencia en el cursor (o sustituye la recién insertada). true si se ha usado. */
+  function senalar(refTexto, sustituir) {
+    const ed = ui.editando;
+    if (!ed) return false;
+    const input = raiz.querySelector('.celda-input');
+    const cursor = input && typeof input.selectionStart === 'number' ? input.selectionStart : ed.texto.length;
+    const ult = ed.ultimaRef;
+    const reemplazo = ult && (sustituir || cursor === ult.fin) ? ult : null;
+    const r = E.insertarReferencia(ed.texto, reemplazo ? ult.fin : cursor, refTexto, reemplazo);
+    if (!r) return false;
+    ed.texto = r.texto;
+    ed.cursor = r.cursor;
+    ed.ultimaRef = { inicio: r.inicio, fin: r.fin };
+    if (input) { input.value = r.texto; input.focus(); input.setSelectionRange(r.cursor, r.cursor); }
+    pintarEdicion();
+    return true;
   }
 
-  function rellenar() {
+  /* Relleno con el cuadradito de la esquina: repite el patrón de las filas seleccionadas hacia abajo. */
+  function ejecutarRelleno(rect, dest) {
+    const cx = ctx();
+    if (!cx || cx.soloLectura) return;
+    const n = dest - rect.r2;
+    if (n <= 0) return;
+    let hechas = 0;
+    for (let c = rect.c1; c <= rect.c2; c++) {
+      const origen = [];
+      for (let r = rect.r1; r <= rect.r2; r++) origen.push(cx.hoja.crudoCR(c, r) || '');
+      if (origen.every((x) => x === '')) continue;
+      E.rellenarPatron(origen, n).forEach((raw, i) => {
+        const ref = E.refA1(c, rect.r2 + 1 + i);
+        if (cx.edit.has(ref)) { guardarCelda(cx, ref, raw); hechas++; }
+      });
+    }
+    ui.sel = { anchor: { c: rect.c1, r: rect.r1 }, activa: { c: rect.c2, r: dest } };
+    ui.estadoMsg = hechas ? `Fórmula copiada en ${hechas} celda${hechas === 1 ? '' : 's'}.` : 'Ninguna de las celdas de destino se puede editar.';
+    ui.enfocarHoja = true;
+    refrescarHoja();
+    refrescarEstadoMsg();
+  }
+
+  /* Ctrl+D / botón: copia la celda superior de la selección al resto. */
+  function rellenarAbajo() {
     if (ui.editando) confirmarEdicion(0, 0);
-    const cx = contexto();
+    const cx = ctx();
+    if (!cx) return;
+    const rc = E.rectSel(ui.sel);
     ui.estadoMsg = '';
     if (cx.soloLectura) ui.estadoMsg = 'Esta misión ya está completada: solo puedes mirarla.';
+    else if (rc.r2 === rc.r1) ui.estadoMsg = 'Selecciona varias celdas de arriba abajo (clic en la primera y Mayús+clic en la última, o arrastra) y vuelve a pulsar Rellenar hacia abajo.';
     else {
-      const rg = rangoSel();
-      if (rg.r2 === rg.r1) ui.estadoMsg = 'Selecciona varias celdas de arriba abajo (clic en la primera y Mayús+clic en la última) y vuelve a pulsar Rellenar hacia abajo.';
-      else {
-        const superior = cx.hoja.crudoCR(rg.c, rg.r1);
-        if (!superior) ui.estadoMsg = 'La celda superior de la selección está vacía: escribe primero la fórmula allí.';
-        else {
-          const nuevos = E.rellenarAbajo(superior, rg.r2 - rg.r1);
-          let hechas = 0;
-          nuevos.forEach((raw, i) => {
-            const ref = E.refA1(rg.c, rg.r1 + 1 + i);
-            if (cx.edit.has(ref) && J.editarCelda(estado, ref, raw)) { delete ui.resultado[ref]; hechas++; }
-          });
-          ui.estadoMsg = hechas ? `Fórmula copiada en ${hechas} celda${hechas === 1 ? '' : 's'}.` : 'Ninguna de las celdas seleccionadas se puede editar.';
-          guardar();
-        }
+      let hechas = 0, vacia = true;
+      for (let c = rc.c1; c <= rc.c2; c++) {
+        const superior = cx.hoja.crudoCR(c, rc.r1);
+        if (!superior) continue;
+        vacia = false;
+        E.rellenarAbajo(superior, rc.r2 - rc.r1).forEach((raw, i) => {
+          const ref = E.refA1(c, rc.r1 + 1 + i);
+          if (cx.edit.has(ref)) { guardarCelda(cx, ref, raw); hechas++; }
+        });
       }
+      ui.estadoMsg = vacia ? 'La celda superior de la selección está vacía: escribe primero la fórmula allí.'
+        : hechas ? `Fórmula copiada en ${hechas} celda${hechas === 1 ? '' : 's'}.` : 'Ninguna de las celdas seleccionadas se puede editar.';
     }
     ui.enfocarHoja = true;
-    render();
+    refrescarHoja();
+    refrescarEstadoMsg();
   }
 
+  /* ---------- Acciones de juego ---------- */
   function entregar() {
     if (ui.editando) confirmarEdicion(0, 0);
-    const cx = contexto();
-    if (cx.soloLectura) return;
-    const entrega = estado.borradores[cx.m.id] || {};
-    const r = J.entregar(estado, entrega, cx.m.grafico ? Object.assign({}, ui.grafico) : undefined);
+    const cx = ctx();
+    if (!cx || cx.soloLectura) return;
+    const practica = cx.modo === 'practica';
+    const entrega = practica ? estado.practicaActiva.borrador : (estado.borradores[cx.def.id] || {});
+    const r = J.entregar(estado, entrega, cx.def.grafico ? Object.assign({}, ui.grafico) : undefined);
     guardar();
     ui.estadoMsg = '';
-    if (r.ok) { ui.aviso = r; ui.mensajes = []; ui.resultado = r.porCelda; }
-    else { ui.aviso = null; ui.mensajes = r.mensajes; ui.resultado = cx.m.grafico ? {} : r.porCelda; }
-    if (cx.m.grafico) ui.vistaGrafico = true;
+    if (r.ok) {
+      ui.popup = r;
+      ui.mensajes = [];
+      ui.resultado = {};
+    } else {
+      ui.mensajes = r.mensajes;
+      ui.resultado = cx.def.grafico ? {} : r.porCelda;
+    }
+    if (cx.def.grafico) ui.vistaGrafico = true;
     render();
   }
 
-  function reiniciarUI() {
-    ui.ver = Math.min(estado.misionActual, NMISIONES);
-    ui.sel = { c: 0, r: 1 }; ui.anchor = { c: 0, r: 1 };
-    ui.editando = null; ui.mensajes = []; ui.resultado = {}; ui.aviso = null; ui.estadoMsg = '';
+  function reiniciarVista() {
+    ui.sel = E.selUna(0, 1);
+    ui.editando = null; ui.mensajes = []; ui.resultado = {}; ui.estadoMsg = '';
+    ui.leccionAbierta = false; ui.pag = 0; ui.narrativa = true;
     ui.grafico = { rango: '', tipo: '', titulo: '' }; ui.vistaGrafico = false;
+  }
+
+  function continuar() {
+    const r = ui.popup;
+    ui.popup = null;
+    reiniciarVista();
+    ui.ver = Math.min(estado.misionActual, NM);
+    ui.panel = r && r.practica ? 'equipo' : null;
+    render();
+  }
+
+  function reiniciarTodo() {
+    reiniciarVista();
+    ui.ver = Math.min(estado.misionActual, NM);
+    ui.panel = null; ui.popup = null; ui.ejId = null; ui.escuelaCeldas = {}; ui.escuelaMsg = null; ui.escuelaFin = false;
   }
 
   function exportar() {
@@ -1731,7 +2991,7 @@ label input, label select { display: block; margin-top: 3px; min-width: 16rem; }
         estado = J.cargar(String(lector.result));
         ui.errorImportar = '';
         guardar();
-        reiniciarUI();
+        reiniciarTodo();
       } catch (e) { ui.errorImportar = 'No se pudo importar: el archivo no es una partida válida.'; }
       render();
     };
@@ -1739,76 +2999,201 @@ label input, label select { display: block; margin-top: 3px; min-width: 16rem; }
     lector.readAsText(file);
   }
 
+  function comprobarEjercicio() {
+    if (ui.editando) confirmarEdicion(0, 0);
+    const cx = ctx();
+    if (!cx) return;
+    ui.ejId = cx.ej.id;
+    const r = J.completarEjercicio(estado, cx.ej.id, { sel: E.rectSel(ui.sel), celdas: ui.escuelaCeldas });
+    guardar();
+    ui.escuelaMsg = { ok: r.ok, mensaje: r.mensaje };
+    if (r.ok && r.escuelaCompleta) ui.escuelaFin = true;
+    render();
+  }
+  function siguienteEjercicio() {
+    const sig = J.siguienteEjercicio(estado);
+    ui.escuelaMsg = null; ui.escuelaCeldas = {}; ui.sel = E.selUna(0, 1); ui.editando = null; ui.estadoMsg = '';
+    if (!sig) { ui.ejId = null; ui.escuelaFin = true; } else ui.ejId = sig.id;
+    render();
+  }
+
   /* ---------- Eventos ---------- */
+  function celdaDe(el) {
+    const td = el && el.closest ? el.closest('td[data-ref]') : null;
+    if (!td || !raiz.contains(td)) return null;
+    const pr = E.parsearRef(td.getAttribute('data-ref'));
+    return pr ? { c: pr.c, r: pr.r } : null;
+  }
+
+  raiz.addEventListener('mousedown', (e) => {
+    if (e.button !== 0 || ui.popup) return;
+    const t = e.target;
+    if (t.classList && t.classList.contains('celda-input')) return;
+    const cx = ctx();
+    if (!cx) return;
+    if (t.getAttribute && t.getAttribute('data-asa') && !ui.editando) {
+      e.preventDefault();
+      ui.arrastrando = 'relleno';
+      ui.rellenoDestino = E.rectSel(ui.sel).r2;
+      return;
+    }
+    const cel = celdaDe(t);
+    if (!cel) return;
+    if (ui.editando) {
+      if (senalar(E.refA1(cel.c, cel.r), false)) {
+        e.preventDefault();
+        ui.dragSenalar = { c: cel.c, r: cel.r };
+        return;
+      }
+      confirmarEdicion(0, 0);
+    }
+    e.preventDefault();
+    const ahora = Date.now();
+    const ref = E.refA1(cel.c, cel.r);
+    const doble = ui.ultimoClic && ui.ultimoClic.ref === ref && ahora - ui.ultimoClic.t < 450 && !e.shiftKey;
+    ui.ultimoClic = { ref, t: ahora };
+    ui.estadoMsg = '';
+    if (doble) { ui.ultimoClic = null; iniciarEdicion(ref); return; }
+    ui.sel = E.seleccionar(ui.sel, cel.c, cel.r, e.shiftKey);
+    ui.arrastrando = 'sel';
+    ui.enfocarHoja = true;
+    refrescarHoja();
+    refrescarEstadoMsg();
+  });
+
+  raiz.addEventListener('mouseover', (e) => {
+    if (!ui.arrastrando && !ui.dragSenalar) return;
+    const cel = celdaDe(e.target);
+    if (!cel) return;
+    if (ui.dragSenalar) {
+      const a = ui.dragSenalar;
+      const rect = { c1: Math.min(a.c, cel.c), c2: Math.max(a.c, cel.c), r1: Math.min(a.r, cel.r), r2: Math.max(a.r, cel.r) };
+      senalar(E.rangoTexto(rect), true);
+      return;
+    }
+    if (ui.arrastrando === 'sel') {
+      const act = ui.sel.activa;
+      if (act.c === cel.c && act.r === cel.r) return;
+      ui.sel = E.seleccionar(ui.sel, cel.c, cel.r, true);
+      refrescarHoja();
+    } else if (ui.arrastrando === 'relleno') {
+      const cx = ctx();
+      const dest = Math.min(cx.filas, Math.max(E.rectSel(ui.sel).r2, cel.r));
+      if (dest === ui.rellenoDestino) return;
+      ui.rellenoDestino = dest;
+      refrescarHoja();
+    }
+  });
+
+  document.addEventListener('mouseup', () => {
+    const modo = ui.arrastrando;
+    ui.dragSenalar = null;
+    ui.arrastrando = null;
+    if (modo === 'relleno') {
+      const dest = ui.rellenoDestino;
+      ui.rellenoDestino = null;
+      const rect = E.rectSel(ui.sel);
+      if (dest > rect.r2) ejecutarRelleno(rect, dest); else refrescarHoja();
+    }
+  });
+
   raiz.addEventListener('click', (e) => {
     const t = e.target;
-    const td = t.closest && t.closest('td[data-ref]');
-    if (td && !(t.classList && t.classList.contains('celda-input'))) {
+    if (ui.popup && !(t.closest && t.closest('[data-act="continuar"]'))) return;
+    const bp = t.closest && t.closest('[data-panel]');
+    if (bp) {
       if (ui.editando) confirmarEdicion(0, 0);
-      const pr = E.parsearRef(td.getAttribute('data-ref'));
-      const nueva = { c: pr.c, r: pr.r };
-      if (e.shiftKey && ui.anchor.c === nueva.c) ui.sel = nueva;
-      else { ui.sel = nueva; ui.anchor = nueva; }
-      ui.estadoMsg = '';
-      ui.enfocarHoja = true;
+      const p = bp.getAttribute('data-panel');
+      ui.panel = ui.panel === p ? null : p;
       render();
       return;
     }
     const b = t.closest && t.closest('[data-act]');
     if (!b) return;
     const act = b.getAttribute('data-act');
-    if (act === 'entregar') entregar();
-    else if (act === 'pista') { J.usarPista(estado); guardar(); render(); }
-    else if (act === 'rellenar') rellenar();
-    else if (act === 'dibujar') {
-      ui.vistaGrafico = true;
-      render();
-    } else if (act === 'siguiente') {
-      ui.aviso = null; ui.resultado = {}; ui.mensajes = [];
-      ui.ver = Math.min(estado.misionActual, NMISIONES);
-      ui.sel = { c: 0, r: 1 }; ui.anchor = { c: 0, r: 1 };
-      render();
-    } else if (act === 'ver') {
-      if (ui.editando) confirmarEdicion(0, 0);
-      ui.ver = parseInt(b.getAttribute('data-i'), 10);
-      ui.sel = { c: 0, r: 1 }; ui.anchor = { c: 0, r: 1 };
-      ui.mensajes = []; ui.resultado = {}; ui.aviso = null; ui.estadoMsg = '';
-      render();
-    } else if (act === 'exportar') exportar();
-    else if (act === 'importar') { const f = raiz.querySelector('#archivo'); if (f) f.click(); }
-    else if (act === 'nueva') {
-      if (window.confirm('¿Seguro que quieres empezar una partida nueva? Se perderá el progreso actual (exporta la partida antes si quieres conservarla).')) {
-        J.borrarLocal();
-        estado = J.nuevaPartida('', semillaNueva());
-        reiniciarUI();
-        guardar();
+    if (ui.editando) confirmarEdicion(0, 0);
+    switch (act) {
+      case 'entregar': entregar(); break;
+      case 'pista': J.usarPista(estado); guardar(); render(); break;
+      case 'rellenar': rellenarAbajo(); break;
+      case 'aldric': ui.panel = 'libro'; ui.libroFoco = true; render(); break;
+      case 'dibujar': ui.vistaGrafico = true; render(); break;
+      case 'narrativa': ui.narrativa = !ui.narrativa; render(); break;
+      case 'leccion': ui.leccionAbierta = true; ui.pag = 0; render(); break;
+      case 'pag-sig': ui.pag += 1; render(); break;
+      case 'pag-ant': ui.pag = Math.max(0, ui.pag - 1); render(); break;
+      case 'empezar-mision': {
+        const m = M.MISIONES[ui.ver];
+        if (m && ui.ver === estado.misionActual) { J.verLeccion(estado, m.id); guardar(); }
+        ui.leccionAbierta = false;
         render();
+        break;
       }
-    } else if (act === 'empezar') {
-      const inp = raiz.querySelector('#nombre');
-      const nombre = (inp && inp.value.trim()) || 'Daniel';
-      estado.nombre = nombre;
-      estado.iniciada = true;
-      guardar();
-      render();
-    } else if (act === 'tutorial-ok') {
-      estado.tutorialVisto = true;
-      guardar();
-      render();
+      case 'cerrar-panel': ui.panel = null; render(); break;
+      case 'ficha': ui.panel = 'libro'; ui.ficha = b.getAttribute('data-id'); render(); break;
+      case 'ver':
+        if (estado.practicaActiva) J.abandonarPractica(estado);
+        reiniciarVista();
+        ui.ver = parseInt(b.getAttribute('data-i'), 10);
+        ui.panel = null;
+        render();
+        break;
+      case 'practicar': {
+        const r = J.iniciarPractica(estado, b.getAttribute('data-id'));
+        if (r.ok) { guardar(); reiniciarVista(); ui.panel = null; ui.errorImportar = ''; } else ui.errorImportar = r.mensaje;
+        render();
+        break;
+      }
+      case 'abandonar': J.abandonarPractica(estado); guardar(); reiniciarVista(); ui.ver = Math.min(estado.misionActual, NM); render(); break;
+      case 'continuar': continuar(); break;
+      case 'exportar': exportar(); break;
+      case 'importar': { const f = raiz.querySelector('#archivo'); if (f) f.click(); break; }
+      case 'nueva':
+        if (window.confirm('¿Seguro que quieres empezar una partida nueva? Se perderá el progreso actual (exporta la partida antes si quieres conservarla).')) {
+          J.borrarLocal();
+          estado = J.nuevaPartida('', semillaNueva());
+          reiniciarTodo();
+          guardar();
+          render();
+        }
+        break;
+      case 'empezar': {
+        const inp = raiz.querySelector('#nombre');
+        estado.nombre = (inp && inp.value.trim()) || 'Daniel';
+        estado.iniciada = true;
+        estado.tutorialVisto = true;
+        guardar();
+        reiniciarTodo();
+        render();
+        break;
+      }
+      case 'esc-comprobar': comprobarEjercicio(); break;
+      case 'esc-continuar': siguienteEjercicio(); break;
+      case 'esc-saltar':
+        if (window.confirm('¿Seguro que quieres saltar la Escuela? Explica cosas básicas (celdas, rangos, fórmulas y funciones) que las misiones dan por sabidas.')) {
+          J.saltarEscuela(estado);
+          guardar();
+          ui.escuelaFin = false; ui.ejId = null; ui.escuelaMsg = null; ui.escuelaCeldas = {};
+          ui.sel = E.selUna(0, 1);
+          render();
+        }
+        break;
+      case 'entrar-aldea': ui.escuelaFin = false; ui.ejId = null; reiniciarVista(); ui.ver = Math.min(estado.misionActual, NM); render(); break;
+      default: break;
     }
-  });
-
-  raiz.addEventListener('dblclick', (e) => {
-    const td = e.target.closest && e.target.closest('td[data-ref]');
-    if (td && !(e.target.classList && e.target.classList.contains('celda-input'))) iniciarEdicion(td.getAttribute('data-ref'));
   });
 
   raiz.addEventListener('input', (e) => {
     const t = e.target;
     if (t.classList && t.classList.contains('celda-input') && ui.editando) {
       ui.editando.texto = t.value;
-      const barra = raiz.querySelector('#barra-texto');
-      if (barra) barra.textContent = t.value;
+      ui.editando.cursor = t.selectionStart;
+      ui.editando.ultimaRef = null;
+      pintarEdicion();
+    } else if (t.id === 'libro-q') {
+      ui.libroQ = t.value;
+      const lista = raiz.querySelector('#libro-lista');
+      if (lista) lista.innerHTML = htmlLibroLista();
     } else if (t.getAttribute && t.getAttribute('data-campo')) ui.grafico[t.getAttribute('data-campo')] = t.value;
   });
 
@@ -1818,47 +3203,75 @@ label input, label select { display: block; margin-top: 3px; min-width: 16rem; }
     else if (t.getAttribute && t.getAttribute('data-campo')) ui.grafico[t.getAttribute('data-campo')] = t.value;
   });
 
-  document.addEventListener('keydown', (e) => {
-    if (pantalla() !== 'juego') return;
-    const t = e.target;
-    if (t && t.classList && t.classList.contains('celda-input')) {
-      if (e.key === 'Enter') { e.preventDefault(); confirmarEdicion(0, 1); }
-      else if (e.key === 'Tab') { e.preventDefault(); confirmarEdicion(1, 0); }
-      else if (e.key === 'ArrowDown') { e.preventDefault(); confirmarEdicion(0, 1); }
-      else if (e.key === 'ArrowUp') { e.preventDefault(); confirmarEdicion(0, -1); }
-      else if (e.key === 'Escape') { e.preventDefault(); ui.editando = null; ui.enfocarHoja = true; render(); }
-      else if (e.key === 'd' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); rellenar(); }
-      return;
-    }
-    if (t && t.matches && t.matches('input, select, textarea')) return;
-    if (t && t.tagName === 'BUTTON' && (e.key === 'Enter' || e.key === ' ')) return;
-    if (ui.ver >= NMISIONES) return;
+  function teclasHoja(e) {
+    const cx = ctx();
+    if (!cx) return;
     const mod = e.ctrlKey || e.metaKey;
-    if (mod && (e.key === 'd' || e.key === 'D')) { e.preventDefault(); rellenar(); return; }
+    if (mod && (e.key === 'd' || e.key === 'D')) { e.preventDefault(); rellenarAbajo(); return; }
     const flechas = { ArrowDown: [0, 1], ArrowUp: [0, -1], ArrowLeft: [-1, 0], ArrowRight: [1, 0] };
     if (flechas[e.key]) {
       e.preventDefault();
-      mover(flechas[e.key][0], flechas[e.key][1], e.shiftKey);
+      ui.sel = E.moverSeleccion(ui.sel, flechas[e.key][0], flechas[e.key][1], e.shiftKey, cx.cols, cx.filas);
       ui.estadoMsg = '';
       ui.enfocarHoja = true;
-      render();
+      refrescarHoja();
+      refrescarEstadoMsg();
     } else if (e.key === 'Tab') {
       e.preventDefault();
-      mover(e.shiftKey ? -1 : 1, 0, false);
+      ui.sel = E.moverSeleccion(E.selUna(ui.sel.activa.c, ui.sel.activa.r), e.shiftKey ? -1 : 1, 0, false, cx.cols, cx.filas);
       ui.enfocarHoja = true;
-      render();
+      refrescarHoja();
     } else if (e.key === 'F2' || e.key === 'Enter') {
       e.preventDefault();
-      iniciarEdicion(E.refA1(ui.sel.c, ui.sel.r));
+      iniciarEdicion(celdaActiva());
     } else if (e.key === 'Delete' || e.key === 'Backspace') {
       e.preventDefault();
-      const ref = E.refA1(ui.sel.c, ui.sel.r);
-      iniciarEdicion(ref, '');
-      if (ui.editando) confirmarEdicion(0, 0);
+      if (cx.soloLectura) return;
+      const rc = E.rectSel(ui.sel);
+      let hecho = false;
+      for (let c = rc.c1; c <= rc.c2; c++) {
+        for (let r = rc.r1; r <= rc.r2; r++) {
+          const ref = E.refA1(c, r);
+          if (cx.edit.has(ref)) { guardarCelda(cx, ref, ''); hecho = true; }
+        }
+      }
+      ui.estadoMsg = hecho ? '' : `La celda ${celdaActiva()} es de solo lectura.`;
+      ui.enfocarHoja = true;
+      refrescarHoja();
+      refrescarEstadoMsg();
     } else if (e.key.length === 1 && !mod && !e.altKey) {
       e.preventDefault();
-      iniciarEdicion(E.refA1(ui.sel.c, ui.sel.r), e.key);
+      iniciarEdicion(celdaActiva(), e.key);
     }
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (ui.popup) {
+      if (e.key === 'Enter' || e.key === 'Escape') { e.preventDefault(); continuar(); }
+      return;
+    }
+    const t = e.target;
+    if (e.key === 'Escape' && ui.panel) { e.preventDefault(); ui.panel = null; render(); return; }
+    if (pantalla() === 'bienvenida') {
+      if (e.key === 'Enter' && t && t.id === 'nombre') { e.preventDefault(); const b = raiz.querySelector('[data-act="empezar"]'); if (b) b.click(); }
+      return;
+    }
+    if (t && t.classList && t.classList.contains('celda-input')) {
+      if (e.key === 'Enter') { e.preventDefault(); confirmarEdicion(0, 1); }
+      else if (e.key === 'Tab') { e.preventDefault(); confirmarEdicion(e.shiftKey ? -1 : 1, 0); }
+      else if (e.key === 'ArrowDown') { e.preventDefault(); confirmarEdicion(0, 1); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); confirmarEdicion(0, -1); }
+      else if (e.key === 'Escape') { e.preventDefault(); cancelarEdicion(); }
+      else if (e.key === 'ArrowLeft' || e.key === 'ArrowRight' || e.key === 'Home' || e.key === 'End') {
+        setTimeout(() => { if (ui.editando && typeof t.selectionStart === 'number') { ui.editando.cursor = t.selectionStart; ui.editando.ultimaRef = null; } }, 0);
+      } else if ((e.ctrlKey || e.metaKey) && (e.key === 'd' || e.key === 'D')) e.preventDefault();
+      return;
+    }
+    if (ui.panel) return;
+    if (t && t.matches && t.matches('input, select, textarea')) return;
+    if (t && t.tagName === 'BUTTON' && (e.key === 'Enter' || e.key === ' ')) return;
+    if (pantalla() === 'juego' && !estado.practicaActiva && ui.ver >= NM) return;
+    teclasHoja(e);
   });
 
   render();

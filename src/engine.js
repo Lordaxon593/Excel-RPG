@@ -487,13 +487,14 @@
 
   /* ---------- Análisis y relleno ---------- */
   function analizar(raw) {
-    const info = { esFormula: false, funciones: [], referencias: 0, error: false };
+    const info = { esFormula: false, funciones: [], referencias: 0, refs: [], error: false };
     if (typeof raw !== 'string' || !raw.startsWith('=')) return info;
     info.esFormula = true;
     try {
       for (const t of tokenizar(raw.slice(1))) {
         if (t.t === 'func') info.funciones.push(t.v);
-        else if (t.t === 'ref' || t.t === 'rango') info.referencias++;
+        else if (t.t === 'ref') { info.referencias++; info.refs.push(t.ref); }
+        else if (t.t === 'rango') { info.referencias++; info.refs.push(t.a, t.b); }
       }
     } catch (e) {
       if (!(e instanceof ErrorHoja)) throw e;
@@ -536,9 +537,102 @@
     return res;
   }
 
+  /* Como Ctrl+D o el cuadradito de la esquina: devuelve el contenido de las n filas nuevas situadas
+     debajo de las celdas de origen (un patrón de 1 o más filas que se repite). */
+  function rellenarPatron(rawsOrigen, n) {
+    const len = rawsOrigen.length;
+    const res = [];
+    if (!len) return res;
+    for (let k = 0; k < n; k++) {
+      const i = len + k;
+      const s = i % len;
+      res.push(desplazarFormula(rawsOrigen[s], 0, i - s));
+    }
+    return res;
+  }
+
+  /* ---------- Modo señalar ---------- */
+  const COLORES_REF = 6;
+  function escanearReferencias(texto) {
+    const out = [];
+    if (typeof texto !== 'string' || texto[0] !== '=') return out;
+    const re = /\$?[A-Za-z]{1,3}\$?\d+(?::\$?[A-Za-z]{1,3}\$?\d+)?/y;
+    const colores = new Map();
+    let enCadena = false;
+    let i = 1;
+    while (i < texto.length) {
+      const ch = texto[i];
+      if (ch === '"') { enCadena = !enCadena; i++; continue; }
+      if (enCadena) { i++; continue; }
+      if (/[$A-Za-z]/.test(ch) && !/[A-Za-z0-9_.]/.test(texto[i - 1] || '')) {
+        re.lastIndex = i;
+        const m = re.exec(texto);
+        const fin = m ? i + m[0].length : -1;
+        if (m && !(texto[fin] && /[A-Za-z0-9_(.]/.test(texto[fin]))) {
+          const clave = m[0].replace(/\$/g, '').toUpperCase();
+          if (!colores.has(clave)) colores.set(clave, colores.size % COLORES_REF);
+          out.push({ inicio: i, fin, texto: m[0], color: colores.get(clave) });
+          i = fin;
+          continue;
+        }
+        while (i < texto.length && /[A-Za-z0-9_.$]/.test(texto[i])) i++;
+        continue;
+      }
+      i++;
+    }
+    return out;
+  }
+
+  /* ¿Toca insertar una referencia con un clic en la posición `cursor` de una fórmula en edición? */
+  function puedeInsertarReferencia(texto, cursor) {
+    if (typeof texto !== 'string' || texto[0] !== '=' || cursor < 1 || cursor > texto.length) return false;
+    const antes = texto.slice(0, cursor);
+    if ((antes.match(/"/g) || []).length % 2 === 1) return false;
+    const prev = antes.replace(/\s+$/, '').slice(-1);
+    return prev !== '' && '=(;+-*/^<>'.includes(prev);
+  }
+
+  /* Inserta `ref` en el cursor. Si se pasa `reemplazo` {inicio, fin}, sustituye la referencia recién insertada.
+     Devuelve {texto, cursor, inicio, fin} o null si en esa posición no toca insertar. */
+  function insertarReferencia(texto, cursor, ref, reemplazo) {
+    let ini = cursor, fin = cursor;
+    if (reemplazo && reemplazo.inicio >= 1 && reemplazo.fin <= texto.length && reemplazo.inicio <= reemplazo.fin) {
+      ini = reemplazo.inicio;
+      fin = reemplazo.fin;
+    }
+    if (!puedeInsertarReferencia(texto.slice(0, ini) + texto.slice(fin), ini)) return null;
+    const nuevo = texto.slice(0, ini) + ref + texto.slice(fin);
+    return { texto: nuevo, cursor: ini + ref.length, inicio: ini, fin: ini + ref.length };
+  }
+
+  /* ---------- Selección de celdas (estado puro) ---------- */
+  function rectSel(sel) {
+    return {
+      c1: Math.min(sel.anchor.c, sel.activa.c), c2: Math.max(sel.anchor.c, sel.activa.c),
+      r1: Math.min(sel.anchor.r, sel.activa.r), r2: Math.max(sel.anchor.r, sel.activa.r)
+    };
+  }
+  function rangoTexto(rect) {
+    const a = refA1(rect.c1, rect.r1);
+    return rect.c1 === rect.c2 && rect.r1 === rect.r2 ? a : a + ':' + refA1(rect.c2, rect.r2);
+  }
+  const selUna = (c, r) => ({ anchor: { c, r }, activa: { c, r } });
+  /* clic (extender=false) o Mayús+clic / arrastre (extender=true) */
+  function seleccionar(sel, c, r, extender) {
+    return extender ? { anchor: { c: sel.anchor.c, r: sel.anchor.r }, activa: { c, r } } : selUna(c, r);
+  }
+  /* flechas; con extender (Mayús) se amplía el rango desde el ancla */
+  function moverSeleccion(sel, dc, dr, extender, cols, filas) {
+    const c = Math.max(0, Math.min(cols - 1, sel.activa.c + dc));
+    const r = Math.max(1, Math.min(filas, sel.activa.r + dr));
+    return seleccionar(sel, c, r, extender);
+  }
+
   return {
     FUNCIONES, EXPLICACIONES, ErrorHoja, esError, Hoja,
     colALetra, letraACol, parsearRef, refA1,
-    interpretar, formatear, analizar, desplazarFormula, rellenarAbajo
+    interpretar, formatear, analizar, desplazarFormula, rellenarAbajo, rellenarPatron,
+    escanearReferencias, puedeInsertarReferencia, insertarReferencia,
+    rectSel, rangoTexto, selUna, seleccionar, moverSeleccion
   };
 });
