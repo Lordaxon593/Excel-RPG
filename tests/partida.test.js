@@ -10,6 +10,12 @@ function almacenFalso() {
   return { setItem: (k, v) => { d[k] = v; }, getItem: (k) => (k in d ? d[k] : null), removeItem: (k) => { delete d[k]; } };
 }
 
+function nueva(nombre, semilla) {
+  const e = G.nuevaPartida(nombre, semilla);
+  G.saltarEscuela(e);
+  return e;
+}
+
 function jugar(estado, hasta) {
   const resultados = [];
   for (let i = estado.misionActual; i < (hasta === undefined ? M.MISIONES.length : hasta); i++) {
@@ -43,7 +49,7 @@ test('niveles, rangos y barra de XP', () => {
 });
 
 test('partida completa con las soluciones de referencia', () => {
-  const e = G.nuevaPartida('Daniel', 4242);
+  const e = nueva('Daniel', 4242);
   const res = jugar(e);
   assert.ok(res.every((r) => r.ok && r.completada));
   assert.strictEqual(e.xp, 350);
@@ -53,7 +59,7 @@ test('partida completa con las soluciones de referencia', () => {
   assert.strictEqual(G.terminada(e), true);
   assert.strictEqual(e.registro.length, 8);
   assert.ok(e.grafico && e.grafico.tipo === 'columnas');
-  assert.strictEqual(G.codice(e).filter((c) => c.desbloqueada).length, 21);
+  assert.strictEqual(G.libro(e).filter((c) => c.desbloqueada).length, 21);
   const r = G.resumenFinal(e);
   assert.strictEqual(r.nivel, 4);
   assert.strictEqual(r.codiceTotal, 21);
@@ -62,7 +68,7 @@ test('partida completa con las soluciones de referencia', () => {
 });
 
 test('las misiones se desbloquean en orden y no se repiten para ganar XP', () => {
-  const e = G.nuevaPartida('Ana', 99);
+  const e = nueva('Ana', 99);
   // entregar la solución de M2 estando en M1 no sirve
   const mal = G.entregar(e, SOLUCIONES.M2);
   assert.strictEqual(mal.ok, false);
@@ -81,7 +87,7 @@ test('las misiones se desbloquean en orden y no se repiten para ganar XP', () =>
 });
 
 test('fallar o pedir pistas no penaliza', () => {
-  const e = G.nuevaPartida('Ana', 7);
+  const e = nueva('Ana', 7);
   const r = G.entregar(e, { B9: '=SUMA(B2:B3)' });
   assert.strictEqual(r.ok, false);
   assert.strictEqual(r.completada, false);
@@ -96,7 +102,7 @@ test('fallar o pedir pistas no penaliza', () => {
 });
 
 test('solo se editan las celdas objetivo de la misión actual', () => {
-  const e = G.nuevaPartida('Ana', 7);
+  const e = nueva('Ana', 7);
   assert.strictEqual(G.editarCelda(e, 'B9', '=SUMA(B2:B8)'), true);
   assert.strictEqual(G.editarCelda(e, 'B2', '5'), false);
   assert.strictEqual(e.borradores.M1.B9, '=SUMA(B2:B8)');
@@ -105,7 +111,7 @@ test('solo se editan las celdas objetivo de la misión actual', () => {
 });
 
 test('estado de la aldea según las misiones completadas', () => {
-  const e = G.nuevaPartida('Ana', 31);
+  const e = nueva('Ana', 31);
   const ini = G.calcularAldea(e);
   assert.strictEqual(ini.trigo, 0);
   assert.strictEqual(ini.edificios.length, 0);
@@ -124,7 +130,7 @@ test('estado de la aldea según las misiones completadas', () => {
 });
 
 test('guardado y carga sin pérdida, en cualquier punto de la partida', () => {
-  const e = G.nuevaPartida('Daniel', 777);
+  const e = nueva('Daniel', 777);
   G.editarCelda(e, 'B9', '=SUMA(B2:B8)');
   G.usarPista(e);
   for (let paso = 0; paso <= 8; paso++) {

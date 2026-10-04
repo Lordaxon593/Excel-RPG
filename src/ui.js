@@ -118,8 +118,8 @@
   }
 
   function htmlCodice() {
-    const items = J.codice(estado).map((c) => c.desbloqueada
-      ? `<li class="desbloqueada">✓ ${esc(c.nombre)} <span class="suave">(${esc(c.mision)})</span></li>`
+    const items = J.libro(estado).map((c) => c.desbloqueada
+      ? `<li class="desbloqueada">✓ ${esc(c.nombre)}</li>`
       : `<li class="pendiente">○ ${esc(c.nombre)}</li>`).join('');
     return `<aside class="derecha"><section class="panel"><h2>Códice</h2><ul class="lista-simple">${items}</ul></section></aside>`;
   }
@@ -434,6 +434,7 @@
       const nombre = (inp && inp.value.trim()) || 'Daniel';
       estado.nombre = nombre;
       estado.iniciada = true;
+      J.saltarEscuela(estado);
       guardar();
       render();
     } else if (act === 'tutorial-ok') {

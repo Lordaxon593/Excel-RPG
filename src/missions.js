@@ -411,6 +411,90 @@
     m.objetivos.forEach((o) => { if (x.entero.includes(o.celda)) o.entero = true; });
   });
 
+  /* ---------- Lecciones del mayordomo (se muestran antes de cada misión) ---------- */
+  const LECCIONES = {
+    M1: {
+      paginas: [{
+        titulo: 'Sumar con SUMA',
+        texto: 'Para sumar muchos números a la vez usamos la función SUMA. Se escribe =SUMA(rango): el signo =, el nombre de la función y, entre paréntesis, el rango (primera celda, dos puntos y última celda). Errores comunes: olvidar el = (la celda mostraría el texto tal cual) o dejar el paréntesis sin cerrar. En el ejemplo, B5 suma de B2 a B4.',
+        ejemplo: { cols: 2, filas: 5, celdas: { A1: 'Mes', B1: 'Sacos de cebada', A2: 'Enero', B2: '12', A3: 'Febrero', B3: '8', A4: 'Marzo', B4: '15', A5: 'Total', B5: '=SUMA(B2:B4)' } },
+        ficha: 'funcion.suma'
+      }]
+    },
+    M2: {
+      paginas: [{
+        titulo: 'Referencias relativas y rellenar hacia abajo',
+        texto: 'En una fórmula, B2 es una referencia relativa: si copias la fórmula una fila más abajo, Excel la convierte en B3 sola. Por eso basta escribir la primera fórmula, seleccionar la columna de arriba abajo y pulsar «Rellenar hacia abajo» (Ctrl+D), o arrastrar el cuadradito de la esquina. Error común: seleccionar solo la celda de la fórmula; sin celdas debajo no hay nada que rellenar.',
+        ejemplo: { cols: 4, filas: 4, celdas: { A1: 'Mes', B1: 'Cebada', C1: 'Avena', D1: 'Total', A2: 'Enero', B2: '12', C2: '5', D2: '=SUMA(B2:C2)', A3: 'Febrero', B3: '8', C3: '9', D3: '=SUMA(B3:C3)', A4: 'Marzo', B4: '15', C4: '7', D4: '=SUMA(B4:C4)' } },
+        ficha: 'ref.relativa'
+      }],
+      repasos: []
+    },
+    M3: {
+      paginas: [{
+        titulo: 'Operadores con referencias',
+        texto: 'Con referencias puedes calcular sin funciones: + suma, - resta, * multiplica, / divide y ^ eleva. Se escribe =B2*B3. Si cambia un dato, el resultado se actualiza. Los decimales llevan coma (2,5). Error común: escribir el número en la fórmula (=12*2,5) en lugar de apuntar a su celda: si el dato cambia, la fórmula no se entera.',
+        ejemplo: { cols: 2, filas: 5, celdas: { A1: 'Concepto', B1: 'Valor', A2: 'Cajas', B2: '12', A3: 'Peso por caja (kg)', B3: '2,5', A4: 'Peso total (kg)', B4: '=B2*B3', A5: 'Si se pierde una caja', B5: '=B4-B3' } },
+        ficha: 'operadores'
+      }],
+      repasos: [{ texto: 'Repaso: recuerda que SUMA suma un rango entero, como =SUMA(B2:B8).', ficha: 'funcion.suma' }]
+    },
+    M4: {
+      paginas: [{
+        titulo: 'La media con PROMEDIO',
+        texto: 'PROMEDIO calcula la media de un rango: suma los números y los divide entre cuántos hay. Forma: =PROMEDIO(rango). Ignora el texto y las celdas vacías. Error común: promediar también la celda del encabezado o la del propio resultado.',
+        ejemplo: { cols: 2, filas: 6, celdas: { A1: 'Día', B1: 'Panes', A2: 'Lun', B2: '10', A3: 'Mar', B3: '14', A4: 'Mié', B4: '12', A5: 'Jue', B5: '16', A6: 'Media', B6: '=PROMEDIO(B2:B5)' } },
+        ficha: 'funcion.promedio'
+      }, {
+        titulo: 'Solo la parte entera con ENTERO',
+        texto: 'ENTERO descarta los decimales y se queda con la parte entera (hacia abajo): =ENTERO(B1/B2). Sirve para contar unidades completas: 40 sacos entre raciones de 7 dan 5,71, pero solo 5 raciones completas. Si el divisor es 0 verás #DIV/0!: Excel no puede dividir entre cero. Error común: dejar los decimales cuando se piden días completos.',
+        ejemplo: { cols: 2, filas: 3, celdas: { A1: 'Sacos', B1: '40', A2: 'Sacos por ración', B2: '7', A3: 'Raciones completas', B3: '=ENTERO(B1/B2)' } },
+        ficha: 'funcion.entero'
+      }]
+    },
+    M5: {
+      paginas: [{
+        titulo: 'Mayor, menor y recuento: MAX, MIN y CONTAR',
+        texto: 'MAX devuelve el mayor valor de un rango, MIN el menor y CONTAR cuántas celdas tienen números: =MAX(rango). Un ratio como hogazas por hora es una división fila a fila (=B2/C2) que luego se rellena hacia abajo. Error común: usar CONTAR sobre una columna de texto: CONTAR solo cuenta números.',
+        ejemplo: { cols: 4, filas: 8, celdas: { A1: 'Panadero', B1: 'Hogazas', C1: 'Horas', D1: 'Hogazas/hora', A2: 'Rodrigo', B2: '60', C2: '6', D2: '=B2/C2', A3: 'Marta', B3: '45', C3: '5', D3: '=B3/C3', A4: 'Pablo', B4: '70', C4: '10', D4: '=B4/C4', A6: 'Mejor', B6: '=MAX(D2:D4)', A7: 'Peor', B7: '=MIN(D2:D4)', A8: 'Panaderos', B8: '=CONTAR(B2:B4)' } },
+        ficha: 'funcion.max'
+      }],
+      repasos: [{ texto: 'Repaso: para el ratio de cada trabajador, escribe la primera fórmula y usa «Rellenar hacia abajo».', ficha: 'rellenar' }]
+    },
+    M6: {
+      paginas: [{
+        titulo: 'Referencias absolutas con $',
+        texto: 'Al rellenar hacia abajo, las referencias relativas se desplazan. Si una celda debe quedarse fija (un precio, un umbral), escribe $ delante de la columna y de la fila: $G$1. Así no se mueve nunca. Sin $, al rellenar G1 pasaría a G2, a G3… celdas vacías. En el ejemplo, el envío está en G1 y se suma a cada precio.',
+        ejemplo: { cols: 7, filas: 4, celdas: { A1: 'Producto', B1: 'Precio', C1: 'Con envío', F1: 'Envío', G1: '2', A2: 'Harina', B2: '8', C2: '=B2+$G$1', A3: 'Sal', B3: '3', C3: '=B3+$G$1', A4: 'Miel', B4: '12', C4: '=B4+$G$1' } },
+        ficha: 'ref.absoluta'
+      }],
+      repasos: [{ texto: 'Repaso: escribe la fórmula en la primera fila, selecciona la columna y pulsa «Rellenar hacia abajo».', ficha: 'rellenar' }]
+    },
+    M7: {
+      paginas: [{
+        titulo: 'Decidir con SI y comparaciones',
+        texto: 'SI toma una decisión: =SI(condición; valor_si_verdadero; valor_si_falso). La condición compara con < (menor), > (mayor), = (igual), <= , >= o <> (distinto). Ejemplo: =SI(B2>=5;"APROBADO";"SUSPENDIDO"). Error común: usar comas en vez de punto y coma, o invertir los dos resultados.',
+        ejemplo: { cols: 3, filas: 4, celdas: { A1: 'Alumno', B1: 'Nota', C1: 'Resultado', A2: 'Ana', B2: '7', C2: '=SI(B2>=5;"APROBADO";"SUSPENDIDO")', A3: 'Luis', B3: '4', C3: '=SI(B3>=5;"APROBADO";"SUSPENDIDO")', A4: 'Eva', B4: '5', C4: '=SI(B4>=5;"APROBADO";"SUSPENDIDO")' } },
+        ficha: 'funcion.si'
+      }, {
+        titulo: 'El texto va entre comillas',
+        texto: 'Cuando una fórmula devuelve texto, ese texto se escribe entre comillas dobles: "PESADO". Sin comillas, Excel cree que es el nombre de algo y da #¿NOMBRE?. Los números y las referencias no llevan comillas. Error común: comillas tipográficas (“ ”) en lugar de las rectas ("). En el ejemplo el límite está escrito en la fórmula; en tu misión estará en una celda, y ya sabes cómo fijarla.',
+        ejemplo: { cols: 3, filas: 4, celdas: { A1: 'Saco', B1: 'Peso (kg)', C1: 'Aviso', A2: 'Harina', B2: '35', C2: '=SI(B2>30;"PESADO";"LIGERO")', A3: 'Sal', B3: '12', C3: '=SI(B3>30;"PESADO";"LIGERO")', A4: 'Miel', B4: '30', C4: '=SI(B4>30;"PESADO";"LIGERO")' } },
+        ficha: 'comparaciones'
+      }],
+      repasos: [{ texto: 'Repaso: para fijar una celda al rellenar hacia abajo usa $, como en $G$1.', ficha: 'ref.absoluta' }]
+    },
+    M8: {
+      paginas: [{
+        titulo: 'Gráficos: rango, tipo y título',
+        texto: 'Un gráfico necesita tres decisiones. El rango de datos: incluye los encabezados y todos los datos (A1:B5), ni más ni menos. El tipo: columnas para comparar categorías, líneas para ver la evolución en el tiempo. El título: dile al lector qué está viendo. Error común: dejar fuera la fila de encabezados o el último dato.',
+        ejemplo: { cols: 2, filas: 5, celdas: { A1: 'Fruta', B1: 'Kilos', A2: 'Manzanas', B2: '40', A3: 'Peras', B3: '25', A4: 'Uvas', B4: '60', A5: 'Higos', B5: '15' } },
+        ficha: 'grafico.rango'
+      }]
+    }
+  };
+  MISIONES.forEach((m) => { m.leccion = Object.assign({ repasos: [] }, LECCIONES[m.id]); });
+
   const INTRO = {
     bienvenida: [
       'Bienvenido al clan, aprendiz. Hemos fundado una aldea junto al río, pero sin cuentas claras no sobreviviremos al invierno.',
@@ -543,6 +627,6 @@
   function celdasEditables(m) { return m.objetivos.map((o) => o.celda); }
 
   return {
-    MISIONES, CODICE, INTRO, TUTORIAL, mulberry32, prng, validar, celdasEditables, iguales
+    MISIONES, CODICE, INTRO, TUTORIAL, mulberry32, prng, ent, ob, obRango, DIAS, validar, celdasEditables, iguales
   };
 });
