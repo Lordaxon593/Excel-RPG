@@ -1,0 +1,1869 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Excel RPG - El nacimiento de la aldea</title>
+<style>
+:root {
+  --fondo: #f6f1e4;
+  --panel: #fffdf6;
+  --texto: #1d1a14;
+  --suave: #5c5546;
+  --borde: #8a7f66;
+  --acento: #7a3b12;
+  --acento-fondo: #f0dfc2;
+  --ok: #14612b;
+  --ok-fondo: #d6f0dc;
+  --mal: #a11414;
+  --mal-fondo: #fadada;
+  --sel: #1f4e9e;
+  --editable: #fff6d6;
+}
+* { box-sizing: border-box; }
+html { font-size: 16px; }
+body {
+  margin: 0;
+  background: var(--fondo);
+  color: var(--texto);
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
+  line-height: 1.45;
+}
+#app { max-width: 1500px; margin: 0 auto; padding: 8px; }
+h1, h2, h3 { margin: 0 0 6px; }
+h1 { font-size: 1.4rem; }
+h2 { font-size: 1.05rem; border-bottom: 1px solid var(--borde); padding-bottom: 3px; }
+h3 { font-size: 0.95rem; }
+p { margin: 6px 0; }
+button, input, select { font: inherit; color: inherit; }
+button {
+  background: var(--acento-fondo);
+  border: 1px solid var(--acento);
+  border-radius: 3px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+button:hover:not(:disabled) { background: #e6cc9d; }
+button:disabled { opacity: 0.55; cursor: default; }
+button.principal { background: var(--acento); color: #fff; font-weight: bold; }
+button.principal:hover:not(:disabled) { background: #5f2d0c; }
+button.enlace { background: none; border: none; padding: 1px 0; text-align: left; text-decoration: underline; color: var(--acento); }
+button.enlace.activo { font-weight: bold; }
+:focus-visible { outline: 3px solid var(--sel); outline-offset: 1px; }
+input[type=text], select { background: #fff; border: 1px solid var(--borde); border-radius: 3px; padding: 4px 6px; }
+label { display: block; margin: 8px 0; }
+label input, label select { display: block; margin-top: 3px; min-width: 16rem; }
+
+.cabecera { background: var(--panel); border: 2px solid var(--borde); border-radius: 4px; padding: 8px 12px; margin-bottom: 8px; }
+.fila-cab { margin: 2px 0; }
+.nombre { font-weight: bold; font-size: 1.1rem; }
+.xp { white-space: pre; }
+.stats { color: var(--suave); }
+.botones-cab { margin-top: 6px; display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+
+.rejilla { display: grid; grid-template-columns: 270px minmax(0, 1fr) 260px; gap: 8px; align-items: start; }
+.panel { background: var(--panel); border: 1px solid var(--borde); border-radius: 4px; padding: 10px 12px; margin-bottom: 8px; }
+.lista-simple, .registro, .pistas { margin: 4px 0; padding-left: 0; list-style: none; }
+.registro, .pistas { padding-left: 1.2rem; list-style: disc; font-size: 0.9rem; }
+.pistas { list-style: decimal; background: var(--acento-fondo); border-radius: 3px; padding: 6px 6px 6px 2rem; }
+.lista-simple li { margin: 3px 0; }
+.suave, .pendiente { color: var(--suave); }
+.pendiente { opacity: 0.8; }
+.desbloqueada { color: var(--ok); }
+.bloqueada { color: var(--suave); }
+.meta { color: var(--suave); font-size: 0.9rem; }
+.que-hacer { border: 2px solid var(--acento); background: var(--acento-fondo); border-radius: 4px; padding: 6px 12px; margin-top: 8px; }
+.que-hacer ul { margin: 4px 0; padding-left: 1.2rem; }
+.error { color: var(--mal); }
+.mensajes { background: var(--mal-fondo); border: 1px solid var(--mal); border-radius: 3px; padding: 6px 6px 6px 1.6rem; margin: 8px 0; }
+.aviso.ok { background: var(--ok-fondo); border: 2px solid var(--ok); border-radius: 4px; padding: 8px 12px; margin-bottom: 8px; }
+.nivel { font-weight: bold; }
+.estado-msg { min-height: 1.4em; color: var(--suave); font-size: 0.9rem; margin-top: 4px; }
+.botones { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0; }
+.proximamente { font-style: italic; }
+
+.barra-formulas { display: flex; align-items: center; gap: 8px; border: 1px solid var(--borde); background: #fff; padding: 3px 6px; margin-bottom: 4px; min-height: 2rem; }
+.nombre-celda { font-weight: bold; min-width: 3.5rem; border-right: 1px solid var(--borde); }
+.fx { color: var(--suave); font-style: italic; }
+.barra-texto { white-space: pre-wrap; word-break: break-all; }
+.explica { font-size: 0.9rem; margin-bottom: 4px; }
+
+.hoja-wrap { overflow: auto; max-width: 100%; border: 1px solid var(--borde); background: #fff; }
+.hoja { border-collapse: collapse; }
+.hoja th, .hoja td { border: 1px solid #c9c0a8; padding: 2px 6px; height: 1.9rem; white-space: nowrap; }
+.hoja th { background: #e9e2d0; font-weight: normal; color: var(--suave); text-align: center; position: sticky; top: 0; }
+.hoja th.cab-fila { position: static; min-width: 2.2rem; }
+.hoja td { max-width: 32ch; overflow: hidden; text-overflow: ellipsis; cursor: cell; }
+.hoja td.num { text-align: right; }
+.hoja td.editable { background: var(--editable); }
+.hoja td.hecha { background: #eef3ea; }
+.hoja td.err { color: var(--mal); font-weight: bold; }
+.hoja td.rango { background: #d9e6fb; }
+.hoja td.sel { outline: 3px solid var(--sel); outline-offset: -2px; background: #e8f0fe; }
+.hoja td.ok { background: var(--ok-fondo); }
+.hoja td.mal { background: var(--mal-fondo); }
+.celda-input { width: 100%; min-width: 12ch; border: none; background: #fff; padding: 0; outline: none; }
+
+.panel-grafico { margin-top: 10px; border-top: 1px dashed var(--borde); padding-top: 6px; }
+.grafico { width: 100%; max-width: 480px; height: auto; display: block; margin-top: 8px; background: #fff; border: 1px solid var(--borde); }
+.g-barra { fill: var(--acento); }
+.g-linea { stroke: var(--acento); stroke-width: 2.5; }
+.g-eje { stroke: var(--texto); stroke-width: 1; }
+.g-titulo { font-size: 14px; font-weight: bold; fill: var(--texto); }
+.g-valor, .g-etq { font-size: 11px; fill: var(--texto); }
+
+.pantalla { max-width: 720px; margin: 20px auto; }
+
+@media (max-width: 1000px) {
+  .rejilla { grid-template-columns: 1fr; }
+}
+
+</style>
+</head>
+<body>
+<div id="app"></div>
+<noscript>Este juego necesita JavaScript activado.</noscript>
+<script>
+/* Motor de fórmulas y hoja de cálculo (Excel en español de España). Sin DOM. */
+(function (raiz, fabrica) {
+  if (typeof module === 'object' && module.exports) module.exports = fabrica();
+  else raiz.Engine = fabrica();
+})(typeof self !== 'undefined' ? self : this, function () {
+  'use strict';
+
+  const FUNCIONES = ['SUMA', 'PROMEDIO', 'MAX', 'MIN', 'CONTAR', 'SI', 'ENTERO', 'REDONDEAR'];
+
+  const EXPLICACIONES = {
+    '#¿NOMBRE?': 'Excel no reconoce una función o un nombre de la fórmula. Revisa que esté bien escrito.',
+    '#DIV/0!': 'Estás dividiendo entre cero (o entre una celda vacía). Una división necesita un divisor distinto de 0.',
+    '#VALOR!': 'Estás operando con texto o con un tipo de dato que no encaja. Las operaciones necesitan números.',
+    '#REF!': 'La fórmula apunta a una celda que no existe en esta hoja.',
+    '#CIRCULAR': 'Referencia circular: la fórmula depende de sí misma, directa o indirectamente.',
+    '#ERROR!': 'La fórmula no está bien escrita. Revisa paréntesis, operadores y separadores.'
+  };
+
+  class ErrorHoja {
+    constructor(codigo, explicacion) {
+      this.codigo = codigo;
+      this.explicacion = explicacion || EXPLICACIONES[codigo] || '';
+    }
+    toString() { return this.codigo; }
+  }
+  const err = (codigo, explicacion) => new ErrorHoja(codigo, explicacion);
+  const esError = (v) => v instanceof ErrorHoja;
+
+  /* ---------- Referencias ---------- */
+  function colALetra(c) {
+    let s = '';
+    c += 1;
+    while (c > 0) {
+      const m = (c - 1) % 26;
+      s = String.fromCharCode(65 + m) + s;
+      c = Math.floor((c - 1) / 26);
+    }
+    return s;
+  }
+  function letraACol(s) {
+    let n = 0;
+    for (const ch of s.toUpperCase()) n = n * 26 + (ch.charCodeAt(0) - 64);
+    return n - 1;
+  }
+  const RE_REF = /^(\$?)([A-Za-z]{1,3})(\$?)(\d+)$/;
+  function parsearRef(texto) {
+    const m = RE_REF.exec(String(texto).trim());
+    if (!m) return null;
+    return { c: letraACol(m[2]), r: parseInt(m[4], 10), absC: m[1] === '$', absR: m[3] === '$' };
+  }
+  const refA1 = (c, r) => colALetra(c) + r;
+
+  /* ---------- Tokenizador ---------- */
+  const ERR_SINTAXIS = () => err('#ERROR!', 'La fórmula no está bien escrita: revisa paréntesis, operadores y separadores.');
+  const ERR_COMA = () => err('#ERROR!', 'En Excel en español los argumentos se separan con ; (punto y coma)');
+  const esDig = (c) => c !== undefined && c >= '0' && c <= '9';
+  const RE_PALABRA = /[A-Za-z0-9_.$ÁÉÍÓÚÜÑáéíóúüñ]/;
+  const RE_INICIO = /[A-Za-z_$ÁÉÍÓÚÜÑáéíóúüñ]/;
+
+  function tokenizar(src) {
+    const toks = [];
+    const n = src.length;
+    let i = 0;
+    while (i < n) {
+      const c = src[i];
+      if (c === ' ' || c === '\t') { i++; continue; }
+      if (esDig(c)) {
+        let j = i;
+        while (esDig(src[j])) j++;
+        if ((src[j] === ',' || src[j] === '.') && esDig(src[j + 1])) {
+          j++;
+          while (esDig(src[j])) j++;
+        }
+        if (src[j] !== undefined && RE_INICIO.test(src[j])) throw ERR_SINTAXIS();
+        toks.push({ t: 'num', v: parseFloat(src.slice(i, j).replace(',', '.')), i, j });
+        i = j;
+        continue;
+      }
+      if (c === '"') {
+        let j = i + 1;
+        let s = '';
+        let cerrada = false;
+        while (j < n) {
+          if (src[j] === '"') {
+            if (src[j + 1] === '"') { s += '"'; j += 2; continue; }
+            cerrada = true;
+            j++;
+            break;
+          }
+          s += src[j++];
+        }
+        if (!cerrada) throw ERR_SINTAXIS();
+        toks.push({ t: 'str', v: s, i, j });
+        i = j;
+        continue;
+      }
+      if (RE_INICIO.test(c)) {
+        let j = i;
+        while (j < n && RE_PALABRA.test(src[j])) j++;
+        const palabra = src.slice(i, j);
+        if (src[j] === '(') {
+          toks.push({ t: 'func', v: palabra.toUpperCase(), i, j });
+          i = j;
+          continue;
+        }
+        const ra = parsearRef(palabra);
+        if (ra) {
+          if (src[j] === ':') {
+            let k = j + 1;
+            while (k < n && RE_PALABRA.test(src[k])) k++;
+            const rb = parsearRef(src.slice(j + 1, k));
+            if (!rb) throw ERR_SINTAXIS();
+            toks.push({ t: 'rango', a: ra, b: rb, i, j: k });
+            i = k;
+          } else {
+            toks.push({ t: 'ref', ref: ra, i, j });
+            i = j;
+          }
+          continue;
+        }
+        toks.push({ t: 'nombre', v: palabra.toUpperCase(), i, j });
+        i = j;
+        continue;
+      }
+      if (c === ',') throw ERR_COMA();
+      const dos = src.slice(i, i + 2);
+      if (dos === '<>' || dos === '<=' || dos === '>=') {
+        toks.push({ t: 'op', v: dos, i, j: i + 2 });
+        i += 2;
+        continue;
+      }
+      if ('+-*/^=<>();'.includes(c)) {
+        toks.push({ t: 'op', v: c, i, j: i + 1 });
+        i++;
+        continue;
+      }
+      throw ERR_SINTAXIS();
+    }
+    return toks;
+  }
+
+  /* ---------- Parser ---------- */
+  function parsear(toks) {
+    let p = 0;
+    const sig = () => toks[p];
+    const esOp = (v) => toks[p] && toks[p].t === 'op' && toks[p].v === v;
+    function esperar(v) {
+      if (!esOp(v)) throw ERR_SINTAXIS();
+      p++;
+    }
+    function cmp() {
+      let a = suma();
+      while (sig() && sig().t === 'op' && ['=', '<>', '<', '>', '<=', '>='].includes(sig().v)) {
+        const op = toks[p++].v;
+        a = { t: 'bin', op, a, b: suma() };
+      }
+      return a;
+    }
+    function suma() {
+      let a = mul();
+      while (esOp('+') || esOp('-')) {
+        const op = toks[p++].v;
+        a = { t: 'bin', op, a, b: mul() };
+      }
+      return a;
+    }
+    function mul() {
+      let a = pot();
+      while (esOp('*') || esOp('/')) {
+        const op = toks[p++].v;
+        a = { t: 'bin', op, a, b: pot() };
+      }
+      return a;
+    }
+    function pot() {
+      let a = unario();
+      while (esOp('^')) {
+        p++;
+        a = { t: 'bin', op: '^', a, b: unario() };
+      }
+      return a;
+    }
+    function unario() {
+      if (esOp('-') || esOp('+')) {
+        const op = toks[p++].v;
+        return { t: 'un', op, e: unario() };
+      }
+      return primario();
+    }
+    function primario() {
+      const tk = sig();
+      if (!tk) throw ERR_SINTAXIS();
+      if (tk.t === 'num' || tk.t === 'str') { p++; return { t: tk.t, v: tk.v }; }
+      if (tk.t === 'ref') { p++; return { t: 'ref', c: tk.ref.c, r: tk.ref.r }; }
+      if (tk.t === 'rango') { p++; return { t: 'rango', a: tk.a, b: tk.b }; }
+      if (tk.t === 'nombre') { p++; return { t: 'nombre', v: tk.v }; }
+      if (tk.t === 'func') {
+        p++;
+        esperar('(');
+        const args = [];
+        if (!esOp(')')) {
+          args.push(cmp());
+          while (esOp(';')) { p++; args.push(cmp()); }
+        }
+        esperar(')');
+        return { t: 'func', nombre: tk.v, args };
+      }
+      if (esOp('(')) {
+        p++;
+        const e = cmp();
+        esperar(')');
+        return e;
+      }
+      throw ERR_SINTAXIS();
+    }
+    const raiz = cmp();
+    if (p < toks.length) throw ERR_SINTAXIS();
+    return raiz;
+  }
+
+  const cacheCompilado = new Map();
+  function compilar(raw) {
+    let r = cacheCompilado.get(raw);
+    if (r) return r;
+    try {
+      r = { ast: parsear(tokenizar(raw.slice(1))) };
+    } catch (e) {
+      if (!(e instanceof ErrorHoja)) throw e;
+      r = { error: e };
+    }
+    if (cacheCompilado.size > 5000) cacheCompilado.clear();
+    cacheCompilado.set(raw, r);
+    return r;
+  }
+
+  /* ---------- Conversión de valores ---------- */
+  const RE_NUM = /^\s*[+-]?\d+([.,]\d+)?\s*$/;
+  function textoANumero(s) {
+    return RE_NUM.test(s) ? parseFloat(s.replace(',', '.')) : null;
+  }
+  function interpretar(raw) {
+    if (raw === undefined || raw === null) return null;
+    const t = String(raw);
+    if (t.trim() === '') return null;
+    const n = textoANumero(t);
+    return n === null ? t : n;
+  }
+  const escalar = (v) => (v && v.celdas ? err('#VALOR!', 'Aquí hace falta un único valor, no un rango. Usa una función como SUMA para trabajar con rangos.') : v);
+  function aNumero(v) {
+    if (esError(v)) return v;
+    if (typeof v === 'number') return v;
+    if (v === null) return 0;
+    if (typeof v === 'boolean') return v ? 1 : 0;
+    const n = textoANumero(v);
+    return n === null ? err('#VALOR!') : n;
+  }
+
+  /* ---------- Evaluación ---------- */
+  class Pasada {
+    constructor(hoja) {
+      this.hoja = hoja;
+      this.memo = new Map();
+      this.enCurso = new Set();
+    }
+    celda(c, r) {
+      const h = this.hoja;
+      if (c < 0 || r < 1 || c >= h.cols || r > h.filas) return err('#REF!');
+      const clave = r * 1000 + c;
+      if (this.memo.has(clave)) return this.memo.get(clave);
+      if (this.enCurso.has(clave)) return err('#CIRCULAR');
+      this.enCurso.add(clave);
+      let v;
+      const raw = h.crudoCR(c, r);
+      if (typeof raw === 'string' && raw.startsWith('=')) v = this.formula(raw);
+      else v = interpretar(raw);
+      this.enCurso.delete(clave);
+      this.memo.set(clave, v);
+      return v;
+    }
+    formula(raw) {
+      const comp = compilar(raw);
+      if (comp.error) return comp.error;
+      let v = evaluar(comp.ast, this);
+      v = escalar(v);
+      return v === null ? 0 : v;
+    }
+    rango(n) {
+      const h = this.hoja;
+      for (const e of [n.a, n.b]) {
+        if (e.c < 0 || e.r < 1 || e.c >= h.cols || e.r > h.filas) return err('#REF!');
+      }
+      const c1 = Math.min(n.a.c, n.b.c), c2 = Math.max(n.a.c, n.b.c);
+      const r1 = Math.min(n.a.r, n.b.r), r2 = Math.max(n.a.r, n.b.r);
+      const celdas = [];
+      for (let r = r1; r <= r2; r++) for (let c = c1; c <= c2; c++) celdas.push(this.celda(c, r));
+      return { celdas };
+    }
+  }
+
+  function comparar(op, a, b) {
+    if (a === null) a = typeof b === 'string' ? '' : typeof b === 'boolean' ? false : 0;
+    if (b === null) b = typeof a === 'string' ? '' : typeof a === 'boolean' ? false : 0;
+    const rango = (x) => (typeof x === 'number' ? 0 : typeof x === 'string' ? 1 : 2);
+    let cmp;
+    if (rango(a) !== rango(b)) cmp = rango(a) - rango(b);
+    else if (typeof a === 'string') {
+      const x = a.toLowerCase(), y = b.toLowerCase();
+      cmp = x < y ? -1 : x > y ? 1 : 0;
+    } else cmp = a < b ? -1 : a > b ? 1 : 0;
+    switch (op) {
+      case '=': return cmp === 0;
+      case '<>': return cmp !== 0;
+      case '<': return cmp < 0;
+      case '>': return cmp > 0;
+      case '<=': return cmp <= 0;
+      default: return cmp >= 0;
+    }
+  }
+
+  function recolectar(args, ctx, nombre) {
+    const out = [];
+    for (const a of args) {
+      if (a.t === 'ref' || a.t === 'rango') {
+        const v = evaluar(a, ctx);
+        if (esError(v)) return v;
+        for (const x of v.celdas || [v]) {
+          if (esError(x)) return x;
+          if (typeof x === 'number') out.push(x);
+        }
+      } else {
+        const v = escalar(evaluar(a, ctx));
+        if (esError(v)) return v;
+        if (typeof v === 'number') out.push(v);
+        else if (typeof v === 'boolean') out.push(v ? 1 : 0);
+        else if (typeof v === 'string') {
+          const n = textoANumero(v);
+          if (n !== null) out.push(n);
+          else if (nombre !== 'CONTAR') return err('#VALOR!', 'Has escrito texto donde la función espera números.');
+        }
+      }
+    }
+    return out;
+  }
+
+  function redondear(x, d) {
+    d = Math.trunc(d);
+    const f = Math.pow(10, d);
+    const abs = Math.abs(x) * f * (1 + 1e-15);
+    return (Math.sign(x) * Math.round(abs)) / f;
+  }
+
+  function aridad(nombre, args, min, max) {
+    if (args.length < min || args.length > max) {
+      const cuantos = min === max ? `${min}` : `entre ${min} y ${max}`;
+      return err('#ERROR!', `La función ${nombre} necesita ${cuantos} argumento(s) separados por ;`);
+    }
+    return null;
+  }
+
+  function llamar(n, ctx) {
+    const { nombre, args } = n;
+    let e;
+    switch (nombre) {
+      case 'SUMA': case 'PROMEDIO': case 'MAX': case 'MIN': case 'CONTAR': {
+        if (args.length < 1) return err('#ERROR!', `La función ${nombre} necesita al menos un argumento.`);
+        const nums = recolectar(args, ctx, nombre);
+        if (esError(nums)) return nums;
+        if (nombre === 'SUMA') return nums.reduce((s, x) => s + x, 0);
+        if (nombre === 'CONTAR') return nums.length;
+        if (nombre === 'PROMEDIO') {
+          return nums.length ? nums.reduce((s, x) => s + x, 0) / nums.length : err('#DIV/0!', 'PROMEDIO no encontró ningún número que promediar.');
+        }
+        if (!nums.length) return 0;
+        return nombre === 'MAX' ? Math.max(...nums) : Math.min(...nums);
+      }
+      case 'SI': {
+        if ((e = aridad(nombre, args, 2, 3))) return e;
+        let cond = escalar(evaluar(args[0], ctx));
+        if (esError(cond)) return cond;
+        if (typeof cond === 'string') return err('#VALOR!', 'La condición de SI debe ser una comparación (verdadera o falsa), no texto.');
+        cond = cond === null ? false : typeof cond === 'boolean' ? cond : cond !== 0;
+        if (cond) return escalar(evaluar(args[1], ctx));
+        return args[2] ? escalar(evaluar(args[2], ctx)) : false;
+      }
+      case 'ENTERO': {
+        if ((e = aridad(nombre, args, 1, 1))) return e;
+        const x = aNumero(escalar(evaluar(args[0], ctx)));
+        return esError(x) ? x : Math.floor(x);
+      }
+      case 'REDONDEAR': {
+        if ((e = aridad(nombre, args, 2, 2))) return e;
+        const x = aNumero(escalar(evaluar(args[0], ctx)));
+        if (esError(x)) return x;
+        const d = aNumero(escalar(evaluar(args[1], ctx)));
+        return esError(d) ? d : redondear(x, d);
+      }
+      default:
+        return err('#¿NOMBRE?', `Excel no reconoce la función «${nombre}». En este juego tienes: ${FUNCIONES.join(', ')}.`);
+    }
+  }
+
+  function evaluar(n, ctx) {
+    switch (n.t) {
+      case 'num': case 'str': return n.v;
+      case 'ref': return ctx.celda(n.c, n.r);
+      case 'rango': return ctx.rango(n);
+      case 'nombre': return err('#¿NOMBRE?', `Excel no reconoce «${n.v}». Si es texto, ponlo entre comillas dobles; si es una celda, revisa su letra y número.`);
+      case 'func': return llamar(n, ctx);
+      case 'un': {
+        const x = aNumero(escalar(evaluar(n.e, ctx)));
+        if (esError(x)) return x;
+        return n.op === '-' ? -x : x;
+      }
+      case 'bin': {
+        const a = escalar(evaluar(n.a, ctx));
+        const b = escalar(evaluar(n.b, ctx));
+        if (esError(a)) return a;
+        if (esError(b)) return b;
+        if (['=', '<>', '<', '>', '<=', '>='].includes(n.op)) return comparar(n.op, a, b);
+        const x = aNumero(a);
+        if (esError(x)) return x;
+        const y = aNumero(b);
+        if (esError(y)) return y;
+        let r;
+        switch (n.op) {
+          case '+': r = x + y; break;
+          case '-': r = x - y; break;
+          case '*': r = x * y; break;
+          case '/':
+            if (y === 0) return err('#DIV/0!');
+            r = x / y;
+            break;
+          default: r = Math.pow(x, y);
+        }
+        return Number.isFinite(r) ? r : err('#VALOR!', 'El resultado no es un número válido.');
+      }
+    }
+    return err('#ERROR!');
+  }
+
+  /* ---------- Formato ---------- */
+  function formatear(v) {
+    if (esError(v)) return v.codigo;
+    if (v === null || v === undefined) return '';
+    if (typeof v === 'boolean') return v ? 'VERDADERO' : 'FALSO';
+    if (typeof v === 'number') {
+      if (Math.abs(v) < 0.005) return '0';
+      return v.toLocaleString('es-ES', { maximumFractionDigits: 2 });
+    }
+    return String(v);
+  }
+
+  /* ---------- Hoja ---------- */
+  class Hoja {
+    constructor(cols, filas) {
+      this.cols = cols || 10;
+      this.filas = filas || 20;
+      this.datos = new Map();
+      this._pasada = null;
+    }
+    static desde(obj, cols, filas) {
+      const h = new Hoja(cols, filas);
+      for (const k of Object.keys(obj || {})) h.poner(k, obj[k]);
+      return h;
+    }
+    poner(ref, raw) {
+      const k = String(ref).toUpperCase();
+      if (raw === '' || raw === null || raw === undefined) this.datos.delete(k);
+      else this.datos.set(k, String(raw));
+      this._pasada = null;
+    }
+    crudo(ref) { return this.datos.get(String(ref).toUpperCase()); }
+    crudoCR(c, r) { return this.datos.get(refA1(c, r)); }
+    celdas() {
+      const o = {};
+      for (const [k, v] of this.datos) o[k] = v;
+      return o;
+    }
+    valor(ref) {
+      const pr = parsearRef(ref);
+      if (!pr) return err('#REF!');
+      if (!this._pasada) this._pasada = new Pasada(this);
+      return this._pasada.celda(pr.c, pr.r);
+    }
+    texto(ref) { return formatear(this.valor(ref)); }
+  }
+
+  /* ---------- Análisis y relleno ---------- */
+  function analizar(raw) {
+    const info = { esFormula: false, funciones: [], referencias: 0, error: false };
+    if (typeof raw !== 'string' || !raw.startsWith('=')) return info;
+    info.esFormula = true;
+    try {
+      for (const t of tokenizar(raw.slice(1))) {
+        if (t.t === 'func') info.funciones.push(t.v);
+        else if (t.t === 'ref' || t.t === 'rango') info.referencias++;
+      }
+    } catch (e) {
+      if (!(e instanceof ErrorHoja)) throw e;
+      info.error = true;
+    }
+    return info;
+  }
+
+  function desplazarRef(r, dc, dr) {
+    const c = r.absC ? r.c : r.c + dc;
+    const f = r.absR ? r.r : r.r + dr;
+    if (c < 0 || f < 1) return null;
+    return (r.absC ? '$' : '') + colALetra(c) + (r.absR ? '$' : '') + f;
+  }
+
+  function desplazarFormula(raw, dc, dr) {
+    if (typeof raw !== 'string' || !raw.startsWith('=')) return raw;
+    const src = raw.slice(1);
+    let toks;
+    try { toks = tokenizar(src); } catch (e) { return raw; }
+    let out = '=';
+    let ult = 0;
+    for (const t of toks) {
+      if (t.t !== 'ref' && t.t !== 'rango') continue;
+      out += src.slice(ult, t.i);
+      if (t.t === 'ref') out += desplazarRef(t.ref, dc, dr) || '#REF!';
+      else {
+        const a = desplazarRef(t.a, dc, dr), b = desplazarRef(t.b, dc, dr);
+        out += a && b ? a + ':' + b : '#REF!';
+      }
+      ult = t.j;
+    }
+    return out + src.slice(ult);
+  }
+
+  /* Como Ctrl+D: devuelve el contenido para las n filas situadas debajo de la celda superior. */
+  function rellenarAbajo(rawSuperior, n) {
+    const res = [];
+    for (let k = 1; k <= n; k++) res.push(desplazarFormula(rawSuperior, 0, k));
+    return res;
+  }
+
+  return {
+    FUNCIONES, EXPLICACIONES, ErrorHoja, esError, Hoja,
+    colALetra, letraACol, parsearRef, refA1,
+    interpretar, formatear, analizar, desplazarFormula, rellenarAbajo
+  };
+});
+
+;
+/* Datos y validadores de las 7 misiones. Sin DOM. */
+(function (raiz, fabrica) {
+  if (typeof module === 'object' && module.exports) module.exports = fabrica(require('./engine.js'));
+  else raiz.Misiones = fabrica(raiz.Engine);
+})(typeof self !== 'undefined' ? self : this, function (Engine) {
+  'use strict';
+
+  /* ---------- PRNG determinista ---------- */
+  function mulberry32(a) {
+    return function () {
+      a |= 0;
+      a = (a + 0x6D2B79F5) | 0;
+      let t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  const prng = (semilla, n) => mulberry32((semilla + n * 7919) >>> 0);
+  const ent = (rng, min, max) => min + Math.floor(rng() * (max - min + 1));
+  const DIAS = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+
+  /* ---------- Códice (competencias de Excel) ---------- */
+  const CODICE = [
+    ['formulas.entrada', 'Entrada de fórmulas (empezar por =)'],
+    ['rangos', 'Rangos de celdas (A1:B5)'],
+    ['funcion.suma', 'Función SUMA'],
+    ['ref.relativa', 'Referencias relativas'],
+    ['rellenar', 'Rellenar hacia abajo'],
+    ['operadores', 'Operadores + − × ÷'],
+    ['ref.celda', 'Referencias de celda'],
+    ['decimales', 'Números decimales'],
+    ['funcion.promedio', 'Función PROMEDIO'],
+    ['funcion.entero', 'Función ENTERO'],
+    ['error.div0', 'Error #DIV/0!'],
+    ['funcion.max', 'Función MAX'],
+    ['funcion.min', 'Función MIN'],
+    ['funcion.contar', 'Función CONTAR'],
+    ['ratios', 'Ratios entre columnas'],
+    ['ref.absoluta', 'Referencias absolutas ($)'],
+    ['funcion.si', 'Función SI'],
+    ['comparaciones', 'Comparaciones y texto'],
+    ['grafico.rango', 'Gráficos: elegir el rango'],
+    ['grafico.tipo', 'Gráficos: elegir el tipo'],
+    ['grafico.titulo', 'Gráficos: poner título']
+  ].map(([id, nombre]) => ({ id, nombre, moduloPlan: '' }));
+
+  const TUTORIAL = [
+    { titulo: 'Qué es una celda', texto: 'La hoja es una cuadrícula. Cada casilla es una celda y tiene un nombre formado por su columna (letra) y su fila (número): B9 es la columna B, fila 9. Haz clic en una celda para seleccionarla y escribe para rellenarla.' },
+    { titulo: 'Las fórmulas empiezan por =', texto: 'Si escribes un texto o un número, la celda lo guarda tal cual. Si empiezas por =, Excel calcula: =2+3 muestra 5, y =B2+B3 suma lo que haya en esas dos celdas. Así el resultado se actualiza solo cuando cambian los datos.' },
+    { titulo: 'El separador es ;', texto: 'Excel en español separa los argumentos de una función con punto y coma (;), y usa la coma para los decimales: 1,5. Por ejemplo, SI(B2>3;"sí";"no"). Un rango se escribe con dos puntos: B2:B8.' },
+    { titulo: 'Cómo se entrega', texto: 'Cuando creas que la hoja está lista, pulsa «Entregar al mayordomo». Maese Aldric revisará tu trabajo con los datos de hoy y con otros datos distintos, para comprobar que tus fórmulas sirven siempre. Fallar no cuesta nada: puedes volver a intentarlo y pedir pistas.' }
+  ];
+
+  /* ---------- Utilidades de misiones ---------- */
+  const col = (c) => Engine.colALetra(c);
+  const rangoFilas = (letra, desde, hasta) => {
+    const r = [];
+    for (let i = desde; i <= hasta; i++) r.push(letra + i);
+    return r;
+  };
+  const num = (s) => parseFloat(String(s).replace(',', '.'));
+
+  function ob(celda, esperado, requisitos, extra) {
+    return Object.assign({ celda, grupo: celda, esperado, requisitos: requisitos || {} }, extra || {});
+  }
+  function obRango(letra, desde, hasta, esperadoFila, requisitos, extra) {
+    return rangoFilas(letra, desde, hasta).map((celda, k) =>
+      ob(celda, (d) => esperadoFila(d, k), requisitos, Object.assign({ grupo: `${letra}${desde}:${letra}${hasta}` }, extra || {})));
+  }
+
+  /* ---------- Misiones ---------- */
+  const M1 = {
+    id: 'M1', titulo: 'Lo que hay en el campo', dificultad: 'Fácil', xp: 25, oro: 10,
+    stats: { logica: 1 },
+    etiquetas: ['formulas.entrada', 'rangos', 'funcion.suma'],
+    texto: [
+      'Maese Aldric te recibe junto al campo de trigo. «Aprendiz, el clan necesita un almacén, pero antes debo saber cuánto trigo cosechamos. Tomás ha anotado lo recogido cada día de la semana.»'
+    ],
+    queHacer: ['B9: el total de trigo recogido en la semana (de lunes a domingo).'],
+    generarDatos(semilla) {
+      const rng = prng(semilla, 1);
+      const celdas = { A1: 'Día', B1: 'Trigo (kg)', A9: 'Total' };
+      const trigo = [];
+      for (let i = 0; i < 7; i++) {
+        const v = ent(rng, 18, 42);
+        trigo.push(v);
+        celdas['A' + (i + 2)] = DIAS[i];
+        celdas['B' + (i + 2)] = String(v);
+      }
+      return { cols: 2, filas: 9, celdas, v: { trigo } };
+    },
+    objetivos: [ob('B9', (d) => d.v.trigo.reduce((s, x) => s + x, 0), { funcion: 'SUMA' })],
+    pistas: [
+      'Aldric quiere el total de la semana. Piensa qué operación junta muchos números en uno solo.',
+      'Excel tiene una función para sumar muchos valores a la vez. Se escribe tras el signo = con su nombre en español y, entre paréntesis, lo que quieres sumar.',
+      'La estructura es =FUNCIÓN(primera_celda:última_celda): los dos puntos indican el rango de la columna del trigo, del lunes al domingo.'
+    ],
+    consecuencia: {
+      texto: (d) => `Se construye el almacén del clan. El stock de trigo de la aldea pasa a ser ${d.v.trigo.reduce((s, x) => s + x, 0)} kg.`
+    },
+    aplicarAldea(a, d) {
+      a.trigo = d.v.trigo.reduce((s, x) => s + x, 0);
+      a.edificios.push('Almacén');
+    }
+  };
+
+  const M2 = {
+    id: 'M2', titulo: 'Las tres gallineras', dificultad: 'Fácil', xp: 25, oro: 10,
+    stats: { productividad: 1 },
+    etiquetas: ['ref.relativa', 'rellenar'],
+    texto: [
+      'Tomás te lleva a las gallineras. «Tenemos tres y cada una pone lo suyo. Anoto los huevos cada día, pero sumar cada fila a mano me lleva horas.»',
+      'Aquí aprenderás a «Rellenar hacia abajo»: escribe una fórmula, selecciona la columna entera y deja que Excel la copie ajustando las filas (Ctrl+D).'
+    ],
+    queHacer: ['E2:E6: el total de huevos de cada día (suma de los tres gallineros de esa fila).', 'E7: el total de huevos de la semana.'],
+    generarDatos(semilla) {
+      const rng = prng(semilla, 2);
+      const celdas = { A1: 'Día', B1: 'Gallinero 1', C1: 'Gallinero 2', D1: 'Gallinero 3', E1: 'Total del día', A7: 'Total semana' };
+      const filas = [];
+      for (let i = 0; i < 5; i++) {
+        const f = [ent(rng, 4, 15), ent(rng, 4, 15), ent(rng, 4, 15)];
+        filas.push(f);
+        celdas['A' + (i + 2)] = DIAS[i];
+        ['B', 'C', 'D'].forEach((l, k) => { celdas[l + (i + 2)] = String(f[k]); });
+      }
+      return { cols: 5, filas: 7, celdas, v: { filas } };
+    },
+    objetivos: [].concat(
+      obRango('E', 2, 6, (d, k) => d.v.filas[k].reduce((s, x) => s + x, 0), { usaReferencias: true, funcion: 'SUMA' }),
+      [ob('E7', (d) => d.v.filas.reduce((s, f) => s + f[0] + f[1] + f[2], 0), { usaReferencias: true })]
+    ),
+    pistas: [
+      'Cada día necesitas juntar los huevos de las tres gallineras. Resuélvelo para un solo día y después repítelo para el resto sin escribir cinco fórmulas a mano.',
+      'Para cada fila usa la función de sumar sobre las tres celdas de esa fila. Luego selecciona de arriba abajo las celdas del total diario y pulsa «Rellenar hacia abajo» (Ctrl+D).',
+      'Estructura: =FUNCIÓN(primera:última) con las tres celdas de la primera fila; al rellenar, Excel desplaza solo la fila. El total de la semana suma la columna de totales diarios.'
+    ],
+    consecuencia: {
+      texto: (d) => `Los huevos entran al almacén: ${d.v.filas.reduce((s, f) => s + f[0] + f[1] + f[2], 0)} esta semana. Has dominado «Rellenar hacia abajo».`
+    },
+    aplicarAldea(a, d) {
+      a.huevos = d.v.filas.reduce((s, f) => s + f[0] + f[1] + f[2], 0);
+      a.edificios.push('Gallineros');
+    }
+  };
+
+  const M3 = {
+    id: 'M3', titulo: 'Las bocas del pueblo', dificultad: 'Normal', xp: 50, oro: 20,
+    stats: { logica: 1, finanzas: 1 },
+    etiquetas: ['operadores', 'ref.celda', 'decimales'],
+    texto: [
+      'Tomás frunce el ceño ante los sacos. «Todos comen cada día y el trigo no es infinito. Necesito saber cuánto sale del almacén diariamente y cuánto queda después.»'
+    ],
+    queHacer: ['B6: el consumo diario de trigo de toda la aldea (kg).', 'B7: el stock de trigo que queda tras el consumo de hoy (kg).'],
+    generarDatos(semilla) {
+      const rng = prng(semilla, 3);
+      const stock = ent(rng, 250, 400);
+      const personas = ent(rng, 12, 18);
+      const celdas = {
+        A1: 'Concepto', B1: 'Valor',
+        A2: 'Stock de trigo (kg)', B2: String(stock),
+        A3: 'Personas', B3: String(personas),
+        A4: 'Ración por persona (kg/día)', B4: '1,5',
+        A6: 'Consumo diario (kg)', A7: 'Stock tras hoy (kg)'
+      };
+      return { cols: 2, filas: 7, celdas, v: { stock, personas, racion: 1.5 } };
+    },
+    objetivos: [
+      ob('B6', (d) => d.v.personas * d.v.racion, { usaReferencias: true }),
+      ob('B7', (d) => d.v.stock - d.v.personas * d.v.racion, { usaReferencias: true })
+    ],
+    pistas: [
+      'El consumo diario depende de cuántas personas hay y de cuánto come cada una. El stock restante es lo que había menos lo que se gasta hoy.',
+      'No hace falta ninguna función: bastan los operadores (* para multiplicar, - para restar) y referencias a las celdas de la tabla. No escribas los números, apunta a sus celdas.',
+      'Consumo: celda de personas multiplicada por celda de ración. Stock tras hoy: celda de stock menos la celda de consumo que acabas de calcular.'
+    ],
+    consecuencia: {
+      texto: (d) => `Tomás saca la comida cada día: ${d.v.personas * d.v.racion} kg. El stock de trigo de la aldea baja en esa cantidad.`
+    },
+    aplicarAldea(a, d) {
+      a.trigo = Math.max(0, a.trigo - d.v.personas * d.v.racion);
+    }
+  };
+
+  const M4 = {
+    id: 'M4', titulo: '¿Para cuántos días alcanza?', dificultad: 'Normal', xp: 50, oro: 20,
+    stats: { analisis: 1 },
+    etiquetas: ['funcion.promedio', 'funcion.entero', 'error.div0'],
+    texto: [
+      'Maese Aldric despliega el pergamino de cuentas. «Quiero saber si podemos acoger más colonos. Necesito la producción media diaria, los días que aguantamos con las reservas y si cada día ganamos o perdemos trigo.»',
+      'Ojo: si el consumo diario fuera 0, dividir entre él daría el error #DIV/0!, porque Excel no puede dividir entre cero.'
+    ],
+    queHacer: [
+      'B13: la producción media diaria de trigo (media de la semana).',
+      'B14: los días completos de reserva (parte entera de stock ÷ consumo diario).',
+      'B15: el balance diario en kg (producción media menos consumo diario).'
+    ],
+    generarDatos(semilla) {
+      const rng = prng(semilla, 4);
+      const celdas = { A1: 'Día', B1: 'Trigo (kg)', A10: 'Stock (kg)', A11: 'Consumo diario (kg)', A13: 'Producción media diaria', A14: 'Días de reserva', A15: 'Balance diario (kg)' };
+      const trigo = [];
+      for (let i = 0; i < 7; i++) {
+        const v = ent(rng, 18, 42);
+        trigo.push(v);
+        celdas['A' + (i + 2)] = DIAS[i];
+        celdas['B' + (i + 2)] = String(v);
+      }
+      const stock = ent(rng, 200, 350);
+      const consumo = ent(rng, 18, 30);
+      celdas.B10 = String(stock);
+      celdas.B11 = String(consumo);
+      return { cols: 2, filas: 15, celdas, v: { trigo, stock, consumo } };
+    },
+    objetivos: [
+      ob('B13', (d) => d.v.trigo.reduce((s, x) => s + x, 0) / d.v.trigo.length, { funcion: 'PROMEDIO' }),
+      ob('B14', (d) => Math.floor(d.v.stock / d.v.consumo), { funcion: 'ENTERO' }),
+      ob('B15', (d) => d.v.trigo.reduce((s, x) => s + x, 0) / d.v.trigo.length - d.v.consumo, { usaReferencias: true })
+    ],
+    pistas: [
+      'Son tres cálculos: la media de lo que se produce al día, cuántos días completos aguanta el stock y si cada día se gana o se pierde trigo.',
+      'Para la producción usa la función que calcula la media. Para los días, divide stock entre consumo y quédate solo con la parte entera con la función adecuada. El balance es una resta.',
+      'Media: =FUNCIÓN(rango de la semana). Días: =FUNCIÓN(celda de stock / celda de consumo). Balance: celda de la media menos celda del consumo.'
+    ],
+    consecuencia: {
+      texto: (d) => {
+        const c = colonos(d);
+        return c > 0
+          ? `Maese Aldric conoce ya cuánto aguantará la aldea (${Math.floor(d.v.stock / d.v.consumo)} días) y decide acoger a ${c} colono${c === 1 ? '' : 's'} más.`
+          : `Maese Aldric conoce ya cuánto aguantará la aldea (${Math.floor(d.v.stock / d.v.consumo)} días), pero el balance no permite acoger más colonos.`;
+      }
+    },
+    aplicarAldea(a, d) { a.poblacion += colonos(d); }
+  };
+  function colonos(d) {
+    const balance = d.v.trigo.reduce((s, x) => s + x, 0) / d.v.trigo.length - d.v.consumo;
+    return Math.max(0, Math.min(5, Math.floor(balance / 1.5)));
+  }
+
+  const M5 = {
+    id: 'M5', titulo: 'La oficina del capataz', dificultad: 'Normal', xp: 50, oro: 20,
+    stats: { productividad: 1, analisis: 1 },
+    etiquetas: ['funcion.max', 'funcion.min', 'funcion.contar', 'ratios'],
+    texto: [
+      'Berta, la capataz, golpea la mesa con un legajo. «Trabajan seis, pero no todos rinden igual. Quiero ver cuántos kilos saca cada uno por hora, quién rinde más y quién menos, y cuántos somos.»'
+    ],
+    queHacer: [
+      'D2:D7: los kg por hora de cada trabajador (producción ÷ horas).',
+      'B9: el mejor rendimiento (kg/h).',
+      'B10: el peor rendimiento (kg/h).',
+      'B11: el número de trabajadores.'
+    ],
+    generarDatos(semilla) {
+      const rng = prng(semilla, 5);
+      const nombres = ['Garcés', 'Inés', 'Ramiro', 'Elvira', 'Nuño', 'Urraca'];
+      const celdas = { A1: 'Trabajador', B1: 'Horas/semana', C1: 'Producción (kg)', D1: 'kg por hora', A9: 'Más productivo (kg/h)', A10: 'Menos productivo (kg/h)', A11: 'Nº de trabajadores' };
+      const horas = [], prod = [];
+      nombres.forEach((n, i) => {
+        horas.push(ent(rng, 30, 48));
+        prod.push(ent(rng, 150, 420));
+        celdas['A' + (i + 2)] = n;
+        celdas['B' + (i + 2)] = String(horas[i]);
+        celdas['C' + (i + 2)] = String(prod[i]);
+      });
+      return { cols: 4, filas: 11, celdas, v: { horas, prod } };
+    },
+    objetivos: [].concat(
+      obRango('D', 2, 7, (d, k) => d.v.prod[k] / d.v.horas[k], { usaReferencias: true }),
+      [
+        ob('B9', (d) => Math.max(...d.v.prod.map((p, k) => p / d.v.horas[k])), { funcion: 'MAX' }),
+        ob('B10', (d) => Math.min(...d.v.prod.map((p, k) => p / d.v.horas[k])), { funcion: 'MIN' }),
+        ob('B11', (d) => d.v.horas.length, { funcion: 'CONTAR' })
+      ]
+    ),
+    pistas: [
+      'Para comparar a los trabajadores necesitas su rendimiento por hora. Después busca el mejor, el peor y cuenta cuántos hay.',
+      'El rendimiento es producción dividida entre horas, fila a fila (rellena hacia abajo). Para el mejor, el peor y el recuento existen las funciones MAX, MIN y CONTAR.',
+      'Rendimiento: celda de producción / celda de horas, y rellenar hacia abajo. MAX y MIN sobre la columna de rendimientos; CONTAR sobre una columna con un dato por trabajador.'
+    ],
+    consecuencia: {
+      texto: () => 'Berta reasigna a los seis trabajadores según su rendimiento: los más rápidos a la cosecha y los demás al apoyo.'
+    },
+    aplicarAldea(a) {
+      a.trabajadores = 6;
+      a.edificios.push('Oficina del capataz');
+    }
+  };
+
+  const M6 = {
+    id: 'M6', titulo: 'Tiempos de escasez', dificultad: 'Difícil', xp: 100, oro: 50,
+    stats: { logica: 2, finanzas: 1 },
+    etiquetas: ['ref.absoluta', 'funcion.si', 'comparaciones'],
+    texto: [
+      'Llega el invierno y Maese Aldric habla bajo. «Si el trigo cae por debajo del umbral de racionamiento, hay que repartir menos. Quiero ver día a día cuánto queda y cuándo toca racionar.»',
+      'El umbral está en una sola celda (G1) y todos los días deben compararse con ella.'
+    ],
+    queHacer: [
+      'D2:D8: el stock final de cada día (stock inicial menos consumo).',
+      'E2:E8: el estado de cada día, «RACIONAR» si el stock final queda por debajo del umbral y «NORMAL» si no.'
+    ],
+    generarDatos(semilla) {
+      const rng = prng(semilla, 6);
+      const celdas = { A1: 'Día', B1: 'Stock inicial', C1: 'Consumo', D1: 'Stock final', E1: 'Estado', F1: 'Umbral' };
+      const b2 = ent(rng, 120, 180);
+      const consumo = [];
+      for (let i = 0; i < 7; i++) {
+        consumo.push(ent(rng, 15, 30));
+        celdas['A' + (i + 2)] = String(i + 1);
+        celdas['C' + (i + 2)] = String(consumo[i]);
+        celdas['B' + (i + 2)] = i === 0 ? String(b2) : '=D' + (i + 1);
+      }
+      const umbral = ent(rng, 40, 60);
+      celdas.G1 = String(umbral);
+      return { cols: 7, filas: 8, celdas, v: { b2, consumo, umbral } };
+    },
+    objetivos: [].concat(
+      obRango('D', 2, 8, (d, k) => stockFinal(d, k), { usaReferencias: true }),
+      obRango('E', 2, 8, (d, k) => (stockFinal(d, k) < d.v.umbral ? 'RACIONAR' : 'NORMAL'), { funcion: 'SI', usaReferencias: true },
+        { ayuda: 'Piensa qué ocurre con la referencia al umbral cuando rellenas hacia abajo (mira la pista 2).' })
+    ),
+    pistas: [
+      'Cada día el stock final es el inicial menos el consumo. Y el estado depende de si ese stock final cae por debajo del umbral de racionamiento.',
+      'El estado se decide con la función SI, comparando el stock final con el umbral. Al rellenar hacia abajo, el umbral debe quedarse en su sitio: fija su referencia con el símbolo $ (referencia absoluta).',
+      'Stock final: celda de stock inicial menos celda de consumo. Estado: =SI(stock final < celda del umbral fijada con $; "RACIONAR"; "NORMAL"), con el texto entre comillas dobles.'
+    ],
+    consecuencia: {
+      texto: () => 'La aldea sobrevive al invierno. Se instaura la política de racionamiento: cuando el stock cae bajo el umbral, se reparte menos.'
+    },
+    aplicarAldea() {}
+  };
+  function stockFinal(d, k) {
+    let s = d.v.b2;
+    for (let i = 0; i <= k; i++) s -= d.v.consumo[i];
+    return s;
+  }
+
+  const PRODUCTOS = ['Trigo', 'Huevos', 'Leña', 'Piedra', 'Lana'];
+  const M7 = {
+    id: 'M7', titulo: 'El tablón de la aldea', dificultad: 'Normal', xp: 50, oro: 20,
+    stats: { analisis: 1 },
+    etiquetas: ['grafico.rango', 'grafico.tipo', 'grafico.titulo'],
+    grafico: true,
+    texto: [
+      'Maese Aldric clava un tablón en la plaza. «El pueblo entiende mejor un dibujo que una lista de números. Quiero un gráfico que compare lo que producimos de cada cosa.»'
+    ],
+    queHacer: ['Crea un gráfico con el panel de gráfico: elige el rango de datos, el tipo de gráfico adecuado para comparar productos y ponle un título (mínimo 5 caracteres).'],
+    generarDatos(semilla) {
+      const rng = prng(semilla, 7);
+      const celdas = { A1: 'Producto', B1: 'Producción semanal' };
+      const usados = new Set();
+      const valores = [];
+      PRODUCTOS.forEach((p, i) => {
+        let v;
+        do { v = ent(rng, 20, 300); } while (usados.has(v));
+        usados.add(v);
+        valores.push(v);
+        celdas['A' + (i + 2)] = p;
+        celdas['B' + (i + 2)] = String(v);
+      });
+      return { cols: 2, filas: 6, celdas, v: { productos: PRODUCTOS.slice(), valores } };
+    },
+    objetivos: [],
+    pistas: [
+      'Quieres comparar cuánto se produce de cada producto. Piensa qué datos entran en el gráfico: ¿solo los números o también los nombres y los encabezados?',
+      'Indica el rango que incluye encabezados y datos, de la esquina superior izquierda a la inferior derecha. Para comparar categorías, elige el tipo de gráfico que pone una barra por producto.',
+      'El rango tiene la forma CELDA:CELDA (del primer encabezado al último dato), el tipo es el de barras verticales y el título debe describir qué muestra el gráfico.'
+    ],
+    consecuencia: {
+      texto: () => 'El gráfico queda fijado en el tablón de la aldea. Todos ven de un vistazo qué producimos más.'
+    },
+    aplicarAldea(a) { a.edificios.push('Tablón de la aldea'); }
+  };
+
+  const MISIONES = [M1, M2, M3, M4, M5, M6, M7];
+
+  const INTRO = {
+    bienvenida: [
+      'Bienvenido al clan, aprendiz. Hemos fundado una aldea junto al río, pero sin cuentas claras no sobreviviremos al invierno.',
+      'Cada problema de la aldea se resuelve con una hoja de cálculo. Escribirás fórmulas reales de Excel en español y el mayordomo las comprobará.'
+    ],
+    tutorial: TUTORIAL
+  };
+
+  /* ---------- Validación ---------- */
+  function iguales(esperado, valor) {
+    if (typeof esperado === 'number') return typeof valor === 'number' && Math.abs(esperado - valor) <= 1e-6;
+    return valor === esperado;
+  }
+
+  function construirHoja(m, datos, entrega) {
+    const celdas = Object.assign({}, datos.celdas);
+    for (const o of m.objetivos) {
+      const raw = entrega[o.celda];
+      if (raw === undefined || raw === null || String(raw).trim() === '') delete celdas[o.celda];
+      else celdas[o.celda] = String(raw).trim();
+    }
+    return Engine.Hoja.desde(celdas, datos.cols, datos.filas);
+  }
+
+  function evaluarCelda(m, datos, entrega, o) {
+    return construirHoja(m, datos, entrega).valor(o.celda);
+  }
+
+  function validarGrafico(extra) {
+    const porCelda = {};
+    const mensajes = [];
+    const g = extra || {};
+    const rango = String(g.rango || '').replace(/\$/g, '').replace(/\s/g, '').toUpperCase();
+    porCelda.rango = rango === 'A1:B6' ? 'ok' : 'valor';
+    if (porCelda.rango !== 'ok') mensajes.push('El rango de datos no es el adecuado: debe cubrir los encabezados y todos los datos de la tabla, ni más ni menos.');
+    if (g.tipo === 'columnas') porCelda.tipo = 'ok';
+    else {
+      porCelda.tipo = 'valor';
+      mensajes.push(g.tipo === 'líneas' || g.tipo === 'lineas'
+        ? 'Las líneas sirven para ver la evolución en el tiempo; aquí comparas categorías, y para eso van mejor las columnas.'
+        : 'Elige un tipo de gráfico para el panel: columnas o líneas.');
+    }
+    if (String(g.titulo || '').trim().length >= 5) porCelda.titulo = 'ok';
+    else {
+      porCelda.titulo = 'valor';
+      mensajes.push('El gráfico necesita un título de al menos 5 caracteres.');
+    }
+    return { ok: Object.values(porCelda).every((x) => x === 'ok'), porCelda, mensajes };
+  }
+
+  /* entrega: { celda: texto bruto } con las celdas editables del jugador. */
+  function validar(m, entrega, semilla, extra) {
+    if (m.grafico) return validarGrafico(extra);
+    entrega = entrega || {};
+    const datos = m.generarDatos(semilla);
+    const alternos = [m.generarDatos(semilla + 1), m.generarDatos(semilla + 2)];
+    const porCelda = {};
+    const fallos = new Map();
+    const registrar = (o, estado, texto) => {
+      porCelda[o.celda] = estado;
+      const clave = o.grupo + '|' + estado;
+      if (!fallos.has(clave)) fallos.set(clave, { texto, celdas: [] });
+      fallos.get(clave).celdas.push(o.celda);
+    };
+
+    for (const o of m.objetivos) {
+      const raw = entrega[o.celda];
+      const vacia = raw === undefined || raw === null || String(raw).trim() === '';
+      if (vacia) {
+        registrar(o, 'noFormula', `${o.grupo}: está vacía. Escribe una fórmula que empiece por =.`);
+        continue;
+      }
+      if (!String(raw).trim().startsWith('=')) {
+        registrar(o, 'noFormula', `${o.grupo}: no contiene una fórmula (debe empezar por =). Un valor escrito a mano no se recalcula.`);
+        continue;
+      }
+      const v = evaluarCelda(m, datos, entrega, o);
+      if (Engine.esError(v)) {
+        registrar(o, 'valor', `${o.grupo}: la fórmula da el error ${v.codigo}. ${v.explicacion}`);
+        continue;
+      }
+      if (!iguales(o.esperado(datos), v)) {
+        registrar(o, 'valor', `${o.grupo}: el resultado no es el esperado.${o.ayuda ? ' ' + o.ayuda : ''}`);
+        continue;
+      }
+      const adapta = alternos.every((alt) => {
+        const va = evaluarCelda(m, alt, entrega, o);
+        return !Engine.esError(va) && iguales(o.esperado(alt), va);
+      });
+      if (!adapta) {
+        registrar(o, 'hardcode', `${o.grupo}: Tu resultado es correcto ahora, pero no se adapta si cambian los datos. ¿Has escrito algún número a mano o apuntado a una celda equivocada?${o.ayuda ? ' ' + o.ayuda : ''}`);
+        continue;
+      }
+      const info = Engine.analizar(String(raw).trim());
+      if (o.requisitos.funcion && !info.funciones.includes(o.requisitos.funcion)) {
+        registrar(o, 'requisito', `${o.grupo}: en esta celda tienes que usar la función ${o.requisitos.funcion}.`);
+        continue;
+      }
+      if (o.requisitos.usaReferencias && info.referencias === 0) {
+        registrar(o, 'requisito', `${o.grupo}: tienes que usar referencias a celdas (como B2) en lugar de números escritos a mano.`);
+        continue;
+      }
+      porCelda[o.celda] = 'ok';
+    }
+    const mensajes = Array.from(fallos.values()).map((f) => f.texto);
+    return { ok: m.objetivos.every((o) => porCelda[o.celda] === 'ok'), porCelda, mensajes };
+  }
+
+  function celdasEditables(m) { return m.objetivos.map((o) => o.celda); }
+
+  return {
+    MISIONES, CODICE, INTRO, TUTORIAL, mulberry32, prng, validar, celdasEditables, iguales
+  };
+});
+
+;
+/* Estado del juego, XP, niveles, recompensas y guardado. Sin DOM. */
+(function (raiz, fabrica) {
+  if (typeof module === 'object' && module.exports) module.exports = fabrica(require('./missions.js'));
+  else raiz.Juego = fabrica(raiz.Misiones);
+})(typeof self !== 'undefined' ? self : this, function (Misiones) {
+  'use strict';
+
+  const { MISIONES, CODICE } = Misiones;
+  const VERSION = 1;
+  const CLAVE = 'excelrpg.aldea.v1';
+  const STATS = ['logica', 'analisis', 'automatizacion', 'finanzas', 'productividad'];
+  const NOMBRES_STATS = { logica: 'Lógica', analisis: 'Análisis', automatizacion: 'Automatización', finanzas: 'Finanzas', productividad: 'Productividad' };
+
+  function nuevaPartida(nombre, semilla) {
+    const stats = {};
+    STATS.forEach((s) => { stats[s] = 1; });
+    return {
+      version: VERSION,
+      nombre: String(nombre || '').trim() || 'Daniel',
+      clase: 'Aprendiz de Finanzas',
+      equipo: 'Hoja de cálculo de madera',
+      semilla: Number.isInteger(semilla) ? semilla : Math.floor(Math.random() * 1e6),
+      iniciada: false,
+      tutorialVisto: false,
+      misionActual: 0,
+      completadas: {},
+      borradores: {},
+      pistas: {},
+      xp: 0,
+      oro: 0,
+      stats,
+      registro: [],
+      grafico: null
+    };
+  }
+
+  const nivel = (xp) => 1 + Math.floor(xp / 100);
+  function rango(n) {
+    if (n <= 5) return 'Aprendiz';
+    if (n <= 10) return 'Auxiliar';
+    if (n <= 15) return 'Analista Junior';
+    if (n <= 20) return 'Analista';
+    if (n <= 25) return 'Analista Senior';
+    if (n <= 30) return 'Controller';
+    return 'Maestro Financiero';
+  }
+  function barraXP(xp) {
+    const en = xp % 100;
+    const llenos = Math.floor(en / 10);
+    return `[${'#'.repeat(llenos)}${'-'.repeat(10 - llenos)}] ${en}/100`;
+  }
+
+  const mision = (estado) => MISIONES[estado.misionActual] || null;
+  const datosMision = (estado, i) => MISIONES[i].generarDatos(estado.semilla);
+  const terminada = (estado) => estado.misionActual >= MISIONES.length;
+
+  function editarCelda(estado, ref, raw) {
+    const m = mision(estado);
+    if (!m) return false;
+    const k = String(ref).toUpperCase();
+    if (!Misiones.celdasEditables(m).includes(k)) return false;
+    const b = estado.borradores[m.id] || (estado.borradores[m.id] = {});
+    if (raw === '' || raw === null || raw === undefined) delete b[k];
+    else b[k] = String(raw);
+    return true;
+  }
+
+  function usarPista(estado) {
+    const m = mision(estado);
+    if (!m) return null;
+    const n = estado.pistas[m.id] || 0;
+    if (n < m.pistas.length) estado.pistas[m.id] = n + 1;
+    return { usadas: estado.pistas[m.id] || 0, texto: m.pistas.slice(0, estado.pistas[m.id] || 0) };
+  }
+
+  /* Entrega la misión actual. entrega: {celda: texto}; extra: datos del gráfico (M7). */
+  function entregar(estado, entrega, extra) {
+    const m = mision(estado);
+    if (!m) return { ok: false, completada: false, mensajes: ['Ya has completado todas las misiones.'], porCelda: {} };
+    const res = Misiones.validar(m, entrega, estado.semilla, extra);
+    if (!res.ok) return Object.assign({ completada: false }, res);
+
+    const nivelAntes = nivel(estado.xp);
+    estado.xp += m.xp;
+    estado.oro += m.oro;
+    for (const k of Object.keys(m.stats)) estado.stats[k] += m.stats[k];
+    const celdas = {};
+    for (const c of Misiones.celdasEditables(m)) celdas[c] = String(entrega[c]).trim();
+    estado.completadas[m.id] = { celdas, extra: m.grafico ? Object.assign({}, extra) : null };
+    if (m.grafico) estado.grafico = Object.assign({}, extra);
+    estado.registro.push({ mision: m.id, titulo: m.titulo, texto: m.consecuencia.texto(m.generarDatos(estado.semilla), extra) });
+    delete estado.borradores[m.id];
+    estado.misionActual += 1;
+
+    const nivelDespues = nivel(estado.xp);
+    return {
+      ok: true, completada: true, porCelda: res.porCelda, mensajes: [],
+      xp: m.xp, oro: m.oro, stats: m.stats,
+      nivelAntes, nivelDespues,
+      subeNivel: nivelDespues > nivelAntes,
+      mensajeNivel: nivelDespues > nivelAntes ? `¡Has subido al nivel ${nivelDespues}! Nuevo rango: ${rango(nivelDespues)}.` : '',
+      consecuencia: estado.registro[estado.registro.length - 1].texto
+    };
+  }
+
+  /* El estado de la aldea se deduce de las misiones completadas. */
+  function calcularAldea(estado) {
+    const m3 = MISIONES[2].generarDatos(estado.semilla);
+    const aldea = { trigo: 0, huevos: 0, poblacion: m3.v.personas, trabajadores: 0, edificios: [] };
+    MISIONES.forEach((m, i) => {
+      if (estado.completadas[m.id]) m.aplicarAldea(aldea, m.generarDatos(estado.semilla));
+    });
+    return aldea;
+  }
+
+  function codice(estado) {
+    const desbloqueadas = {};
+    for (const m of MISIONES) {
+      if (estado.completadas[m.id]) m.etiquetas.forEach((e) => { desbloqueadas[e] = m.titulo; });
+    }
+    const todas = {};
+    for (const m of MISIONES) m.etiquetas.forEach((e) => { todas[e] = todas[e] || m.titulo; });
+    return CODICE.map((c) => ({
+      id: c.id, nombre: c.nombre, moduloPlan: c.moduloPlan,
+      desbloqueada: !!desbloqueadas[c.id],
+      mision: desbloqueadas[c.id] || null
+    }));
+  }
+
+  function resumenFinal(estado) {
+    const cod = codice(estado);
+    return {
+      nombre: estado.nombre, nivel: nivel(estado.xp), rango: rango(nivel(estado.xp)),
+      xp: estado.xp, oro: estado.oro, stats: Object.assign({}, estado.stats),
+      codiceDesbloqueadas: cod.filter((c) => c.desbloqueada).length, codiceTotal: cod.length
+    };
+  }
+
+  /* ---------- Guardado ---------- */
+  const serializar = (estado) => JSON.stringify(estado);
+
+  function cargar(texto) {
+    let o;
+    try { o = typeof texto === 'string' ? JSON.parse(texto) : texto; } catch (e) { throw new Error('El archivo no es una partida válida.'); }
+    if (!o || o.version !== VERSION || typeof o.nombre !== 'string' || !Number.isInteger(o.semilla) ||
+        !Number.isInteger(o.misionActual) || o.misionActual < 0 || o.misionActual > MISIONES.length ||
+        typeof o.xp !== 'number' || typeof o.oro !== 'number' || !o.stats || typeof o.stats !== 'object') {
+      throw new Error('El archivo no es una partida válida.');
+    }
+    const base = nuevaPartida(o.nombre, o.semilla);
+    const estado = Object.assign(base, {
+      iniciada: !!o.iniciada, tutorialVisto: !!o.tutorialVisto,
+      misionActual: o.misionActual, xp: o.xp, oro: o.oro,
+      completadas: o.completadas && typeof o.completadas === 'object' ? o.completadas : {},
+      borradores: o.borradores && typeof o.borradores === 'object' ? o.borradores : {},
+      pistas: o.pistas && typeof o.pistas === 'object' ? o.pistas : {},
+      registro: Array.isArray(o.registro) ? o.registro : [],
+      grafico: o.grafico || null
+    });
+    STATS.forEach((s) => { estado.stats[s] = Number.isFinite(o.stats[s]) ? o.stats[s] : 1; });
+    return estado;
+  }
+
+  function almacen(storage) {
+    if (storage) return storage;
+    try { return typeof localStorage !== 'undefined' ? localStorage : null; } catch (e) { return null; }
+  }
+  function guardarLocal(estado, storage) {
+    try {
+      const s = almacen(storage);
+      if (!s) return false;
+      s.setItem(CLAVE, serializar(estado));
+      return true;
+    } catch (e) { return false; }
+  }
+  function cargarLocal(storage) {
+    try {
+      const s = almacen(storage);
+      const t = s && s.getItem(CLAVE);
+      return t ? cargar(t) : null;
+    } catch (e) { return null; }
+  }
+  function borrarLocal(storage) {
+    try { const s = almacen(storage); if (s) s.removeItem(CLAVE); } catch (e) { /* sin almacenamiento */ }
+  }
+
+  return {
+    STATS, NOMBRES_STATS, nuevaPartida, nivel, rango, barraXP, mision, datosMision, terminada,
+    editarCelda, usarPista, entregar, calcularAldea, codice, resumenFinal,
+    serializar, cargar, guardarLocal, cargarLocal, borrarLocal
+  };
+});
+
+;
+/* Interfaz: todo lo que toca el DOM. */
+(function () {
+  'use strict';
+  if (typeof document === 'undefined') return;
+
+  const E = window.Engine, M = window.Misiones, J = window.Juego;
+  const raiz = document.getElementById('app');
+  const NMISIONES = M.MISIONES.length;
+
+  const semillaNueva = () => 1000 + Math.floor(Math.random() * 900000);
+  let estado = J.cargarLocal() || J.nuevaPartida('', semillaNueva());
+
+  const ui = {
+    ver: 0, sel: { c: 0, r: 1 }, anchor: { c: 0, r: 1 }, editando: null,
+    mensajes: [], resultado: {}, aviso: null, estadoMsg: '', enfocarHoja: false,
+    grafico: { rango: '', tipo: '', titulo: '' }, vistaGrafico: false, errorImportar: ''
+  };
+  ui.ver = Math.min(estado.misionActual, NMISIONES);
+
+  const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  const guardar = () => J.guardarLocal(estado);
+  const pantalla = () => (!estado.iniciada ? 'bienvenida' : !estado.tutorialVisto ? 'tutorial' : 'juego');
+
+  /* ---------- Contexto de la misión que se está viendo ---------- */
+  function contexto() {
+    const idx = ui.ver;
+    const m = M.MISIONES[idx];
+    const datos = m.generarDatos(estado.semilla);
+    const soloLectura = idx < estado.misionActual;
+    const comp = estado.completadas[m.id];
+    const jugador = soloLectura ? (comp ? comp.celdas : {}) : (estado.borradores[m.id] || {});
+    const celdas = Object.assign({}, datos.celdas);
+    const edit = M.celdasEditables(m);
+    edit.forEach((k) => { if (jugador[k]) celdas[k] = jugador[k]; });
+    return { idx, m, datos, soloLectura, edit: new Set(edit), hoja: E.Hoja.desde(celdas, datos.cols, datos.filas) };
+  }
+
+  /* ---------- Gráfico SVG ---------- */
+  function svgGrafico(datos, g) {
+    const mt = /^\$?([A-Z]+)\$?(\d+):\$?([A-Z]+)\$?(\d+)$/.exec(String(g.rango || '').replace(/\s/g, '').toUpperCase());
+    if (!mt) return null;
+    const c1 = E.letraACol(mt[1]), c2 = E.letraACol(mt[3]);
+    const r1 = parseInt(mt[2], 10), r2 = parseInt(mt[4], 10);
+    if (c2 <= c1 || r2 <= r1) return null;
+    const pts = [];
+    for (let r = r1 + 1; r <= r2; r++) {
+      const etiqueta = datos.celdas[E.refA1(c1, r)];
+      const v = parseFloat(String(datos.celdas[E.refA1(c2, r)] || '').replace(',', '.'));
+      if (etiqueta !== undefined && !isNaN(v)) pts.push({ etiqueta, v });
+    }
+    if (!pts.length) return null;
+    const W = 440, H = 250, izq = 40, der = 12, sup = 40, inf = 40;
+    const max = Math.max.apply(null, pts.map((p) => p.v)) || 1;
+    const aw = W - izq - der, ah = H - sup - inf;
+    const paso = aw / pts.length;
+    const y = (v) => sup + ah - (v / max) * ah;
+    let s = `<svg class="grafico" viewBox="0 0 ${W} ${H}" role="img" aria-label="Gráfico: ${esc(g.titulo || '')}">`;
+    s += `<text x="${W / 2}" y="22" text-anchor="middle" class="g-titulo">${esc(g.titulo || '')}</text>`;
+    s += `<line x1="${izq}" y1="${sup + ah}" x2="${W - der}" y2="${sup + ah}" class="g-eje"/><line x1="${izq}" y1="${sup}" x2="${izq}" y2="${sup + ah}" class="g-eje"/>`;
+    if (g.tipo === 'líneas' || g.tipo === 'lineas') {
+      const xy = pts.map((p, i) => [izq + paso * i + paso / 2, y(p.v)]);
+      s += `<polyline class="g-linea" fill="none" points="${xy.map((q) => q.join(',')).join(' ')}"/>`;
+      xy.forEach((q, i) => {
+        s += `<circle cx="${q[0]}" cy="${q[1]}" r="4" class="g-barra"/><text x="${q[0]}" y="${q[1] - 8}" text-anchor="middle" class="g-valor">${pts[i].v}</text>`;
+      });
+    } else {
+      pts.forEach((p, i) => {
+        const x = izq + paso * i + paso * 0.15, bw = paso * 0.7, yy = y(p.v);
+        s += `<rect x="${x}" y="${yy}" width="${bw}" height="${sup + ah - yy}" class="g-barra"/><text x="${x + bw / 2}" y="${yy - 5}" text-anchor="middle" class="g-valor">${p.v}</text>`;
+      });
+    }
+    pts.forEach((p, i) => {
+      s += `<text x="${izq + paso * i + paso / 2}" y="${sup + ah + 16}" text-anchor="middle" class="g-etq">${esc(String(p.etiqueta).slice(0, 9))}</text>`;
+    });
+    return s + '</svg>';
+  }
+
+  /* ---------- Piezas de la interfaz ---------- */
+  function htmlCabecera() {
+    const n = J.nivel(estado.xp);
+    const stats = J.STATS.map((s) => `${J.NOMBRES_STATS[s]} <b>${estado.stats[s]}</b>`).join(' · ');
+    return `<header class="cabecera">
+      <div class="fila-cab"><span class="nombre">${esc(estado.nombre)}</span> · ${esc(estado.clase)} · Rango: <b>${esc(J.rango(n))}</b> · Nivel <b>${n}</b> · Oro <b>${estado.oro}</b></div>
+      <div class="fila-cab"><span class="xp" aria-label="Experiencia">XP ${esc(J.barraXP(estado.xp))}</span> · Equipo: ${esc(estado.equipo)}</div>
+      <div class="fila-cab stats">${stats}</div>
+      <div class="fila-cab botones-cab">
+        <button data-act="exportar">Exportar partida</button>
+        <button data-act="importar">Importar partida</button>
+        <button data-act="nueva">Nueva partida</button>
+        <input type="file" id="archivo" accept=".json,application/json" hidden>
+        ${ui.errorImportar ? `<span class="error" role="alert">${esc(ui.errorImportar)}</span>` : ''}
+      </div></header>`;
+  }
+
+  function htmlIzquierda() {
+    const a = J.calcularAldea(estado);
+    const misiones = M.MISIONES.map((m, i) => {
+      const hecha = i < estado.misionActual;
+      const actual = i === estado.misionActual;
+      const bloqueada = i > estado.misionActual;
+      const etiqueta = `${i + 1}. ${m.titulo}${hecha ? ' ✓' : ''}`;
+      return `<li>${bloqueada ? `<span class="bloqueada">${esc(etiqueta)} (bloqueada)</span>` :
+        `<button class="enlace${i === ui.ver ? ' activo' : ''}" data-act="ver" data-i="${i}">${esc(etiqueta)}${actual ? ' ◄' : ''}</button>`}</li>`;
+    }).join('');
+    const registro = estado.registro.length
+      ? estado.registro.map((r) => `<li><b>${esc(r.titulo)}:</b> ${esc(r.texto)}</li>`).join('')
+      : '<li class="suave">Aún no ha pasado nada en la aldea.</li>';
+    return `<aside class="izquierda">
+      <section class="panel"><h2>Estado de la aldea</h2><ul class="lista-simple">
+        <li>Trigo: <b>${a.trigo.toLocaleString('es-ES', { maximumFractionDigits: 2 })}</b> kg</li>
+        <li>Huevos: <b>${a.huevos}</b></li>
+        <li>Población: <b>${a.poblacion}</b></li>
+        <li>Trabajadores: <b>${a.trabajadores}</b></li>
+        <li>Edificios: <b>${a.edificios.length}</b>${a.edificios.length ? ' (' + esc(a.edificios.join(', ')) + ')' : ''}</li></ul></section>
+      <section class="panel"><h2>Misiones</h2><ul class="lista-simple">${misiones}</ul></section>
+      <section class="panel"><h2>Registro</h2><ul class="registro">${registro}</ul></section>
+    </aside>`;
+  }
+
+  function htmlCodice() {
+    const items = J.codice(estado).map((c) => c.desbloqueada
+      ? `<li class="desbloqueada">✓ ${esc(c.nombre)} <span class="suave">(${esc(c.mision)})</span></li>`
+      : `<li class="pendiente">○ ${esc(c.nombre)}</li>`).join('');
+    return `<aside class="derecha"><section class="panel"><h2>Códice</h2><ul class="lista-simple">${items}</ul></section></aside>`;
+  }
+
+  function rangoSel() {
+    const { anchor, sel } = ui;
+    if (anchor.c !== sel.c) return { c: sel.c, r1: sel.r, r2: sel.r };
+    return { c: sel.c, r1: Math.min(anchor.r, sel.r), r2: Math.max(anchor.r, sel.r) };
+  }
+
+  function htmlHoja(cx) {
+    const { hoja, datos } = cx;
+    const rg = rangoSel();
+    const anchos = [];
+    for (let c = 0; c < datos.cols; c++) {
+      let mx = 4;
+      for (let r = 1; r <= datos.filas; r++) mx = Math.max(mx, hoja.texto(E.refA1(c, r)).length);
+      anchos.push(Math.min(30, mx) + 2);
+    }
+    let h = '<div class="hoja-wrap" tabindex="0" role="grid" aria-label="Hoja de cálculo. Flechas para moverse, F2 para editar, Ctrl+D para rellenar hacia abajo"><table class="hoja"><thead><tr><th class="esq"></th>';
+    for (let c = 0; c < datos.cols; c++) h += `<th class="cab-col" style="min-width:${anchos[c]}ch">${E.colALetra(c)}</th>`;
+    h += '</tr></thead><tbody>';
+    for (let r = 1; r <= datos.filas; r++) {
+      h += `<tr><th class="cab-fila">${r}</th>`;
+      for (let c = 0; c < datos.cols; c++) {
+        const ref = E.refA1(c, r);
+        const v = hoja.valor(ref);
+        const cls = ['celda'];
+        if (cx.edit.has(ref)) cls.push(cx.soloLectura ? 'hecha' : 'editable');
+        if (typeof v === 'number') cls.push('num');
+        if (E.esError(v)) cls.push('err');
+        if (c === ui.sel.c && r === ui.sel.r) cls.push('sel');
+        else if (c === rg.c && r >= rg.r1 && r <= rg.r2) cls.push('rango');
+        const res = ui.resultado[ref];
+        if (res === 'ok') cls.push('ok'); else if (res) cls.push('mal');
+        const titulo = E.esError(v) ? ` title="${esc(v.codigo + ': ' + v.explicacion)}"` : '';
+        let contenido;
+        if (ui.editando && ui.editando.ref === ref) {
+          contenido = `<input class="celda-input" value="${esc(ui.editando.texto)}" spellcheck="false" autocomplete="off" aria-label="Editando ${ref}">`;
+        } else contenido = esc(hoja.texto(ref));
+        h += `<td class="${cls.join(' ')}" data-ref="${ref}"${titulo}>${contenido}</td>`;
+      }
+      h += '</tr>';
+    }
+    return h + '</tbody></table></div>';
+  }
+
+  function htmlBarra(cx) {
+    const ref = E.refA1(ui.sel.c, ui.sel.r);
+    const raw = ui.editando ? ui.editando.texto : (cx.hoja.crudo(ref) || '');
+    const v = cx.hoja.valor(ref);
+    const expl = E.esError(v) ? `<div class="explica error" role="status">${esc(v.codigo)}: ${esc(v.explicacion)}</div>` : '';
+    return `<div class="barra-formulas"><span class="nombre-celda">${ref}</span><span class="fx">fx</span><span id="barra-texto" class="barra-texto">${esc(raw)}</span></div>${expl}`;
+  }
+
+  function htmlGraficoPanel(cx) {
+    if (cx.soloLectura) {
+      const g = estado.grafico;
+      return g ? `<div class="panel-grafico">${svgGrafico(cx.datos, g) || ''}</div>` : '';
+    }
+    const g = ui.grafico;
+    const dibujo = ui.vistaGrafico ? (svgGrafico(cx.datos, g) || '<p class="error">No se puede dibujar un gráfico con ese rango. Escríbelo como CELDA:CELDA (por ejemplo, de la esquina superior izquierda a la inferior derecha).</p>') : '';
+    return `<div class="panel-grafico"><h3>Panel de gráfico</h3>
+      <label>Rango de datos <input type="text" data-campo="rango" value="${esc(g.rango)}" placeholder="CELDA:CELDA" autocomplete="off"></label>
+      <label>Tipo de gráfico <select data-campo="tipo">
+        <option value=""${g.tipo === '' ? ' selected' : ''}>Elige un tipo…</option>
+        <option value="columnas"${g.tipo === 'columnas' ? ' selected' : ''}>Columnas</option>
+        <option value="líneas"${g.tipo === 'líneas' ? ' selected' : ''}>Líneas</option></select></label>
+      <label>Título <input type="text" data-campo="titulo" value="${esc(g.titulo)}" autocomplete="off"></label>
+      <button data-act="dibujar">Dibujar gráfico</button>${dibujo}</div>`;
+  }
+
+  function htmlAviso() {
+    const r = ui.aviso;
+    if (!r) return '';
+    const ganancias = Object.keys(r.stats).map((k) => `+${r.stats[k]} ${J.NOMBRES_STATS[k]}`).join(', ');
+    return `<div class="aviso ok" role="status"><strong>¡Misión completada!</strong> +${r.xp} XP · +${r.oro} oro · ${esc(ganancias)}
+      <p>${esc(r.consecuencia)}</p>${r.mensajeNivel ? `<p class="nivel">${esc(r.mensajeNivel)}</p>` : ''}
+      <button data-act="siguiente">${estado.misionActual >= NMISIONES ? 'Ver el resumen final' : 'Siguiente misión'}</button></div>`;
+  }
+
+  function htmlFinal() {
+    const r = J.resumenFinal(estado);
+    const stats = J.STATS.map((s) => `<li>${J.NOMBRES_STATS[s]}: <b>${r.stats[s]}</b></li>`).join('');
+    const tablon = estado.grafico ? `<section class="panel"><h2>Tablón de la aldea</h2>${svgGrafico(M.MISIONES[6].generarDatos(estado.semilla), estado.grafico) || ''}</section>` : '';
+    return `<section class="panel final"><h1>¡La aldea ha nacido!</h1>
+      <p>${esc(r.nombre)}, has pasado de Aprendiz a ${esc(r.rango)} usando solo fórmulas de Excel.</p>
+      <ul class="lista-simple"><li>Nivel: <b>${r.nivel}</b> (${esc(r.rango)})</li><li>XP total: <b>${r.xp}</b></li><li>Oro: <b>${r.oro}</b></li>${stats}
+      <li>Códice completado: <b>${r.codiceDesbloqueadas}/${r.codiceTotal}</b></li></ul>
+      <p class="proximamente">Próximamente: más misiones (Bosque de las Fórmulas).</p></section>${tablon}`;
+  }
+
+  function htmlCentro() {
+    if (ui.ver >= NMISIONES) return `<main class="centro">${htmlFinal()}</main>`;
+    const cx = contexto();
+    const m = cx.m;
+    const usadas = estado.pistas[m.id] || 0;
+    const pistas = !cx.soloLectura && usadas ? `<ol class="pistas">${m.pistas.slice(0, usadas).map((p) => `<li>${esc(p)}</li>`).join('')}</ol>` : '';
+    const msgs = ui.mensajes.length ? `<ul class="mensajes error" role="alert">${ui.mensajes.map((t) => `<li>${esc(t)}</li>`).join('')}</ul>` : '';
+    const botones = cx.soloLectura
+      ? '<p class="suave">Misión completada: la estás revisando en modo solo lectura.</p>'
+      : `<div class="botones">
+          <button class="principal" data-act="entregar">Entregar al mayordomo</button>
+          <button data-act="pista"${usadas >= 3 ? ' disabled' : ''}>Pista (${usadas}/3)</button>
+          ${m.grafico ? '' : '<button data-act="rellenar">Rellenar hacia abajo</button>'}
+        </div>`;
+    return `<main class="centro">
+      <section class="panel mision"><h2>Misión ${cx.idx + 1}: ${esc(m.titulo)}</h2>
+        <p class="meta">${esc(m.dificultad)} · ${m.xp} XP · ${m.oro} oro</p>
+        ${m.texto.map((t) => `<p>${esc(t)}</p>`).join('')}
+        <div class="que-hacer"><h3>Qué tienes que hacer</h3><ul>${m.queHacer.map((t) => `<li>${esc(t)}</li>`).join('')}</ul></div>
+      </section>
+      ${htmlAviso()}
+      <section class="panel">
+        ${m.grafico ? htmlHoja(cx) + htmlGraficoPanel(cx) : htmlBarra(cx) + htmlHoja(cx)}
+        <div class="estado-msg" role="status">${esc(ui.estadoMsg)}</div>
+        ${botones}${msgs}${pistas}
+      </section></main>`;
+  }
+
+  function htmlBienvenida() {
+    return `<div class="pantalla"><section class="panel"><h1>Excel RPG: El nacimiento de la aldea</h1>
+      ${M.INTRO.bienvenida.map((t) => `<p>${esc(t)}</p>`).join('')}
+      <label>¿Cómo te llamas? <input type="text" id="nombre" value="Daniel" maxlength="30" autocomplete="off"></label>
+      <div class="botones"><button class="principal" data-act="empezar">Empezar</button>
+      <button data-act="importar">Importar partida</button></div>
+      <input type="file" id="archivo" accept=".json,application/json" hidden>
+      ${ui.errorImportar ? `<p class="error" role="alert">${esc(ui.errorImportar)}</p>` : ''}</section></div>`;
+  }
+
+  function htmlTutorial() {
+    return `<div class="pantalla"><section class="panel"><h1>Antes de empezar</h1>
+      ${M.INTRO.tutorial.map((t) => `<h3>${esc(t.titulo)}</h3><p>${esc(t.texto)}</p>`).join('')}
+      <div class="botones"><button class="principal" data-act="tutorial-ok">Entendido, ¡a la aldea!</button></div></section></div>`;
+  }
+
+  /* ---------- Render ---------- */
+  function render() {
+    const p = pantalla();
+    if (p === 'bienvenida') raiz.innerHTML = htmlBienvenida();
+    else if (p === 'tutorial') raiz.innerHTML = htmlTutorial();
+    else raiz.innerHTML = htmlCabecera() + `<div class="rejilla">${htmlIzquierda()}${htmlCentro()}${htmlCodice()}</div>`;
+    if (ui.editando) {
+      const i = raiz.querySelector('.celda-input');
+      if (i) { i.focus(); const n = i.value.length; i.setSelectionRange(n, n); }
+    } else if (ui.enfocarHoja) {
+      const w = raiz.querySelector('.hoja-wrap');
+      if (w && w.focus) w.focus({ preventScroll: true });
+    }
+    ui.enfocarHoja = false;
+  }
+
+  /* ---------- Acciones ---------- */
+  function iniciarEdicion(ref, inicial) {
+    if (ui.ver >= NMISIONES) return;
+    const cx = contexto();
+    ui.estadoMsg = '';
+    if (cx.soloLectura) { ui.estadoMsg = 'Esta misión ya está completada: solo puedes mirarla.'; render(); return; }
+    if (!cx.edit.has(ref)) { ui.estadoMsg = `La celda ${ref} es de solo lectura. Solo puedes editar las celdas de «Qué tienes que hacer».`; render(); return; }
+    ui.editando = { ref, texto: inicial === undefined || inicial === null ? (cx.hoja.crudo(ref) || '') : inicial };
+    render();
+  }
+
+  function confirmarEdicion(dc, dr) {
+    if (!ui.editando) return;
+    const { ref, texto } = ui.editando;
+    J.editarCelda(estado, ref, texto.trim() === '' ? '' : texto.trim());
+    delete ui.resultado[ref];
+    ui.editando = null;
+    guardar();
+    if (dc || dr) mover(dc, dr, false);
+    ui.enfocarHoja = true;
+    render();
+  }
+
+  function mover(dc, dr, extender) {
+    const cx = contexto();
+    const c = Math.max(0, Math.min(cx.datos.cols - 1, ui.sel.c + dc));
+    const r = Math.max(1, Math.min(cx.datos.filas, ui.sel.r + dr));
+    ui.sel = { c, r };
+    if (!extender) ui.anchor = { c, r };
+  }
+
+  function rellenar() {
+    if (ui.editando) confirmarEdicion(0, 0);
+    const cx = contexto();
+    ui.estadoMsg = '';
+    if (cx.soloLectura) ui.estadoMsg = 'Esta misión ya está completada: solo puedes mirarla.';
+    else {
+      const rg = rangoSel();
+      if (rg.r2 === rg.r1) ui.estadoMsg = 'Selecciona varias celdas de arriba abajo (clic en la primera y Mayús+clic en la última) y vuelve a pulsar Rellenar hacia abajo.';
+      else {
+        const superior = cx.hoja.crudoCR(rg.c, rg.r1);
+        if (!superior) ui.estadoMsg = 'La celda superior de la selección está vacía: escribe primero la fórmula allí.';
+        else {
+          const nuevos = E.rellenarAbajo(superior, rg.r2 - rg.r1);
+          let hechas = 0;
+          nuevos.forEach((raw, i) => {
+            const ref = E.refA1(rg.c, rg.r1 + 1 + i);
+            if (cx.edit.has(ref) && J.editarCelda(estado, ref, raw)) { delete ui.resultado[ref]; hechas++; }
+          });
+          ui.estadoMsg = hechas ? `Fórmula copiada en ${hechas} celda${hechas === 1 ? '' : 's'}.` : 'Ninguna de las celdas seleccionadas se puede editar.';
+          guardar();
+        }
+      }
+    }
+    ui.enfocarHoja = true;
+    render();
+  }
+
+  function entregar() {
+    if (ui.editando) confirmarEdicion(0, 0);
+    const cx = contexto();
+    if (cx.soloLectura) return;
+    const entrega = estado.borradores[cx.m.id] || {};
+    const r = J.entregar(estado, entrega, cx.m.grafico ? Object.assign({}, ui.grafico) : undefined);
+    guardar();
+    ui.estadoMsg = '';
+    if (r.ok) { ui.aviso = r; ui.mensajes = []; ui.resultado = r.porCelda; }
+    else { ui.aviso = null; ui.mensajes = r.mensajes; ui.resultado = cx.m.grafico ? {} : r.porCelda; }
+    if (cx.m.grafico) ui.vistaGrafico = true;
+    render();
+  }
+
+  function reiniciarUI() {
+    ui.ver = Math.min(estado.misionActual, NMISIONES);
+    ui.sel = { c: 0, r: 1 }; ui.anchor = { c: 0, r: 1 };
+    ui.editando = null; ui.mensajes = []; ui.resultado = {}; ui.aviso = null; ui.estadoMsg = '';
+    ui.grafico = { rango: '', tipo: '', titulo: '' }; ui.vistaGrafico = false;
+  }
+
+  function exportar() {
+    try {
+      const blob = new Blob([J.serializar(estado)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'aldea-partida.json';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch (e) {
+      ui.errorImportar = 'No se pudo exportar la partida en este navegador.';
+      render();
+    }
+  }
+
+  function importarArchivo(file) {
+    if (!file) return;
+    const lector = new FileReader();
+    lector.onload = () => {
+      try {
+        estado = J.cargar(String(lector.result));
+        ui.errorImportar = '';
+        guardar();
+        reiniciarUI();
+      } catch (e) { ui.errorImportar = 'No se pudo importar: el archivo no es una partida válida.'; }
+      render();
+    };
+    lector.onerror = () => { ui.errorImportar = 'No se pudo leer el archivo.'; render(); };
+    lector.readAsText(file);
+  }
+
+  /* ---------- Eventos ---------- */
+  raiz.addEventListener('click', (e) => {
+    const t = e.target;
+    const td = t.closest && t.closest('td[data-ref]');
+    if (td && !(t.classList && t.classList.contains('celda-input'))) {
+      if (ui.editando) confirmarEdicion(0, 0);
+      const pr = E.parsearRef(td.getAttribute('data-ref'));
+      const nueva = { c: pr.c, r: pr.r };
+      if (e.shiftKey && ui.anchor.c === nueva.c) ui.sel = nueva;
+      else { ui.sel = nueva; ui.anchor = nueva; }
+      ui.estadoMsg = '';
+      ui.enfocarHoja = true;
+      render();
+      return;
+    }
+    const b = t.closest && t.closest('[data-act]');
+    if (!b) return;
+    const act = b.getAttribute('data-act');
+    if (act === 'entregar') entregar();
+    else if (act === 'pista') { J.usarPista(estado); guardar(); render(); }
+    else if (act === 'rellenar') rellenar();
+    else if (act === 'dibujar') {
+      ui.vistaGrafico = true;
+      render();
+    } else if (act === 'siguiente') {
+      ui.aviso = null; ui.resultado = {}; ui.mensajes = [];
+      ui.ver = Math.min(estado.misionActual, NMISIONES);
+      ui.sel = { c: 0, r: 1 }; ui.anchor = { c: 0, r: 1 };
+      render();
+    } else if (act === 'ver') {
+      if (ui.editando) confirmarEdicion(0, 0);
+      ui.ver = parseInt(b.getAttribute('data-i'), 10);
+      ui.sel = { c: 0, r: 1 }; ui.anchor = { c: 0, r: 1 };
+      ui.mensajes = []; ui.resultado = {}; ui.aviso = null; ui.estadoMsg = '';
+      render();
+    } else if (act === 'exportar') exportar();
+    else if (act === 'importar') { const f = raiz.querySelector('#archivo'); if (f) f.click(); }
+    else if (act === 'nueva') {
+      if (window.confirm('¿Seguro que quieres empezar una partida nueva? Se perderá el progreso actual (exporta la partida antes si quieres conservarla).')) {
+        J.borrarLocal();
+        estado = J.nuevaPartida('', semillaNueva());
+        reiniciarUI();
+        guardar();
+        render();
+      }
+    } else if (act === 'empezar') {
+      const inp = raiz.querySelector('#nombre');
+      const nombre = (inp && inp.value.trim()) || 'Daniel';
+      estado.nombre = nombre;
+      estado.iniciada = true;
+      guardar();
+      render();
+    } else if (act === 'tutorial-ok') {
+      estado.tutorialVisto = true;
+      guardar();
+      render();
+    }
+  });
+
+  raiz.addEventListener('dblclick', (e) => {
+    const td = e.target.closest && e.target.closest('td[data-ref]');
+    if (td && !(e.target.classList && e.target.classList.contains('celda-input'))) iniciarEdicion(td.getAttribute('data-ref'));
+  });
+
+  raiz.addEventListener('input', (e) => {
+    const t = e.target;
+    if (t.classList && t.classList.contains('celda-input') && ui.editando) {
+      ui.editando.texto = t.value;
+      const barra = raiz.querySelector('#barra-texto');
+      if (barra) barra.textContent = t.value;
+    } else if (t.getAttribute && t.getAttribute('data-campo')) ui.grafico[t.getAttribute('data-campo')] = t.value;
+  });
+
+  raiz.addEventListener('change', (e) => {
+    const t = e.target;
+    if (t.id === 'archivo') importarArchivo(t.files && t.files[0]);
+    else if (t.getAttribute && t.getAttribute('data-campo')) ui.grafico[t.getAttribute('data-campo')] = t.value;
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (pantalla() !== 'juego') return;
+    const t = e.target;
+    if (t && t.classList && t.classList.contains('celda-input')) {
+      if (e.key === 'Enter') { e.preventDefault(); confirmarEdicion(0, 1); }
+      else if (e.key === 'Tab') { e.preventDefault(); confirmarEdicion(1, 0); }
+      else if (e.key === 'ArrowDown') { e.preventDefault(); confirmarEdicion(0, 1); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); confirmarEdicion(0, -1); }
+      else if (e.key === 'Escape') { e.preventDefault(); ui.editando = null; ui.enfocarHoja = true; render(); }
+      else if (e.key === 'd' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); rellenar(); }
+      return;
+    }
+    if (t && t.matches && t.matches('input, select, textarea')) return;
+    if (t && t.tagName === 'BUTTON' && (e.key === 'Enter' || e.key === ' ')) return;
+    if (ui.ver >= NMISIONES) return;
+    const mod = e.ctrlKey || e.metaKey;
+    if (mod && (e.key === 'd' || e.key === 'D')) { e.preventDefault(); rellenar(); return; }
+    const flechas = { ArrowDown: [0, 1], ArrowUp: [0, -1], ArrowLeft: [-1, 0], ArrowRight: [1, 0] };
+    if (flechas[e.key]) {
+      e.preventDefault();
+      mover(flechas[e.key][0], flechas[e.key][1], e.shiftKey);
+      ui.estadoMsg = '';
+      ui.enfocarHoja = true;
+      render();
+    } else if (e.key === 'Tab') {
+      e.preventDefault();
+      mover(e.shiftKey ? -1 : 1, 0, false);
+      ui.enfocarHoja = true;
+      render();
+    } else if (e.key === 'F2' || e.key === 'Enter') {
+      e.preventDefault();
+      iniciarEdicion(E.refA1(ui.sel.c, ui.sel.r));
+    } else if (e.key === 'Delete' || e.key === 'Backspace') {
+      e.preventDefault();
+      const ref = E.refA1(ui.sel.c, ui.sel.r);
+      iniciarEdicion(ref, '');
+      if (ui.editando) confirmarEdicion(0, 0);
+    } else if (e.key.length === 1 && !mod && !e.altKey) {
+      e.preventDefault();
+      iniciarEdicion(E.refA1(ui.sel.c, ui.sel.r), e.key);
+    }
+  });
+
+  render();
+})();
+
+</script>
+</body>
+</html>
